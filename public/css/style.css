@@ -1,0 +1,307 @@
+ body {
+            margin: 0;
+            background-color: #011904;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+        nav {
+            background-color: #011904;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo img {
+            height: 40px;
+        }
+        .logo span {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            font-weight: 500;
+            color: #e0d9c0;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .nav-links a {
+            color: #e0d9c0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #f4f1e7;
+        }
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .nav-icons i {
+            color: #e0d9c0;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+
+        /* FIN LAYOUTS */
+
+          /* Estilos para el carrusel hero */
+    .hero-carousel {
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .carousel-inner {
+        height: 100%;
+    }
+    
+    .carousel-item {
+        height: 100vh;
+        position: relative;
+    }
+    
+    .hero-slide {
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(1, 25, 4, 0.8) 0%, rgba(1, 25, 4, 0.6) 50%, rgba(1, 25, 4, 0.9) 100%);
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        color: #fff;
+    }
+    
+    .hero-content h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 30px;
+        color: #f4f1e7;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+        letter-spacing: -1px;
+    }
+    
+    .hero-content .lead {
+        font-size: 1.4rem;
+        color: #e0d9c0;
+        font-weight: 300;
+        line-height: 1.6;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        margin-bottom: 40px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #e0d9c0, #f4f1e7);
+        color: #011904;
+        border: none;
+        padding: 15px 35px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(224, 217, 192, 0.4);
+        color: #011904;
+        text-decoration: none;
+    }
+    
+    /* Indicadores del carrusel */
+    .carousel-indicators {
+        bottom: 30px;
+        z-index: 3;
+    }
+    
+    .carousel-indicators button {
+        width: 50px;
+        height: 4px;
+        border-radius: 2px;
+        border: none;
+        background: rgba(224, 217, 192, 0.4);
+        margin: 0 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .carousel-indicators button.active {
+        background: #e0d9c0;
+        box-shadow: 0 0 10px rgba(224, 217, 192, 0.6);
+    }
+    
+    /* Controles de navegación */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 60px;
+        height: 60px;
+        background: rgba(1, 25, 4, 0.8);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 2px solid rgba(224, 217, 192, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .carousel-control-prev {
+        left: 40px;
+    }
+    
+    .carousel-control-next {
+        right: 40px;
+    }
+    
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        background: rgba(224, 217, 192, 0.2);
+        border-color: #e0d9c0;
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 24px;
+        height: 24px;
+        filter: brightness(0) invert(1);
+    }
+    
+    /* Animación para el contenido */
+.carousel-item .hero-content h1,
+.carousel-item .hero-content .lead,
+.carousel-item .hero-content .btn {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: none; /* Resetear cualquier animación */
+}
+
+/* Animaciones para el slide activo */
+.carousel-item.active .hero-content h1 {
+    animation: slideInUp 1s ease-out forwards;
+}
+
+.carousel-item.active .hero-content .lead {
+    animation: slideInUp 1s ease-out 0.2s forwards;
+}
+
+.carousel-item.active .hero-content .btn {
+    animation: slideInUp 1s ease-out 0.4s forwards;
+}
+
+/* adminproductos */
+
+.table-custom {
+        background-color: #02280a;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .table-custom thead {
+        background-color: #044d1c;
+        color: #f7a831;
+    }
+    .table-custom tbody tr {
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .table-custom tbody tr td {
+        vertical-align: middle;
+        color: #e5e5e5;
+    }
+    
+    .table-custom .btn-warning {
+        background-color: #f7a831;
+        border: none;
+        color: #000;
+    }
+    .table-custom .btn-danger {
+        background-color: #c9302c;
+        border: none;
+    }
+    .btn-primary {
+        background-color: #f7a831;
+        border: none;
+        color: #000;
+    }
+    .btn-primary:hover {
+        background-color: #e29d2b;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+        transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero-content .lead {
+            font-size: 1.2rem;
+        }
+        
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .carousel-control-prev {
+            left: 20px;
+        }
+        
+        .carousel-control-next {
+            right: 20px;
+        }
+    }
