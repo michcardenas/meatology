@@ -16,8 +16,18 @@ class Product extends Model
         'price',
         'stock',
         'image',
+        'category_id',
     ];
 
-    // Si prefieres permitir TODO:
-    // protected $guarded = [];   // <— alternativa
+
+public function category()
+{
+    return $this->belongsTo(\App\Models\Category::class);
+}
+
+public function images()
+{
+    return $this->hasMany(ProductImage::class);
+}
+
 }

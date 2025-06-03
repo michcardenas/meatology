@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\ProductController; // <-- NUEVO
+use App\Http\Controllers\CategoryController;
+
 
 /* ---------- Landing y páginas públicas ---------- */
 Route::view('/',        'welcome')->name('home');
@@ -28,6 +30,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('admin')->group(function () {
+    Route::get('/categorias', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/categorias/crear', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('/categorias', [CategoryController::class, 'store'])->name('categories.store');
+});
 });
 
 /* ---------- CRUD de productos (solo usuarios logueados) ---------- */
