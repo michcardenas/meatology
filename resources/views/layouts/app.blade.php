@@ -63,5 +63,57 @@
     <main class="py-1">
         @yield('content')
     </main>
+
+    <!-- Footer -->
+<footer class="text-white pt-5 pb-4" style="background-color: #011904;">
+    <div class="container">
+        <div class="row">
+            <!-- Logo & descripción -->
+            <div class="col-md-4 mb-4">
+                <h4 class="fw-bold text-uppercase">Meatology</h4>
+                <p class="text-light small">
+                    Premium grass-fed beef cuts, ethically sourced and delivered with care. Taste the tradition and quality from Uruguay to your table.
+                </p>
+                <div class="mt-3">
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-whatsapp fa-lg"></i></a>
+                </div>
+            </div>
+
+            <!-- Enlaces rápidos -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-semibold mb-3">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#productos" class="text-light text-decoration-none">Shop</a></li>
+                    <li><a href="#calidad" class="text-light text-decoration-none">Our Process</a></li>
+                    <li><a href="#sostenibilidad" class="text-light text-decoration-none">Sustainability</a></li>
+                    <li><a href="#contacto" class="text-light text-decoration-none">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
+                <p class="text-light small">Subscribe to our newsletter for exclusive offers and recipes.</p>
+                <form class="d-flex gap-2 mt-2">
+                    <input type="email" class="form-control rounded-pill" placeholder="Email address">
+                    <button type="submit" class="btn btn-success rounded-pill px-3">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="border-light my-4">
+
+        <!-- Copyright -->
+        <div class="text-center text-muted small">
+            &copy; {{ date('Y') }} Meatology. All rights reserved.
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>
