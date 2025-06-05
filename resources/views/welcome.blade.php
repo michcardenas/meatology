@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-@dd($featuredProducts)
 
 <!-- Hero Section -->
 <section id="inicio" class="hero-carousel">
