@@ -108,16 +108,9 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="product-card h-100">
                     <div class="product-image-container">
-                        @if($product->images && $product->images->first())
-                            <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
-                                 class="product-image" alt="{{ $product->name }}">
-                        @elseif($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" 
-                                 class="product-image" alt="{{ $product->name }}">
-                        @else
-                            <img src="{{ asset('images/no-image.jpg') }}" 
-                                 class="product-image" alt="No image available">
-                        @endif
+                   <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
+     class="product-image" alt="{{ $product->name }}">
+
                         
                         <div class="product-overlay">
                             <div class="product-actions">
