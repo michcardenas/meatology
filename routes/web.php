@@ -6,10 +6,13 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\ProductController; // <-- NUEVO
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
 
 
 /* ---------- Landing y páginas públicas ---------- */
-Route::view('/',        'welcome')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 Route::view('/about',   'about')->name('about');
 Route::view('/insiders','insiders')->name('insiders');
 Route::view('/chefs',   'chefs')->name('chefs');
