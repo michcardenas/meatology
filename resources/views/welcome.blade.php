@@ -93,29 +93,42 @@
 <!-- Sección de Productos Destacados con Fondo Verde Oscuro -->
 <section class="py-5" style="background-color: #011904;">
     <div class="container">
+        <!-- Encabezado -->
         <div class="row mb-5 text-center text-white">
             <div class="col">
                 <span class="section-badge bg-light text-dark px-3 py-1 rounded-pill">🔥 Monthly Selection</span>
                 <h2 class="section-title text-white mt-3">Featured Cuts of the Month</h2>
-                <p class="section-description text-light">Exclusive, hand-picked premium cuts curated for gourmet experiences.</p>
+                <p class="section-description text-light">
+                    Exclusive, hand-picked premium cuts curated for gourmet experiences.
+                </p>
                 <div class="section-divider mx-auto bg-success" style="height: 3px; width: 80px;"></div>
             </div>
         </div>
 
-        @foreach($featuredProducts->take(3) as $product)
-        <div class="row align-items-center mb-4 p-4 rounded shadow-lg"
-             style="background-color: #f3f3f3;" data-aos="fade-up">
-            <div class="col-md-4 mb-3 mb-md-0">
-                <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
-                     class="img-fluid rounded" alt="{{ $product->name }}">
-            </div>
-            <div class="col-md-8">
-                <h4 class="fw-bold text-dark">{{ $product->name }}</h4>
-                <p class="text-muted">{{ Str::limit($product->description, 180) }}</p>
-                <div class="d-flex justify-content-between align-items-center mt-3">
+        <!-- Productos -->
+    <div class="row g-4">
+    @foreach($featuredProducts->take(6) as $index => $product)
+    <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+        <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: #fdfdfd;">
+            
+            <!-- Imagen del producto -->
+            <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
+                 class="card-img-top" alt="{{ $product->name }}"
+                 style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+
+            <!-- Contenido -->
+            <div class="card-body p-4">
+                <h4 class="card-title fw-bold text-dark mb-2" style="font-family: 'Georgia', serif;">
+                    {{ $product->name }}
+                </h4>
+
+                <p class="card-text text-muted">{{ Str::limit($product->description, 180) }}</p>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
                     <div>
                         <span class="h5 text-success fw-bold">${{ number_format($product->price, 2) }}</span>
                         <small class="text-muted">/ per kg</small>
+
                         @if($product->stock <= 0)
                             <span class="badge bg-danger ms-2">Out of Stock</span>
                         @elseif($product->stock <= 5)
@@ -124,11 +137,12 @@
                             <span class="badge bg-success ms-2">Available</span>
                         @endif
                     </div>
-                    <div>
-                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-dark btn-sm me-2">
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-dark btn-sm rounded-pill">
                             <i class="fas fa-eye"></i> View
                         </a>
-                        <button class="btn btn-success btn-sm add-to-cart"
+                        <button class="btn btn-outline-success btn-sm rounded-pill add-to-cart"
                                 data-product-id="{{ $product->id }}"
                                 {{ $product->stock <= 0 ? 'disabled' : '' }}>
                             <i class="fas fa-shopping-cart"></i> Add
@@ -137,9 +151,13 @@
                 </div>
             </div>
         </div>
-        @endforeach
+    </div>
+    @endforeach
+</div>
+
     </div>
 </section>
+
 <!-- Call to Action: View All Products -->
 <!-- Call to Action: View All Products -->
 <section class="py-5 text-white text-center" style="background: linear-gradient(135deg, #011904 40%, #a6ff8f 100%);">
