@@ -14,7 +14,8 @@ class Product extends Model
         'name',
         'description',
         'price',
-        'stock',
+        'avg_weight',
+        'stock',        // ← AGREGAR ESTE CAMPO
         'image',
         'category_id',
     ];

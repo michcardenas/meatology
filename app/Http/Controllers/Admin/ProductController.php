@@ -62,21 +62,33 @@ public function store(Request $request)
     }
 
     /*──────────────────────── UPDATE ──────────────────────*/
-    public function update(Request $request, Product $product)
-    {
-        $data = $this->validated($request);
-        $product->update($data);
+ public function update(Request $request, Product $product)
+{
+    // Validación manual con todos los campos
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'avg_weight' => 'nullable|string|max:50',
+        'category_id' => 'required|exists:categories,id',
+        'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
 
-        // Agregar nuevas imágenes
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $path = $file->store('products', 'public');
-                $product->images()->create(['image' => $path]);
-            }
+    // Actualizar el producto (excluyendo images)
+    $productData = collect($validatedData)->except(['images'])->toArray();
+    $product->update($productData);
+
+    // Agregar nuevas imágenes
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $file) {
+            $path = $file->store('products', 'public');
+            $product->images()->create(['image' => $path]);
         }
-
-        return back()->with('success', 'Producto actualizado ✔️');
     }
+
+    return back()->with('success', 'Producto actualizado ✔️');
+}
 
     /*──────────────────────── DESTROY ─────────────────────*/
 public function destroy(Product $product)

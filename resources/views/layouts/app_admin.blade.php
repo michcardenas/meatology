@@ -12,12 +12,11 @@
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('images/site.webmanifest') }}">
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- CSS y JS --}}
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -79,5 +78,79 @@
     <main class="py-4">
         @yield('content')
     </main>
+ <script>
+function deleteImageAjax(imageId) {
+    if (confirm('⚠️ Are you sure you want to delete this image? This action cannot be undone.')) {
+        // Mostrar indicador de carga
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Deleting...';
+        button.disabled = true;
+
+        // Realizar petición AJAX
+        fetch(`/admin/products/images/${imageId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Eliminar el elemento del DOM con animación
+                const imageElement = document.getElementById(`image-${imageId}`);
+                imageElement.style.transition = 'opacity 0.3s ease';
+                imageElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    imageElement.remove();
+                    // Actualizar contador de imágenes
+                    updateImageCounter();
+                }, 300);
+                
+                // Mostrar mensaje de éxito (opcional)
+                showToast('Image deleted successfully', 'success');
+            } else {
+                throw new Error(data.message || 'Error deleting image');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Restaurar botón en caso de error
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showToast('Error deleting image', 'error');
+        });
+    }
+}
+
+function updateImageCounter() {
+    const container = document.getElementById('images-container');
+    const imageCount = container.children.length;
+    const counterElement = container.parentElement.querySelector('small');
+    
+    if (imageCount === 0) {
+        counterElement.style.display = 'none';
+    } else {
+        counterElement.textContent = `Currently has ${imageCount} image${imageCount > 1 ? 's' : ''}`;
+    }
+}
+
+function showToast(message, type) {
+    // Crear toast simple
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+</script>
 </body>
 </html>

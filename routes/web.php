@@ -20,6 +20,7 @@ Route::view('/wholesale','wholesale')->name('wholesale');
 
 /* ---------- Catálogo y carrito ---------- */
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+Route::delete('/admin/products/images/{id}', [App\Http\Controllers\Admin\ProductImageController::class, 'destroy'])->name('admin.products.images.destroy');
 
 Route::post('/cart',           [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart',            [CartController::class, 'index'])->name('cart.index');
@@ -47,5 +48,21 @@ Route::middleware(['auth'])
       ->group(function () {
           Route::resource('products', ProductController::class)->except(['show']);
 });
-
+// Rutas del carrito
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/', [CartController::class, 'add'])->name('add');
+    Route::patch('/{rowId}', [CartController::class, 'update'])->name('update');
+    Route::delete('/{rowId}', [CartController::class, 'remove'])->name('remove');
+    Route::delete('/', [CartController::class, 'clear'])->name('clear');
+    
+    // Rutas AJAX
+    Route::get('/count', [CartController::class, 'count'])->name('count');
+    Route::get('/info', [CartController::class, 'info'])->name('info');
+    Route::post('/check-stock', [CartController::class, 'checkStock'])->name('check-stock');
+    
+    // Rutas de descuentos
+    Route::post('/discount', [CartController::class, 'applyDiscount'])->name('apply-discount');
+    Route::delete('/discount', [CartController::class, 'removeDiscount'])->name('remove-discount');
+});
 require __DIR__.'/auth.php';
