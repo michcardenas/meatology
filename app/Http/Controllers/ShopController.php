@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
- public function index(Request $request)
+public function index(Request $request)
 {
     $query = Product::query()->with('images', 'category');
 
@@ -27,8 +27,9 @@ class ShopController extends Controller
     }
 
     $products = $query->latest()->paginate(9);
-    $categories = Category::all();
+    $categories = Category::withCount('products')->get(); // ← actualizado
 
     return view('shop.index', compact('products', 'categories'));
 }
+
 }

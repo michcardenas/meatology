@@ -40,6 +40,8 @@ class CartController extends Controller
      */
   public function add(Request $request)
 {
+    \Log::info('✅ Entrando al método add del carrito', $request->all());
+
     // Validar la request
     $request->validate([
         'product_id' => 'required|exists:products,id',
@@ -48,7 +50,8 @@ class CartController extends Controller
 
     try {
         $product = Product::with('category', 'images')->findOrFail($request->product_id);
-        
+        \Log::info('🔎 Producto encontrado:', ['product_id' => $product->id, 'stock' => $product->stock]);
+
         // Verificar stock disponible
         $requestedQty = $request->qty ?? 1;
         if ($product->stock < $requestedQty) {
@@ -85,21 +88,37 @@ class CartController extends Controller
             Cart::update($cartItem->rowId, $newQty);
             $message = 'Cantidad actualizada en el carrito 🔄';
         } else {
+            \Log::info('🛒 Agregando al carrito', [
+                'id' => $product->id,
+                'name' => $product->name,
+                'qty' => $requestedQty,
+                'price' => ($product->price ?? 0) + ($product->interest ?? 0),
+            ]);
+
             // Si no existe, agregarlo
-            Cart::add([
-                'id'      => $product->id,
-                'name'    => $product->name,
-                'qty'     => $requestedQty,
-                'price'   => $product->price,
-                'weight'  => $product->avg_weight ?? 0,
-                'options' => [
-                    'image' => $product->images->first()?->image ?? $product->image ?? null,
-                    'avg_weight' => $product->avg_weight ?? null,
-                    'category_id' => $product->category_id ?? null,
-                    'category_name' => $product->category->name ?? 'Sin categoría',
-                    'stock' => $product->stock,
-                ],
-            ])->associate(Product::class);
+              Cart::add([
+                    'id'      => $product->id,
+                    'name'    => $product->name,
+                    'qty'     => $requestedQty,
+                    'price'   => ($product->price ?? 0) + ($product->interest ?? 0),
+                    'weight'  => is_numeric(str_replace(',', '.', $product->avg_weight)) 
+                                ? floatval(str_replace(',', '.', $product->avg_weight)) 
+                                : 0,
+                    'options' => [
+                        'image'         => $product->images->first()?->image ?? $product->image ?? null,
+                        'avg_weight'    => $product->avg_weight ?? null,
+                        'category_id'   => $product->category_id ?? null,
+                        'category_name' => $product->category->name ?? 'Sin categoría',
+                        'stock'         => $product->stock,
+                        'base_price'    => $product->price,
+                        'interest'      => $product->interest ?? 0,
+                    ],
+                ])->associate(Product::class);
+
+         
+            \Log::info('✅ Producto agregado al carrito. Total items: ' . Cart::count());
+
+
             $message = 'Producto añadido al carrito 🚀';
         }
 

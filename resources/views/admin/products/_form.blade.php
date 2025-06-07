@@ -13,10 +13,16 @@
 
 <div class="row">
     <div class="col-md-4 mb-4">
-        <label class="form-label fw-bold text-light">Price (COP) *</label>
+        <label class="form-label fw-bold text-light">Price  *</label>
         <input type="number" name="price" step="0.01" class="form-control bg-dark text-light border-secondary"
                value="{{ old('price', $product->price ?? 0) }}" required>
     </div>
+    <div class="col-md-4 mb-4">
+    <label class="form-label fw-bold text-light">Interest Price </label>
+    <input type="number" name="interest" step="0.01" class="form-control bg-dark text-light border-secondary"
+           value="{{ old('interest', $product->interest ?? '') }}" placeholder="Optional discounted price">
+</div>
+
 
     <div class="col-md-4 mb-4">
         <label class="form-label fw-bold text-light">Stock *</label>

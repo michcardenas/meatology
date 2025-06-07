@@ -72,7 +72,8 @@ public function store(Request $request)
         'stock' => 'required|integer|min:0',
         'avg_weight' => 'nullable|string|max:50',
         'category_id' => 'required|exists:categories,id',
-        'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'interest' => 'nullable|numeric|min:0',
     ]);
 
     // Actualizar el producto (excluyendo images)

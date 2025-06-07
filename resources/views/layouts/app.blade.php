@@ -117,6 +117,8 @@
 </footer>
 
 <script>
+
+    
 let currentImages = [];
 let currentImageIndex = 0;
 

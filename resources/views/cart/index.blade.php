@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>🛒 Tu Carrito de Compras</h2>
+    <h2>🛒 Your Shopping Cart</h2>
     
     @if(Cart::count() > 0)
         <div class="row">
@@ -17,8 +17,19 @@
                                 </div>
                                 <div class="col-md-4">
                                     <h5>{{ $item->name }}</h5>
-                                    <small class="text-muted">{{ $item->options->category_name }}</small>
+                                    <small class="text-muted d-block">{{ $item->options->category_name }}</small>
+
+                                    <small class="d-block text-muted">
+                                        Base price: ${{ number_format($item->options->base_price, 0, ',', '.') }}
+                                    </small>
+                                    <small class="d-block text-muted">
+                                        Interest: ${{ number_format($item->options->interest, 0, ',', '.') }}
+                                    </small>
+                                    <small class="d-block fw-bold">
+                                        Unit total: ${{ number_format($item->price, 0, ',', '.') }}
+                                    </small>
                                 </div>
+
                                 <div class="col-md-2">
                                     <strong>${{ number_format($item->price, 0) }}</strong>
                                 </div>
@@ -49,7 +60,7 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Resumen del Pedido</h5>
+                        <h5>Order Summary</h5>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
@@ -57,7 +68,7 @@
                             <span>${{ Cart::subtotal() }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span>Impuestos:</span>
+                            <span>Tax:</span>
                             <span>${{ Cart::tax() }}</span>
                         </div>
                         <hr>
@@ -66,14 +77,14 @@
                             <strong>${{ Cart::total() }}</strong>
                         </div>
                         
-                        <button class="btn btn-success w-100 mt-3">Proceder al Checkout</button>
+                        <button class="btn btn-success w-100 mt-3">Proceed to Checkout</button>
                         
                         <form action="{{ route('cart.clear') }}" method="POST" class="mt-2">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-outline-secondary w-100" 
-                                    onclick="return confirm('¿Estás seguro de vaciar el carrito?')">
-                                Vaciar Carrito
+                                    onclick="return confirm('Are you sure you want to empty the cart?')">
+                                Empty Cart
                             </button>
                         </form>
                     </div>
@@ -82,9 +93,9 @@
         </div>
     @else
         <div class="text-center py-5">
-            <h4>Tu carrito está vacío</h4>
-            <p>¡Agrega algunos productos deliciosos!</p>
-            <a href="{{ route('shop.index') }}" class="btn btn-primary">Continuar Comprando</a>
+            <h4>Your cart is empty</h4>
+            <p>Add some delicious products!</p>
+            <a href="{{ route('shop.index') }}" class="btn btn-primary">Continue Shopping</a>
         </div>
     @endif
 </div>

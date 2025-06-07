@@ -206,10 +206,355 @@
 .modal-backdrop {
     background-color: rgba(1, 25, 4, 0.8);
 }
+.meatology-carousel-section {
+    background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
 
+.category-hero-slide {
+    position: relative;
+    height: 35vh;
+    min-height: 300px;
+    overflow: hidden;
+}
+
+.slide-background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 1;
+}
+
+.slide-bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.3;
+}
+
+.slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(45, 80, 22, 0.9) 0%, 
+        rgba(45, 80, 22, 0.7) 50%, 
+        rgba(45, 80, 22, 0.3) 100%);
+}
+
+.slide-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    padding: 20px 0;
+}
+
+.slide-text {
+    color: white;
+    padding-right: 40px;
+}
+
+.category-label {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    padding: 8px 20px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    color: #fff;
+}
+
+.slide-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    line-height: 1.1;
+    color: #fff;
+}
+
+.slide-description {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+    line-height: 1.5;
+    max-width: 450px;
+    color: #f0f0f0;
+}
+
+.shop-category-btn {
+    display: inline-block;
+    background: #c41e3a;
+    color: white;
+    padding: 15px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(196, 30, 58, 0.3);
+}
+
+.shop-category-btn:hover {
+    background: #e74c3c;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(196, 30, 58, 0.4);
+    color: white;
+}
+
+.slide-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.category-product-image {
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.category-product-image:hover {
+    transform: scale(1.05);
+}
+
+/* Controles */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.carousel-control-prev {
+    left: 30px;
+}
+
+.carousel-control-next {
+    right: 30px;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Indicadores */
+.carousel-indicators {
+    bottom: 30px;
+    margin-bottom: 0;
+}
+
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+}
+
+.carousel-indicators button.active {
+    background: #c41e3a;
+    border-color: #fff;
+    transform: scale(1.2);
+}
+.carousel-item {
+height: 49vh;
+    position: relative;}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .slide-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .category-hero-slide {
+        height: 30vh;
+        min-height: 280px;
+    }
+    
+    .slide-background {
+        width: 100%;
+        opacity: 0.4;
+    }
+    
+    .slide-content {
+        text-align: center;
+    }
+    
+    .slide-text {
+        padding-right: 0;
+        margin-bottom: 20px;
+    }
+    
+    .slide-title {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+    
+    .slide-description {
+        margin: 0 auto 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-hero-slide {
+        height: 28vh;
+        min-height: 260px;
+    }
+    
+    .slide-title {
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+    }
+    
+    .slide-description {
+        font-size: 0.9rem;
+        padding: 0 20px;
+    }
+    
+    .shop-category-btn {
+        padding: 10px 25px;
+        font-size: 0.8rem;
+    }
+    
+    .category-product-image {
+        max-height: 180px;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .carousel-control-prev {
+        left: 15px;
+    }
+    
+    .carousel-control-next {
+        right: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .slide-title {
+        font-size: 1.6rem;
+    }
+    
+    .category-label {
+        padding: 6px 15px;
+        font-size: 0.75rem;
+        margin-bottom: 15px;
+    }
+    
+    .carousel-indicators {
+        bottom: 15px;
+    }
+    
+    .category-hero-slide {
+        min-height: 240px;
+    }
+}
 </style>
 
-
+<div class="meatology-carousel-section">
+    <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            @foreach($categories as $index => $category)
+                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                    <div class="category-hero-slide">
+                        <div class="slide-background">
+                            <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
+                                 class="slide-bg-image" alt="{{ $category->name }}">
+                            <div class="slide-overlay"></div>
+                        </div>
+                        <div class="slide-content">
+                            <div class="container">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <div class="slide-text">
+                                            <div class="category-label">{{ $category->products_count }} Products Available</div>
+                                            <h1 class="slide-title">{{ strtoupper($category->name) }}</h1>
+                                            <p class="slide-description">
+                                                Experience the finest quality {{ strtolower($category->name) }} from family-owned farms. 
+                                                Naturally and sustainably raised for exceptional flavor.
+                                            </p>
+                                            <a href="{{ route('shop.index', ['category' => $category->id]) }}" class="shop-category-btn">
+                                                SHOP {{ strtoupper($category->name) }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="slide-image">
+                                            <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
+                                                 alt="{{ $category->name }}" class="category-product-image">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        
+        <!-- Controles -->
+     
+        <!-- Indicadores -->
+        <div class="carousel-indicators">
+            @foreach($categories as $index => $category)
+                <button type="button" data-bs-target="#categoryCarousel" data-bs-slide-to="{{ $index }}" 
+                        class="{{ $index == 0 ? 'active' : '' }}"></button>
+            @endforeach
+        </div>
+    </div>
+</div>
 <div class="container-fluid py-5">
     <h1 class="text-center catalog-title mb-4">Meatology Catalog 🥩</h1>
 
@@ -255,7 +600,7 @@
     data-bs-target="#quickViewModal"
     data-name="{{ $product->name }}"
     data-desc="{{ $product->description }}"
-    data-price="{{ number_format($product->price, 0) }}"
+data-price="{{ number_format(($product->price ?? 0) + ($product->interest ?? 0), 0) }}"
     data-weight="{{ $product->avg_weight }}"
     data-stock="{{ $product->stock }}"
     data-category="{{ $product->category->name ?? 'N/A' }}"
@@ -267,7 +612,10 @@
 
                     <div class="product-info mt-3">
                         <h5 class="mb-1">{{ $product->name }}</h5>
-                        <div class="product-price">${{ number_format($product->price, 0) }}</div>
+                            @php
+                                $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                            @endphp
+                            <div class="product-price">${{ number_format($totalPrice, 0, ',', '.') }}</div>
 
                         <form action="{{ route('cart.add') }}" method="POST" class="mt-2">
                             @csrf

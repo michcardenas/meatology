@@ -18,6 +18,7 @@ class Product extends Model
         'stock',        // ← AGREGAR ESTE CAMPO
         'image',
         'category_id',
+        'interest',
     ];
 
 
