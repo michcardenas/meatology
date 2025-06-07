@@ -662,19 +662,7 @@ footer {
                     <p class="text-light small mb-3">
                         Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
                     </p>
-                    <form class="newsletter-form" action="#" method="POST">
-                        @csrf
-                        <div class="input-group mb-3">
-                            <input type="email" 
-                                   class="form-control newsletter-input" 
-                                   placeholder="Enter your email address" 
-                                   name="email" 
-                                   required>
-                            <button type="submit" class="btn newsletter-btn">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </form>
+           
                     
                     <!-- Contact Info -->
                     <div class="contact-info mt-4">
