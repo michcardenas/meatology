@@ -26,7 +26,7 @@
             <!-- Legacy Section -->
             <div class="content-section">
                 <div class="row align-items-center mb-5">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
                         <div class="content-text">
                             <h2 class="section-title">A Legacy of Humane Farming</h2>
                             <p class="section-description">
@@ -57,7 +57,7 @@
             <!-- Quality Section -->
             <div class="content-section bg-light-green">
                 <div class="row align-items-center mb-5">
-                    <div class="col-lg-6 order-lg-2">
+                    <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
                         <div class="content-text">
                             <h2 class="section-title">Strict Regulations, Uncompromising Quality</h2>
                             <p class="section-description">
@@ -89,7 +89,7 @@
             <!-- Passion Section -->
             <div class="content-section">
                 <div class="row align-items-center mb-5">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
                         <div class="content-text">
                             <h2 class="section-title">The Passion Behind the Pasture</h2>
                             <p class="section-description">
@@ -173,6 +173,7 @@
 <style>
 .about-page {
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
 }
 
 .about-hero {
@@ -197,6 +198,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
 }
 
 .hero-overlay {
@@ -216,6 +218,7 @@
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     position: relative;
     z-index: 2;
+    line-height: 1.1;
 }
 
 .hero-subtitle {
@@ -224,6 +227,7 @@
     position: relative;
     z-index: 2;
     font-weight: 300;
+    line-height: 1.4;
 }
 
 .about-content {
@@ -239,6 +243,7 @@
     background: rgba(45, 80, 22, 0.05);
     border-radius: 20px;
     margin: 0 20px;
+    padding: 40px 30px;
 }
 
 .bg-dark-green {
@@ -246,6 +251,7 @@
     border-radius: 20px;
     margin: 0 20px;
     color: white;
+    padding: 40px 30px;
 }
 
 .section-title {
@@ -274,11 +280,13 @@
 .content-image {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .section-img {
     width: 100%;
     max-width: 500px;
+    height: auto;
     border-radius: 15px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
@@ -313,6 +321,7 @@
     border-radius: 25px;
     font-size: 0.9rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .farmer-quote {
@@ -335,6 +344,7 @@
     color: #c41e3a;
     font-weight: 600;
     font-style: normal;
+    font-size: 0.95rem;
 }
 
 .benefits-grid {
@@ -346,11 +356,13 @@
 
 .benefit-item {
     text-align: center;
+    padding: 20px;
 }
 
 .benefit-icon {
     font-size: 3rem;
     margin-bottom: 20px;
+    display: block;
 }
 
 .benefit-item h4 {
@@ -363,6 +375,7 @@
 .benefit-item p {
     color: rgba(255, 255, 255, 0.8);
     font-size: 1rem;
+    line-height: 1.5;
 }
 
 .cta-button {
@@ -379,6 +392,7 @@
     transition: all 0.3s ease;
     box-shadow: 0 8px 25px rgba(196, 30, 58, 0.3);
     margin-bottom: 30px;
+    text-align: center;
 }
 
 .cta-button:hover {
@@ -386,6 +400,7 @@
     transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(196, 30, 58, 0.4);
     color: white;
+    text-decoration: none;
 }
 
 .cta-question {
@@ -395,10 +410,31 @@
     margin-top: 20px;
 }
 
-/* Responsive */
+/* RESPONSIVE STYLES */
+
+/* Large Desktop */
+@media (max-width: 1200px) {
+    .hero-title {
+        font-size: 3.2rem;
+    }
+    
+    .section-title {
+        font-size: 2.3rem;
+    }
+    
+    .section-img {
+        max-width: 450px;
+    }
+}
+
+/* Desktop and Large Tablets */
 @media (max-width: 992px) {
     .hero-title {
         font-size: 3rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
     }
     
     .section-title {
@@ -412,11 +448,37 @@
     .about-content {
         padding: 60px 0;
     }
+    
+    .bg-light-green,
+    .bg-dark-green {
+        margin: 0 15px;
+        padding: 35px 25px;
+    }
+    
+    .benefits-grid {
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .farming-quote {
+        padding: 20px 25px;
+    }
+    
+    .farmer-quote {
+        padding: 25px;
+    }
 }
 
+/* Tablets */
 @media (max-width: 768px) {
+    .about-hero {
+        height: 50vh;
+        min-height: 350px;
+    }
+    
     .hero-title {
         font-size: 2.5rem;
+        margin-bottom: 15px;
     }
     
     .hero-subtitle {
@@ -425,47 +487,343 @@
     
     .section-title {
         font-size: 2rem;
+        margin-bottom: 25px;
+        text-align: center;
     }
     
     .section-description {
         font-size: 1rem;
+        margin-bottom: 20px;
     }
     
-    .quality-badges {
-        justify-content: center;
+    .content-section {
+        padding: 35px 0;
     }
     
-    .benefits-grid {
-        grid-template-columns: 1fr;
-        gap: 30px;
+    .about-content {
+        padding: 40px 0;
     }
     
     .bg-light-green,
     .bg-dark-green {
         margin: 0 10px;
+        padding: 30px 20px;
+        border-radius: 15px;
+    }
+    
+    .quality-badges {
+        justify-content: center;
+        gap: 12px;
+    }
+    
+    .badge-item {
+        font-size: 0.85rem;
+        padding: 6px 14px;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        margin-top: 35px;
+    }
+    
+    .benefit-item {
+        padding: 15px;
+    }
+    
+    .benefit-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .benefit-item h4 {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+    
+    .cta-button {
+        padding: 15px 35px;
+        font-size: 1rem;
+    }
+    
+    .content-image {
+        margin-top: 25px;
+        margin-bottom: 25px;
+    }
+    
+    .section-img {
+        max-width: 100%;
+    }
+    
+    /* Row reordering for mobile */
+    .row .col-lg-6.order-lg-2 {
+        order: 1;
+    }
+    
+    .row .col-lg-6.order-lg-1 {
+        order: 2;
     }
 }
 
+/* Mobile Landscape and Large Mobile */
 @media (max-width: 576px) {
+    .about-hero {
+        height: 45vh;
+        min-height: 300px;
+    }
+    
     .hero-title {
         font-size: 2rem;
+        margin-bottom: 12px;
+        line-height: 1.2;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
     }
     
     .section-title {
         font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+    
+    .section-description {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 18px;
+    }
+    
+    .content-section {
+        padding: 30px 0;
+        margin-bottom: 30px;
+    }
+    
+    .about-content {
+        padding: 30px 0;
+    }
+    
+    .bg-light-green,
+    .bg-dark-green {
+        margin: 0 5px;
+        padding: 25px 15px;
+        border-radius: 12px;
     }
     
     .farming-quote {
-        padding: 20px;
+        padding: 18px 20px;
         font-size: 1rem;
+        margin: 25px 0;
+        border-radius: 0 8px 8px 0;
     }
     
     .farmer-quote {
         padding: 20px;
+        margin-top: 25px;
     }
     
     .quote-content p {
         font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+    
+    .quote-content cite {
+        font-size: 0.9rem;
+    }
+    
+    .quality-badges {
+        gap: 10px;
+        margin-top: 25px;
+    }
+    
+    .badge-item {
+        font-size: 0.8rem;
+        padding: 5px 12px;
+    }
+    
+    .benefits-grid {
+        gap: 20px;
+        margin-top: 30px;
+    }
+    
+    .benefit-item {
+        padding: 12px;
+    }
+    
+    .benefit-icon {
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+    }
+    
+    .benefit-item h4 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    
+    .benefit-item p {
+        font-size: 0.9rem;
+    }
+    
+    .cta-button {
+        padding: 12px 30px;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .cta-question {
+        font-size: 1rem;
+        margin-top: 15px;
+        line-height: 1.4;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .about-hero {
+        height: 40vh;
+        min-height: 280px;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+    }
+    
+    .section-description {
+        font-size: 0.9rem;
+    }
+    
+    .bg-light-green,
+    .bg-dark-green {
+        margin: 0;
+        padding: 20px 10px;
+        border-radius: 10px;
+    }
+    
+    .farming-quote {
+        padding: 15px 18px;
+        font-size: 0.95rem;
+    }
+    
+    .farmer-quote {
+        padding: 18px;
+    }
+    
+    .quote-content p {
+        font-size: 1rem;
+    }
+    
+    .quality-badges {
+        gap: 8px;
+    }
+    
+    .badge-item {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+    
+    .benefit-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    .benefit-item h4 {
+        font-size: 1rem;
+    }
+    
+    .benefit-item p {
+        font-size: 0.85rem;
+    }
+    
+    .cta-button {
+        padding: 10px 25px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+    .hero-title {
+        font-size: 1.6rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .bg-light-green,
+    .bg-dark-green {
+        padding: 15px 8px;
+    }
+}
+
+/* Landscape Mode for Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .about-hero {
+        height: 60vh;
+        min-height: 250px;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* High DPI / Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .hero-bg-image,
+    .section-img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .section-img {
+        transition: none;
+    }
+    
+    .cta-button {
+        transition: none;
+    }
+    
+    .section-img:hover {
+        transform: none;
+    }
+    
+    .cta-button:hover {
+        transform: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .farming-quote {
+        background: rgba(45, 80, 22, 0.1);
+    }
+    
+    .farmer-quote {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
     }
 }
 </style>
