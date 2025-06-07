@@ -106,56 +106,65 @@
         </div>
 
         <!-- Productos -->
-    <div class="row g-4">
-    @foreach($featuredProducts->take(6) as $index => $product)
-    <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
-        <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: #fdfdfd;">
-            
-            <!-- Imagen del producto -->
-            <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
-                 class="card-img-top" alt="{{ $product->name }}"
-                 style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-
-            <!-- Contenido -->
-            <div class="card-body p-4">
-                <h4 class="card-title fw-bold text-dark mb-2" style="font-family: 'Georgia', serif;">
-                    {{ $product->name }}
-                </h4>
-
-                <p class="card-text text-muted">{{ Str::limit($product->description, 180) }}</p>
-
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <div>
-                        <span class="h5 text-success fw-bold">${{ number_format($product->price, 2) }}</span>
-                        <small class="text-muted">/ per kg</small>
-
-                        @if($product->stock <= 0)
-                            <span class="badge bg-danger ms-2">Out of Stock</span>
-                        @elseif($product->stock <= 5)
-                            <span class="badge bg-warning text-dark ms-2">Limited Stock</span>
-                        @else
-                            <span class="badge bg-success ms-2">Available</span>
-                        @endif
+        <div class="row g-4 mb-5">
+            @foreach($featuredProducts->take(6) as $index => $product)
+            <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: #fdfdfd;">
+                    
+                    <div class="position-relative">
+                        <!-- Imagen del producto -->
+                        <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
+                             class="card-img-top" alt="{{ $product->name }}"
+                             style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+                        
+                        <!-- Botón de Quick View -->
+                      
                     </div>
 
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-dark btn-sm rounded-pill">
-                            <i class="fas fa-eye"></i> View
-                        </a>
-                        <button class="btn btn-outline-success btn-sm rounded-pill add-to-cart"
-                                data-product-id="{{ $product->id }}"
-                                {{ $product->stock <= 0 ? 'disabled' : '' }}>
-                            <i class="fas fa-shopping-cart"></i> Add
-                        </button>
+                    <!-- Contenido -->
+                    <div class="card-body p-4">
+                        <h4 class="card-title fw-bold text-dark mb-2" style="font-family: 'Georgia', serif;">
+                            {{ $product->name }}
+                        </h4>
+
+                        <p class="card-text text-muted">{{ Str::limit($product->description, 120) }}</p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div>
+                                @php
+                                    $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                                @endphp
+                                <span class="h5 text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</span>
+                                <small class="text-muted">/ per kg</small>
+
+                                @if($product->stock <= 0)
+                                    <span class="badge bg-danger ms-2">Out of Stock</span>
+                                @elseif($product->stock <= 5)
+                                    <span class="badge bg-warning text-dark ms-2">Limited Stock</span>
+                                @else
+                                    <span class="badge bg-success ms-2">Available</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Formulario para agregar al carrito -->
+                        <form action="{{ route('cart.add') }}" method="POST" class="mt-3">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('shop.index') }}" class="btn btn-outline-dark btn-sm rounded-pill flex-fill">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <button type="submit" class="btn btn-buy btn-sm rounded-pill flex-fill" {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+            @endforeach
         </div>
-    </div>
-    @endforeach
-</div>
-
-    </div>
 </section>
 
 <!-- Call to Action: View All Products -->
