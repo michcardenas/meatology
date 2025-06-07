@@ -25,7 +25,7 @@
                             <div class="col-lg-8 ps-lg-5">
                                 <h1>PREMIUM URUGUAYAN GRASS-FED ANGUS BEEF</h1>
                                 <p class="lead mb-4">Experience the finest quality beef from family-owned farms in the pristine lands of Uruguay. Naturally and sustainably raised for exceptional flavor.</p>
-                                <a href="#productos" class="btn btn-primary btn-lg">Shop Premium Cuts</a>
+                                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-lg">Shop Premium Cuts</a>
                             </div>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                             <div class="col-lg-8 ps-lg-5">
                                 <h1>TASTE THE DIFFERENCE OF AUTHENTIC QUALITY</h1>
                                 <p class="lead mb-4">From farm to table, our commitment to excellence ensures every cut delivers unmatched tenderness and rich, natural flavor.</p>
-                                <a href="#calidad" class="btn btn-primary btn-lg">Discover Our Process</a>
+                                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-lg">Shop Quality Cuts</a>
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                             <div class="col-lg-8 ps-lg-5">
                                 <h1>SUSTAINABLE FARMING, EXCEPTIONAL RESULTS</h1>
                                 <p class="lead mb-4">Our cattle roam freely on Uruguay's natural pastures, creating beef that's not only delicious but ethically and sustainably produced.</p>
-                                <a href="#sostenibilidad" class="btn btn-primary btn-lg">Learn Our Values</a>
+                                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-lg">Shop Sustainable Beef</a>
                             </div>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                             <div class="col-lg-8 ps-lg-5">
                                 <h1>ELEVATE YOUR CULINARY EXPERIENCE</h1>
                                 <p class="lead mb-4">Transform your dining moments with beef that represents generations of Uruguayan ranching tradition and uncompromising quality standards.</p>
-                                <a href="#contacto" class="btn btn-primary btn-lg">Start Your Order</a>
+                                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-lg">Start Shopping Now</a>
                             </div>
                         </div>
                     </div>
@@ -164,7 +164,7 @@
     <div class="container">
         <h2 class="mb-4 fw-bold">Want to explore our full selection?</h2>
         <p class="lead text-light">Discover all our premium cuts and find the perfect choice for your next culinary adventure.</p>
-        <a href="{{ route('products.index') }}" class="btn btn-lg btn-light text-dark fw-semibold mt-3 shadow-sm">
+        <a href="{{ route('shop.index') }}" class="btn btn-lg btn-light text-dark fw-semibold mt-3 shadow-sm">
             <i class="fas fa-store me-2"></i> View All Products
         </a>
     </div>
@@ -194,7 +194,7 @@
                     <div class="card-body bg-white rounded-bottom">
                         <h5 class="card-title fw-bold text-dark">{{ $category->name }}</h5>
                         <p class="card-text text-muted">{{ Str::limit($category->description, 100) }}</p>
-                        <a href="{{ route('products.index', ['category' => $category->id]) }}" class="btn btn-outline-dark mt-2">
+                        <a href="{{ route('shop.index') }}" class="btn btn-outline-dark mt-2">
                             Explore Category
                         </a>
                     </div>
