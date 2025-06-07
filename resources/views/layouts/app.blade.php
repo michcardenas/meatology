@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meatology</title>
 
-
     {{-- Favicon y meta para iconos --}}
     <link rel="icon" type="image/png" href="{{ asset('images/favicon-96x96.png') }}" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
@@ -14,22 +13,243 @@
     <link rel="manifest" href="{{ asset('images/site.webmanifest') }}">
 
     {{-- CSS y JS --}}
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+    <style>
+/* Navigation Responsive Styles */
+nav {
+    background-color: #011904;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
 
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+}
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+}
 
- <style>
+.logo img {
+    height: 40px;
+}
+
+.logo span {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    font-weight: 500;
+    color: #e0d9c0;
+}
+
+/* Desktop Navigation */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-links a {
+    color: #e0d9c0;
+    text-decoration: none;
+    font-size: 0.95rem;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #f4f1e7;
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.nav-icons i {
+    color: #e0d9c0;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.nav-icons i:hover {
+    color: #f4f1e7;
+}
+
+.nav-icons a {
+    color: #e0d9c0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav-icons a:hover {
+    color: #f4f1e7;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #e0d9c0;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 1001;
+}
+
+.mobile-menu-toggle:hover {
+    color: #f4f1e7;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(1, 25, 4, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    padding-top: 80px;
+}
+
+.mobile-nav.active {
+    display: block;
+    animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.mobile-nav-links a {
+    color: #e0d9c0;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active {
+    color: #f4f1e7;
+    background: rgba(224, 217, 192, 0.1);
+    transform: translateY(-2px);
+}
+
+.mobile-nav-icons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 50px;
+    padding: 0 20px;
+}
+
+.mobile-nav-icons a,
+.mobile-nav-icons .dropdown {
+    color: #e0d9c0;
+    font-size: 1.3rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 15px;
+    border-radius: 50%;
+    background: rgba(224, 217, 192, 0.1);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-nav-icons a:hover,
+.mobile-nav-icons .dropdown:hover {
+    color: #f4f1e7;
+    background: rgba(224, 217, 192, 0.2);
+    transform: scale(1.1);
+}
+
+/* Dropdown Styles */
+.dropdown-toggle {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu {
+    background: white;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    min-width: 180px;
+    padding: 10px 0;
+    margin-top: 8px;
+}
+
+.dropdown-item {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+    color: #011904;
+    transform: translateX(5px);
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+    border-color: rgba(0,0,0,.1);
+}
+
 /* Footer Styles */
 footer {
     background: linear-gradient(135deg, #011904 0%, #022a07 100%) !important;
-    border-top: 3px solidrgb(7, 52, 13);
+    border-top: 3px solid rgb(7, 52, 13);
 }
 
 .footer-logo img {
@@ -164,8 +384,43 @@ footer {
     transform: translateY(-1px);
 }
 
-/* Responsive */
+/* Responsive Media Queries */
+@media (max-width: 992px) {
+    nav {
+        padding: 12px 15px;
+    }
+    
+    .nav-links {
+        gap: 20px;
+    }
+    
+    .nav-icons {
+        gap: 15px;
+    }
+}
+
 @media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .nav-icons {
+        gap: 12px;
+    }
+    
+    .nav-icons a {
+        font-size: 1rem;
+    }
+    
+    .logo img {
+        height: 35px;
+    }
+    
+    /* Footer responsive */
     .social-links {
         justify-content: center;
         margin-top: 20px;
@@ -193,6 +448,23 @@ footer {
 }
 
 @media (max-width: 576px) {
+    nav {
+        padding: 8px 15px;
+    }
+    
+    .logo img {
+        height: 30px;
+    }
+    
+    .nav-icons {
+        gap: 8px;
+    }
+    
+    .nav-icons a {
+        font-size: 0.9rem;
+    }
+    
+    /* Footer responsive */
     footer {
         padding-top: 3rem !important;
     }
@@ -205,64 +477,139 @@ footer {
         margin-bottom: 2rem;
     }
 }
+
+@media (max-width: 480px) {
+    .mobile-nav-links a {
+        font-size: 1.1rem;
+    }
+    
+    .mobile-nav-icons a,
+    .mobile-nav-icons .dropdown {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+}
 </style>
+
     @vite(['resources/js/app.js'])
 </head>
 <body>
     <nav>
-        <div class="logo">
-            <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" >
-        </div>
+        <div class="navbar-container">
+            <div class="logo">
+                <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo">
+            </div>
 
-        <div class="nav-links">
-            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-            <a href="{{ route('shop.index') }}">Products</a>
-            <a href="{{ route('about') }}">About Us</a>
-    <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
-        </div>
+            <!-- Desktop Navigation -->
+            <div class="nav-links">
+                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+                <a href="{{ route('shop.index') }}">Products</a>
+                <a href="{{ route('about') }}">About Us</a>
+                <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
+            </div>
 
-    <div class="nav-icons">
-
-     @auth
-    <div class="dropdown">
-        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
-            <i class="fas fa-user-circle"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <a class="dropdown-item" href="{{ route('dashboard') }}">
-                    <i class="fas fa-user me-2"></i>Mi Cuenta
+            <!-- Desktop Icons -->
+            <div class="nav-icons">
+                @auth
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                <i class="fas fa-user me-2"></i>Mi Cuenta
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('cart.index') }}">
+                                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('logout') }}" 
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Formulario oculto para logout -->
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </div>
+                @else
+                <a href="{{ route('login') }}" title="Iniciar sesión">
+                    <i class="fas fa-user-circle"></i>
                 </a>
-            </li>
-            <li>
-                <a class="dropdown-item" href="{{ route('cart.index') }}">
-                    <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
-                </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <a class="dropdown-item" href="{{ route('logout') }}" 
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                </a>
-            </li>
-        </ul>
-        
-        <!-- Formulario oculto para logout -->
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-    </div>
-@else
-    <a href="{{ route('login') }}" title="Iniciar sesión">
-        <i class="fas fa-user-circle"></i>
-    </a>
-@endauth
+                @endauth
+                
                 <a class="nav-link" href="{{ route('cart.index') }}">
                     🛒 <span class="badge bg-secondary">{{ Cart::count() }}</span>
                 </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars" id="menuIcon"></i>
+            </button>
         </div>
 
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav" id="mobileNav">
+            <div class="mobile-nav-links">
+                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+                <a href="{{ route('shop.index') }}">Products</a>
+                <a href="{{ route('about') }}">About Us</a>
+                <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
+            </div>
+
+            <div class="mobile-nav-icons">
+                @auth
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                <i class="fas fa-user me-2"></i>Mi Cuenta
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('cart.index') }}">
+                                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('logout') }}" 
+                               onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Formulario oculto para logout móvil -->
+                    <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </div>
+                @else
+                <a href="{{ route('login') }}" title="Iniciar sesión">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                @endauth
+                
+                <a href="{{ route('cart.index') }}">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge bg-secondary ms-1">{{ Cart::count() }}</span>
+                </a>
+            </div>
+        </div>
     </nav>
 
     <main class="py-1">
@@ -270,113 +617,143 @@ footer {
     </main>
 
     <!-- Footer -->
-<footer class="text-white pt-5 pb-4" style="background-color: #011904;">
-    <div class="container">
-        <div class="row">
-            <!-- Logo & descripción -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="footer-logo mb-3">
-                    <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" style="height: 40px; filter: brightness(0) invert(1);">
-                </div>
-                <h4 class="fw-bold text-uppercase mb-3">Meatology</h4>
-                <p class="text-light small">
-                    Premium grass-fed beef cuts, ethically sourced and delivered with care. Taste the tradition and quality from Uruguay to your table.
-                </p>
-                <div class="social-links mt-3">
-                    <a href="#" class="social-link me-3" title="Facebook">
-                        <i class="fab fa-facebook fa-lg"></i>
-                    </a>
-                    <a href="#" class="social-link me-3" title="Instagram">
-                        <i class="fab fa-instagram fa-lg"></i>
-                    </a>
-                    <a href="#" class="social-link me-3" title="Twitter">
-                        <i class="fab fa-twitter fa-lg"></i>
-                    </a>
-                    <a href="#" class="social-link" title="WhatsApp">
-                        <i class="fab fa-whatsapp fa-lg"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h5 class="text-uppercase fw-semibold mb-3">Navigation</h5>
-                <ul class="list-unstyled footer-links">
-                    <li><a href="{{ route('home') }}" class="footer-link">Home</a></li>
-                    <li><a href="{{ route('shop.index') }}" class="footer-link">Products</a></li>
-                    <li><a href="{{ route('about') }}" class="footer-link">About Us</a></li>
-                    <li><a href="{{ route('partner.chefs') }}" class="footer-link">Partner Chefs</a></li>
-                  
-                </ul>
-            </div>
-
-            <!-- Support Links -->
-       
-
-            <!-- Newsletter -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
-                <p class="text-light small mb-3">
-                    Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
-                </p>
-                <form class="newsletter-form" action="#" method="POST">
-                    @csrf
-                    <div class="input-group mb-3">
-                        <input type="email" 
-                               class="form-control newsletter-input" 
-                               placeholder="Enter your email address" 
-                               name="email" 
-                               required>
-                        <button type="submit" class="btn newsletter-btn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
+    <footer class="text-white pt-5 pb-4" style="background-color: #011904;">
+        <div class="container">
+            <div class="row">
+                <!-- Logo & descripción -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-logo mb-3">
+                        <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" style="height: 40px; filter: brightness(0) invert(1);">
                     </div>
-                </form>
-                
-                <!-- Contact Info -->
-                <div class="contact-info mt-4">
-                    <p class="text-light small mb-2">
-                        <i class="fas fa-envelope me-2"></i>
-                        <a href="mailto:sales@meatology.us" class="footer-link">sales@meatology.us</a>
+                    <h4 class="fw-bold text-uppercase mb-3">Meatology</h4>
+                    <p class="text-light small">
+                        Premium grass-fed beef cuts, ethically sourced and delivered with care. Taste the tradition and quality from Uruguay to your table.
                     </p>
-                    <p class="text-light small mb-0">
-                        <i class="fas fa-phone me-2"></i>
-                        <a href="tel:+1234567890" class="footer-link">+1 (234) 567-8890</a>
+                    <div class="social-links mt-3">
+                        <a href="#" class="social-link me-3" title="Facebook">
+                            <i class="fab fa-facebook fa-lg"></i>
+                        </a>
+                        <a href="#" class="social-link me-3" title="Instagram">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                        <a href="#" class="social-link me-3" title="Twitter">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="#" class="social-link" title="WhatsApp">
+                            <i class="fab fa-whatsapp fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 class="text-uppercase fw-semibold mb-3">Navigation</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{{ route('home') }}" class="footer-link">Home</a></li>
+                        <li><a href="{{ route('shop.index') }}" class="footer-link">Products</a></li>
+                        <li><a href="{{ route('about') }}" class="footer-link">About Us</a></li>
+                        <li><a href="{{ route('partner.chefs') }}" class="footer-link">Partner Chefs</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
+                    <p class="text-light small mb-3">
+                        Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
                     </p>
+                    <form class="newsletter-form" action="#" method="POST">
+                        @csrf
+                        <div class="input-group mb-3">
+                            <input type="email" 
+                                   class="form-control newsletter-input" 
+                                   placeholder="Enter your email address" 
+                                   name="email" 
+                                   required>
+                            <button type="submit" class="btn newsletter-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Contact Info -->
+                    <div class="contact-info mt-4">
+                        <p class="text-light small mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            <a href="mailto:sales@meatology.us" class="footer-link">sales@meatology.us</a>
+                        </p>
+                        <p class="text-light small mb-0">
+                            <i class="fas fa-phone me-2"></i>
+                            <a href="tel:+1234567890" class="footer-link">+1 (234) 567-8890</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <hr class="border-light my-4 opacity-25">
+
+            <!-- Bottom Footer -->
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="text-muted small">
+                        &copy; {{ date('Y') }} Meatology. All rights reserved.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-certifications text-md-end">
+                        <span class="certification-badge me-2">
+                            <i class="fas fa-certificate text-success me-1"></i>
+                            <small>Certified Humane®</small>
+                        </span>
+                        <span class="certification-badge">
+                            <i class="fas fa-leaf text-success me-1"></i>
+                            <small>100% Grass-Fed</small>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Divider -->
-        <hr class="border-light my-4 opacity-25">
-
-        <!-- Bottom Footer -->
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="text-muted small">
-                    &copy; {{ date('Y') }} Meatology. All rights reserved. | 
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="footer-certifications text-md-end">
-                    <span class="certification-badge me-2">
-                        <i class="fas fa-certificate text-success me-1"></i>
-                        <small>Certified Humane®</small>
-                    </span>
-                    <span class="certification-badge">
-                        <i class="fas fa-leaf text-success me-1"></i>
-                        <small>100% Grass-Fed</small>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
+    </footer>
 
 <script>
 
-    
+     function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            const menuIcon = document.getElementById('menuIcon');
+            
+            if (mobileNav.classList.contains('active')) {
+                mobileNav.classList.remove('active');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+                document.body.style.overflow = 'auto';
+            } else {
+                mobileNav.classList.add('active');
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Cerrar menú móvil al hacer click en un enlace
+        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggleMobileMenu();
+            });
+        });
+
+        // Cerrar menú móvil al cambiar tamaño de pantalla
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                const mobileNav = document.getElementById('mobileNav');
+                const menuIcon = document.getElementById('menuIcon');
+                
+                mobileNav.classList.remove('active');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+                document.body.style.overflow = 'auto';
+            }
+        });
 let currentImages = [];
 let currentImageIndex = 0;
 
