@@ -25,9 +25,187 @@
 
 
 
-    <style>
-       
-    </style>
+ <style>
+/* Footer Styles */
+footer {
+    background: linear-gradient(135deg, #011904 0%, #022a07 100%) !important;
+    border-top: 3px solidrgb(7, 52, 13);
+}
+
+.footer-logo img {
+    transition: transform 0.3s ease;
+}
+
+.footer-logo:hover img {
+    transform: scale(1.05);
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+}
+
+.social-link {
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.social-link:hover {
+    color: #fff;
+    background: rgba(64, 120, 79, 0.8);
+    transform: translateY(-2px);
+}
+
+.footer-links {
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 8px;
+}
+
+.footer-link {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.footer-link:hover {
+    color: #fff;
+    padding-left: 5px;
+}
+
+.footer-link::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 2px;
+    background: #c41e3a;
+    transition: width 0.3s ease;
+}
+
+.footer-link:hover::before {
+    width: 6px;
+}
+
+.newsletter-form {
+    position: relative;
+}
+
+.newsletter-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px 0 0 25px;
+    color: white;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+}
+
+.newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.newsletter-input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: none;
+    color: white;
+}
+
+.newsletter-btn {
+    background: #c41e3a;
+    border: 2px solid #c41e3a;
+    border-radius: 0 25px 25px 0;
+    color: white;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+}
+
+.newsletter-btn:hover {
+    background: #e74c3c;
+    border-color: #e74c3c;
+    transform: translateY(-1px);
+}
+
+.contact-info .footer-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+}
+
+.contact-info .footer-link:hover {
+    color: #c41e3a;
+    padding-left: 0;
+}
+
+.certification-badge {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.certification-badge:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .social-links {
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    .footer-certifications {
+        text-align: center !important;
+        margin-top: 20px;
+    }
+    
+    .certification-badge {
+        display: block;
+        margin: 5px 0;
+    }
+    
+    .newsletter-input,
+    .newsletter-btn {
+        border-radius: 25px;
+        margin-bottom: 10px;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 576px) {
+    footer {
+        padding-top: 3rem !important;
+    }
+    
+    .footer-logo {
+        text-align: center;
+    }
+    
+    .col-lg-2 {
+        margin-bottom: 2rem;
+    }
+}
+</style>
     @vite(['resources/js/app.js'])
 </head>
 <body>
@@ -39,21 +217,47 @@
         <div class="nav-links">
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
             <a href="{{ route('shop.index') }}">Products</a>
-            <a href="#">About Us</a>
-            <a href="#">Insiders</a>
-            <a href="#">Partner Chefs</a>
-            <a href="#">Wholesale</a>
+            <a href="{{ route('about') }}">About Us</a>
+    <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
         </div>
 
     <div class="nav-icons">
-            <a href="#" title="Buscar"><i class="fas fa-search"></i></a>
 
-            @auth
-                <a href="#" title="Mi cuenta"><i class="fas fa-user-circle"></i></a>
-            @else
-                <!-- <a href="{{ route('login') }}" title="Iniciar sesión"><i class="fas fa-user"></i></a> -->
-            @endauth
-
+     @auth
+    <div class="dropdown">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
+            <i class="fas fa-user-circle"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="{{ route('dashboard') }}">
+                    <i class="fas fa-user me-2"></i>Mi Cuenta
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ route('cart.index') }}">
+                    <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item" href="{{ route('logout') }}" 
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                </a>
+            </li>
+        </ul>
+        
+        <!-- Formulario oculto para logout -->
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+    </div>
+@else
+    <a href="{{ route('login') }}" title="Iniciar sesión">
+        <i class="fas fa-user-circle"></i>
+    </a>
+@endauth
                 <a class="nav-link" href="{{ route('cart.index') }}">
                     🛒 <span class="badge bg-secondary">{{ Cart::count() }}</span>
                 </a>
@@ -70,51 +274,105 @@
     <div class="container">
         <div class="row">
             <!-- Logo & descripción -->
-            <div class="col-md-4 mb-4">
-                <h4 class="fw-bold text-uppercase">Meatology</h4>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="footer-logo mb-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" style="height: 40px; filter: brightness(0) invert(1);">
+                </div>
+                <h4 class="fw-bold text-uppercase mb-3">Meatology</h4>
                 <p class="text-light small">
                     Premium grass-fed beef cuts, ethically sourced and delivered with care. Taste the tradition and quality from Uruguay to your table.
                 </p>
-                <div class="mt-3">
-                    <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
-                    <a href="#" class="text-white"><i class="fab fa-whatsapp fa-lg"></i></a>
+                <div class="social-links mt-3">
+                    <a href="#" class="social-link me-3" title="Facebook">
+                        <i class="fab fa-facebook fa-lg"></i>
+                    </a>
+                    <a href="#" class="social-link me-3" title="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="social-link me-3" title="Twitter">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="social-link" title="WhatsApp">
+                        <i class="fab fa-whatsapp fa-lg"></i>
+                    </a>
                 </div>
             </div>
 
-            <!-- Enlaces rápidos -->
-            <div class="col-md-4 mb-4">
-                <h5 class="text-uppercase fw-semibold mb-3">Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#productos" class="text-light text-decoration-none">Shop</a></li>
-                    <li><a href="#calidad" class="text-light text-decoration-none">Our Process</a></li>
-                    <li><a href="#sostenibilidad" class="text-light text-decoration-none">Sustainability</a></li>
-                    <li><a href="#contacto" class="text-light text-decoration-none">Contact Us</a></li>
+            <!-- Navigation Links -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="text-uppercase fw-semibold mb-3">Navigation</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="{{ route('home') }}" class="footer-link">Home</a></li>
+                    <li><a href="{{ route('shop.index') }}" class="footer-link">Products</a></li>
+                    <li><a href="{{ route('about') }}" class="footer-link">About Us</a></li>
+                    <li><a href="{{ route('partner.chefs') }}" class="footer-link">Partner Chefs</a></li>
+                  
                 </ul>
             </div>
 
+            <!-- Support Links -->
+       
+
             <!-- Newsletter -->
-            <div class="col-md-4 mb-4">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
-                <p class="text-light small">Subscribe to our newsletter for exclusive offers and recipes.</p>
-                <form class="d-flex gap-2 mt-2">
-                    <input type="email" class="form-control rounded-pill" placeholder="Email address">
-                    <button type="submit" class="btn btn-success rounded-pill px-3">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                <p class="text-light small mb-3">
+                    Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
+                </p>
+                <form class="newsletter-form" action="#" method="POST">
+                    @csrf
+                    <div class="input-group mb-3">
+                        <input type="email" 
+                               class="form-control newsletter-input" 
+                               placeholder="Enter your email address" 
+                               name="email" 
+                               required>
+                        <button type="submit" class="btn newsletter-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </form>
+                
+                <!-- Contact Info -->
+                <div class="contact-info mt-4">
+                    <p class="text-light small mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                        <a href="mailto:sales@meatology.us" class="footer-link">sales@meatology.us</a>
+                    </p>
+                    <p class="text-light small mb-0">
+                        <i class="fas fa-phone me-2"></i>
+                        <a href="tel:+1234567890" class="footer-link">+1 (234) 567-8890</a>
+                    </p>
+                </div>
             </div>
         </div>
 
         <!-- Divider -->
-        <hr class="border-light my-4">
+        <hr class="border-light my-4 opacity-25">
 
-        <!-- Copyright -->
-        <div class="text-center text-muted small">
-            &copy; {{ date('Y') }} Meatology. All rights reserved.
+        <!-- Bottom Footer -->
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="text-muted small">
+                    &copy; {{ date('Y') }} Meatology. All rights reserved. | 
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="footer-certifications text-md-end">
+                    <span class="certification-badge me-2">
+                        <i class="fas fa-certificate text-success me-1"></i>
+                        <small>Certified Humane®</small>
+                    </span>
+                    <span class="certification-badge">
+                        <i class="fas fa-leaf text-success me-1"></i>
+                        <small>100% Grass-Fed</small>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </footer>
+
 
 <script>
 

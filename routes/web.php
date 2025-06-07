@@ -26,6 +26,9 @@ Route::post('/cart',           [CartController::class, 'add'])->name('cart.add')
 Route::get('/cart',            [CartController::class, 'index'])->name('cart.index');
 Route::patch('/cart/{rowId}',  [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{rowId}', [CartController::class, 'remove'])->name('cart.remove');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/partner-chefs', [HomeController::class, 'partnerChefs'])->name('partner.chefs');
+Route::post('/partner-chefs', [HomeController::class, 'submitPartnerChefs'])->name('partner.chefs.submit');
 
 /* ---------- Dashboard y perfil ---------- */
 Route::middleware(['auth', 'verified'])->group(function () {
