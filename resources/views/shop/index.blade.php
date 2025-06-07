@@ -509,7 +509,7 @@
     /* Mobile Landscape and Small Tablets */
     @media (max-width: 768px) {
          .carousel-item {
-            height: 30vh;
+            height: 40vh;
             position: relative;
         }
         .category-hero-slide {
@@ -625,7 +625,7 @@
     /* Mobile Portrait */
     @media (max-width: 576px) {
          .carousel-item {
-            height: 30vh;
+            height: 40vh;
             position: relative;
         }
         .slide-title {
@@ -743,7 +743,7 @@
     /* Extra Small Mobile */
     @media (max-width: 480px) {
          .carousel-item {
-            height: 30vh;
+            height: 40vh;
             position: relative;
         }
         .slide-title {
@@ -780,7 +780,7 @@
     /* Landscape mode adjustments for mobile */
     @media (max-height: 500px) and (orientation: landscape) {
         .carousel-item {
-            height: 30vh;
+            height: 40vh;
             position: relative;
         }
         .category-hero-slide {
