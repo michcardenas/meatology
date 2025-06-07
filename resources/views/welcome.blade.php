@@ -81,13 +81,7 @@
             </div>
         </div>
         
-        <!-- Controles de navegación -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
+     
     </div>
 </section>
 <!-- Sección de Productos Destacados con Fondo Verde Oscuro -->
