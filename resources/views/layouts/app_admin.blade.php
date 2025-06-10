@@ -43,7 +43,6 @@
         <a href="{{ route('wholesale') }}">Wholesale</a>
 
 @role('admin')
-        @auth
  <div class="dropdown">
             <a class="dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 🛠️ Admin Panel
@@ -55,7 +54,6 @@
                 <li><a class="dropdown-item text-light" href="{{ route('admin.cities.index') }}">🏙️ Manage Cities</a></li>
             </ul>
         </div>
-@endauth
 @endrole
 
     </div>
