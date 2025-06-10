@@ -2,22 +2,22 @@
 
 @section('content')
 <div class="container py-4">
-    <h2>🛒 Bienvenido {{ $user->name }}</h2>
+    <h2>🛒 Welcome {{ $user->name }}</h2>
     <p>Email: {{ $user->email }}</p>
 
     <hr>
-    <h4>📦 Tus Órdenes</h4>
+    <h4>📦 Your Orders</h4>
     @if($orders->isEmpty())
-        <div class="alert alert-info">Aún no tienes órdenes registradas.</div>
+        <div class="alert alert-info">You don’t have any registered orders yet.</div>
     @else
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th># Orden</th>
-                    <th>Fecha</th>
+                    <th># Order</th>
+                    <th>Date</th>
                     <th>Total</th>
-                    <th>Estado</th>
-                    <th>Pago</th>
+                    <th>Status</th>
+                    <th>Payment</th>
                 </tr>
             </thead>
             <tbody>
