@@ -31,5 +31,10 @@ public function images()
 {
     return $this->hasMany(ProductImage::class);
 }
+public function prices()
+{
+    return $this->hasMany(Price::class);
+}
+
 
 }

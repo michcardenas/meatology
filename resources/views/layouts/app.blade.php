@@ -11,6 +11,8 @@
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('images/site.webmanifest') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
     {{-- CSS y JS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

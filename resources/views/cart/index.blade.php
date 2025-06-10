@@ -77,8 +77,7 @@
                             <strong>${{ Cart::total() }}</strong>
                         </div>
                         
-                        <button class="btn btn-success w-100 mt-3">Proceed to Checkout</button>
-                        
+<a href="{{ route('checkout.index') }}" class="btn btn-success w-100 mt-3">Proceed to Checkout</a>                        
                         <form action="{{ route('cart.clear') }}" method="POST" class="mt-2">
                             @csrf
                             @method('DELETE')

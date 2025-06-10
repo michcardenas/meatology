@@ -9,6 +9,7 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use App\Models\Country;
 
 class ProductController extends Controller
 {
@@ -53,16 +54,17 @@ public function store(Request $request)
 }
 
     /*──────────────────────── EDIT ────────────────────────*/
-    public function edit(Product $product)
-    {
-        $categories = Category::all();
-        $product->load('images');
+public function edit($id)
+{
+    $product = Product::with(['images', 'prices'])->findOrFail($id);
+    $categories = Category::all();
+    $countries = Country::with('cities')->get(); // 🔴 Necesitamos las ciudades también
 
-        return view('admin.products.edit', compact('product', 'categories'));
-    }
+    return view('admin.products.edit', compact('product', 'categories', 'countries'));
+}
 
     /*──────────────────────── UPDATE ──────────────────────*/
- public function update(Request $request, Product $product)
+public function update(Request $request, Product $product) 
 {
     // Validación manual con todos los campos
     $validatedData = $request->validate([
@@ -73,14 +75,39 @@ public function store(Request $request)
         'avg_weight' => 'nullable|string|max:50',
         'category_id' => 'required|exists:categories,id',
         'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'interest' => 'nullable|numeric|min:0',
+        
+        // 🔴 Nuevas validaciones para precios por ubicación
+        'prices' => 'nullable|array',
+        'prices.*.country_id' => 'required_with:prices.*|exists:countries,id',
+        'prices.*.city_id' => 'nullable|exists:cities,id',
+        'prices.*.interest' => 'nullable|numeric|min:0|max:100', // Asumiendo que es porcentaje
+        'prices.*.shipping' => 'nullable|numeric|min:0',
     ]);
 
-    // Actualizar el producto (excluyendo images)
-    $productData = collect($validatedData)->except(['images'])->toArray();
+    // Actualizar el producto base (excluyendo images y prices)
+    $productData = collect($validatedData)->except(['images', 'prices'])->toArray();
     $product->update($productData);
 
-    // Agregar nuevas imágenes
+    // 🔴 Manejar configuraciones de precios por ubicación
+    if ($request->has('prices') && is_array($request->prices)) {
+        // Eliminar configuraciones anteriores
+        $product->prices()->delete();
+
+        // Crear nuevas configuraciones
+        foreach ($request->prices as $priceData) {
+            // Solo crear si tiene al menos un país seleccionado
+            if (!empty($priceData['country_id'])) {
+                $product->prices()->create([
+                    'country_id' => $priceData['country_id'],
+                    'city_id' => !empty($priceData['city_id']) ? $priceData['city_id'] : null,
+                    'interest' => $priceData['interest'] ?? 0,
+                    'shipping' => $priceData['shipping'] ?? 0,
+                ]);
+            }
+        }
+    }
+
+    // Agregar nuevas imágenes (se mantiene igual)
     if ($request->hasFile('images')) {
         foreach ($request->file('images') as $file) {
             $path = $file->store('products', 'public');

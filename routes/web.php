@@ -7,6 +7,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\ProductController; // <-- NUEVO
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\LocationController;
 
 
 /* ---------- Landing y páginas públicas ---------- */
@@ -21,6 +22,9 @@ Route::view('/wholesale','wholesale')->name('wholesale');
 /* ---------- Catálogo y carrito ---------- */
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::delete('/admin/products/images/{id}', [App\Http\Controllers\Admin\ProductImageController::class, 'destroy'])->name('admin.products.images.destroy');
+Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout.index');
+Route::post('/checkout/calculate', [ShopController::class, 'calculateShippingAndTax'])->name('checkout.calculate');
+Route::post('/order/process', [ShopController::class, 'processOrder'])->name('order.process');
 
 Route::post('/cart',           [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart',            [CartController::class, 'index'])->name('cart.index');
@@ -41,6 +45,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/categorias', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('/categorias/crear', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('/categorias', [CategoryController::class, 'store'])->name('categories.store');
+});
+
+
+
+Route::prefix('admin')->group(function () {
+    // Countries
+    Route::get('/countries', [LocationController::class, 'countriesIndex'])->name('admin.countries.index');
+    Route::post('/countries', [LocationController::class, 'countriesStore'])->name('admin.countries.store');
+    Route::delete('/countries/{id}', [LocationController::class, 'countriesDestroy'])->name('admin.countries.destroy');
+
+    // Cities
+    Route::get('/cities', [LocationController::class, 'citiesIndex'])->name('admin.cities.index');
+    Route::post('/cities', [LocationController::class, 'citiesStore'])->name('admin.cities.store');
+    Route::delete('/cities/{id}', [LocationController::class, 'citiesDestroy'])->name('admin.cities.destroy');
 });
 });
 
