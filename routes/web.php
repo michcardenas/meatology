@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductController; // <-- NUEVO
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\DashboardController;
 
 
 /* ---------- Landing y páginas públicas ---------- */
@@ -36,7 +37,7 @@ Route::post('/partner-chefs', [HomeController::class, 'submitPartnerChefs'])->na
 
 /* ---------- Dashboard y perfil ---------- */
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');

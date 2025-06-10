@@ -42,6 +42,7 @@
         <a href="{{ route('chefs') }}">Partner Chefs</a>
         <a href="{{ route('wholesale') }}">Wholesale</a>
 
+@role('admin')
         @auth
  <div class="dropdown">
             <a class="dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -55,6 +56,7 @@
             </ul>
         </div>
 @endauth
+@endrole
 
     </div>
 
