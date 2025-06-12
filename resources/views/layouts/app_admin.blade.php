@@ -50,7 +50,7 @@
             <ul class="dropdown-menu bg-dark border border-secondary">
                 <li><a class="dropdown-item text-light" href="{{ route('admin.products.index') }}">🥩 Admin Products</a></li>
                 <li><a class="dropdown-item text-light" href="{{ route('categories.index') }}">📂 Admin Categories</a></li>
-                <li><a class="dropdown-item text-light" href="{{ route('admin.countries.index') }}">🌍 Manage Countries</a></li>
+                <li><a class="dropdown-item text-light" href="{{ route('admin.countries.index') }}">🌍 Manage State</a></li>
                 <li><a class="dropdown-item text-light" href="{{ route('admin.cities.index') }}">🏙️ Manage Cities</a></li>
             </ul>
         </div>

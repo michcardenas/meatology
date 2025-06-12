@@ -80,7 +80,7 @@
             @foreach($product->prices as $i => $price)
                 <div class="row border rounded p-3 mb-3 bg-dark">
                     <div class="col-md-3 mb-2">
-                        <label class="form-label text-light">País</label>
+                        <label class="form-label text-light">Countrys</label>
                         <select name="prices[{{ $i }}][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
                             @foreach($countries as $country)
                                 <option value="{{ $country->id }}" {{ $price->country_id == $country->id ? 'selected' : '' }}>
@@ -91,7 +91,7 @@
                     </div>
 
                     <div class="col-md-3 mb-2">
-                        <label class="form-label text-light">Ciudad</label>
+                        <label class="form-label text-light">Cities</label>
                         <select name="prices[{{ $i }}][city_id]" class="form-select bg-dark text-light">
                             @php
                                 $countryWithCities = $countries->firstWhere('id', $price->country_id);

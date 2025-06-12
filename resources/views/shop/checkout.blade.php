@@ -44,7 +44,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Country *</label>
+                                    <label class="form-label fw-bold">State *</label>
                                     <select id="shipping-country" name="shipping_country" class="form-select" required>
                                         <option value="">-- Select Country --</option>
                                         @foreach($countries as $country)
