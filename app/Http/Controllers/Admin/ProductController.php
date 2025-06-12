@@ -23,8 +23,9 @@ class ProductController extends Controller
     /*──────────────────────── CREATE ──────────────────────*/
     public function create()
     {
+        $countries = Country::with('cities')->get();
         $categories = Category::all();
-        return view('admin.products.create', compact('categories'));
+        return view('admin.products.create', compact('categories','countries'));
     }
 
     /*──────────────────────── STORE ───────────────────────*/
