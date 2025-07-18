@@ -12,6 +12,11 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Price;
 
+use SquareConnect\Model\CreatePaymentRequest;
+use SquareConnect\Model\Money;
+use SquareConnect\Api\PaymentsApi;
+use SquareConnect\Configuration;
+
 
 
 class ShopController extends Controller
@@ -218,6 +223,98 @@ class ShopController extends Controller
                 return back()->with('error', 'Error creating order: ' . $e->getMessage());
             }
         }
+
+   public function paymentGateway(Order $order)
+{
+    // Verificar que la orden exista y esté pendiente
+    if ($order->payment_status !== 'pending') {
+        return redirect()->route('shop.index')->with('error', 'Order not found or already processed.');
+    }
+
+    return view('payment.gateway', compact('order'));
+}
+
+public function processPayment(Request $request, Order $order)
+{
+    // Verificar que la orden esté pendiente
+    if ($order->payment_status !== 'pending') {
+        return redirect()->route('shop.index')->with('error', 'Order already processed.');
+    }
+
+    try {
+        // Debug: Log de todos los datos recibidos
+        \Log::info('Payment processing started', [
+            'order_id' => $order->id,
+            'request_data' => $request->all()
+        ]);
+
+        // Validar datos del pago
+        $request->validate([
+            'source_id' => 'required|string'
+        ]);
+
+        \Log::info('Validation passed, source_id received', [
+            'source_id' => $request->source_id
+        ]);
+
+        // Configurar Square
+        Configuration::getDefaultConfiguration()->setAccessToken(config('square.access_token'));
+        Configuration::getDefaultConfiguration()->setHost(
+            config('square.environment') === 'sandbox' ? 'https://connect.squareupsandbox.com' : 'https://connect.squareup.com'
+        );
+        
+        $paymentsApi = new PaymentsApi();
+
+        // Crear el objeto Money (Square maneja centavos)
+        $amountMoney = new Money();
+        $amountMoney->setAmount($order->total_amount * 100); // Convertir a centavos
+        $amountMoney->setCurrency('USD');
+
+        // Crear la petición de pago
+        $createPaymentRequest = new CreatePaymentRequest();
+        $createPaymentRequest->setSourceId($request->source_id);
+        $createPaymentRequest->setIdempotencyKey('order_' . $order->id . '_' . time()); // Clave única basada en la orden
+        $createPaymentRequest->setAmountMoney($amountMoney);
+        $createPaymentRequest->setLocationId(config('square.location_id'));
+        $createPaymentRequest->setNote('Order #' . $order->order_number);
+
+        // Procesar el pago
+        $response = $paymentsApi->createPayment($createPaymentRequest);
+
+        if ($response->getErrors()) {
+            return back()->with('error', 'Payment failed: ' . $response->getErrors()[0]->getDetail());
+        }
+
+        // Pago exitoso - actualizar la orden
+        $payment = $response->getPayment();
+        
+        $order->update([
+            'payment_status' => 'paid',
+            'status' => 'confirmed',
+            'payment_method' => 'square',
+            'transaction_id' => $payment->getId(),
+            'paid_at' => now()
+        ]);
+
+        // Opcional: Enviar email de confirmación aquí
+        
+        return redirect()->route('payment.success', $order)->with('success', 'Payment processed successfully!');
+
+    } catch (\Exception $e) {
+        \Log::error('Square payment error: ' . $e->getMessage());
+        return back()->with('error', 'Payment processing failed. Please try again.');
+    }
+}
+
+public function paymentSuccess(Order $order)
+{
+    // Verificar que el pago haya sido exitoso
+    if ($order->payment_status !== 'paid') {
+        return redirect()->route('shop.index')->with('error', 'Order not found or payment not completed.');
+    }
+
+    return view('payment.success', compact('order'));
+}
 
         
 }

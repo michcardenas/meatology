@@ -27,6 +27,11 @@ Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout.ind
 Route::post('/checkout/calculate', [ShopController::class, 'calculateShippingAndTax'])->name('checkout.calculate');
 Route::post('/order/process', [ShopController::class, 'processOrder'])->name('order.process');
 
+// Ruta para la pasarela de pago
+Route::get('/payment/gateway/{order}', [App\Http\Controllers\ShopController::class, 'paymentGateway'])->name('payment.gateway');
+Route::post('/payment/process/{order}', [App\Http\Controllers\ShopController::class, 'processPayment'])->name('payment.process');
+Route::get('/payment/success/{order}', [App\Http\Controllers\ShopController::class, 'paymentSuccess'])->name('payment.success');
+
 Route::post('/cart',           [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart',            [CartController::class, 'index'])->name('cart.index');
 Route::patch('/cart/{rowId}',  [CartController::class, 'update'])->name('cart.update');
