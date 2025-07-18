@@ -258,29 +258,41 @@ public function processPayment(Request $request, Order $order)
             'source_id' => $request->source_id
         ]);
 
-        // Configurar Square Client (SDK moderno v43.0.1 - sintaxis correcta)
+        // Configurar Square Client (SDK v43.0.1)
         $client = new SquareClient(config('square.access_token'));
 
-        // Crear el objeto Money (Square maneja centavos)
+        // Crear el objeto Money
         $amountMoney = new Money([
             'amount' => $order->total_amount * 100, // Convertir a centavos
-            'currency' => 'USD'
+            'currency' => Currency::Usd->value
         ]);
 
-        // Crear la petición de pago usando la nueva sintaxis
+        // Crear la petición de pago
         $createPaymentRequest = new CreatePaymentRequest([
-            'sourceId' => $request->source_id,
             'idempotencyKey' => 'order_' . $order->id . '_' . time(),
+            'sourceId' => $request->source_id,
             'amountMoney' => $amountMoney,
             'locationId' => config('square.location_id'),
             'note' => 'Order #' . $order->order_number
         ]);
 
-        // Procesar el pago usando la nueva API
-        $response = $client->getPaymentsApi()->createPayment($createPaymentRequest);
+        \Log::info('About to call Square API', [
+            'amount' => $order->total_amount * 100,
+            'location_id' => config('square.location_id')
+        ]);
+
+        // ✅ PROCESAR EL PAGO - SINTAXIS CORRECTA PARA SDK v43.0.1
+        $response = $client->payments->create(
+            request: $createPaymentRequest
+        );
+
+        \Log::info('Square API response received', [
+            'is_error' => $response->isError()
+        ]);
 
         if ($response->isError()) {
             $errors = $response->getErrors();
+            \Log::error('Square payment failed', ['errors' => $errors]);
             return back()->with('error', 'Payment failed: ' . $errors[0]->getDetail());
         }
 
@@ -303,11 +315,12 @@ public function processPayment(Request $request, Order $order)
         return redirect()->route('payment.success', $order)->with('success', 'Payment processed successfully!');
 
     } catch (\Exception $e) {
-        \Log::error('Square payment error: ' . $e->getMessage());
+        \Log::error('Square payment error: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString()
+        ]);
         return back()->with('error', 'Payment processing failed. Please try again.');
     }
 }
-
 public function paymentSuccess(Order $order)
 {
     // Verificar que el pago haya sido exitoso
