@@ -17,17 +17,11 @@
         border-left: 4px solid #011904;
     }
     #card-container {
-        min-height: 80px;
-        padding: 12px;
-        border: 2px dashed #dee2e6;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-        transition: all 0.3s ease;
-    }
-    #card-container:focus-within {
-        border-color: #011904;
-        background-color: #fff;
-        box-shadow: 0 0 0 0.2rem rgba(1, 25, 4, 0.25);
+        min-height: 100px; /* Importante: altura mínima como en la vista que funciona */
+        padding: 0; /* Sin padding para que Square.js maneje el styling */
+        border: none; /* Square.js maneja el border */
+        border-radius: 0; /* Square.js maneja el border-radius */
+        background-color: transparent; /* Square.js maneja el background */
     }
     .security-badges {
         background: linear-gradient(135deg, #011904 0%, #28a745 100%);
@@ -60,10 +54,6 @@
         font-weight: bold;
     }
 </style>
-@endpush
-
-@push('scripts')
-<script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
 @endpush
 
 @section('content')
@@ -109,6 +99,7 @@
                     <address class="small text-muted mb-0">
                         <strong>{{ $order->customer_name }}</strong><br>
                         {{ $order->customer_address }}<br>
+                        {{ $order->city->name ?? '' }}, {{ $order->country->name }}<br>
                         {{ $order->customer_phone }}
                     </address>
                 </div>
@@ -203,20 +194,22 @@
     </div>
 </div>
 
+<!-- Square.js Script - Cargado directamente en el HTML como en la vista que funciona -->
+<script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+
 <script>
 async function initializeCard(payments) {
     const card = await payments.card({
         style: {
             '.input-container': {
-                borderRadius: '8px',
-                borderColor: '#dee2e6',
-                backgroundColor: '#ffffff'
+                borderRadius: '6px',
+                borderColor: '#d1d5db'
             },
             '.input-container.is-focus': {
                 borderColor: '#011904'
             },
             '.input-container.is-error': {
-                borderColor: '#dc3545'
+                borderColor: '#ef4444'
             }
         }
     });
