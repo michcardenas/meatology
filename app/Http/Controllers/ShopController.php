@@ -17,7 +17,6 @@ use App\Models\Price;
 use Square\SquareClient;
 use Square\Models\CreatePaymentRequest;
 use Square\Models\Money;
-use Square\Environment;
 
 
 
@@ -226,7 +225,7 @@ class ShopController extends Controller
             }
         }
 
-  public function paymentGateway(Order $order)
+ public function paymentGateway(Order $order)
 {
     // Verificar que la orden exista y esté pendiente
     if ($order->payment_status !== 'pending') {
@@ -235,7 +234,6 @@ class ShopController extends Controller
 
     return view('payment.gateway', compact('order'));
 }
-
 public function processPayment(Request $request, Order $order)
 {
     // Verificar que la orden esté pendiente
@@ -259,29 +257,29 @@ public function processPayment(Request $request, Order $order)
             'source_id' => $request->source_id
         ]);
 
-        // Configurar Square Client (SDK moderno)
-        $environment = config('square.environment') === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION;
-        
+        // Configurar Square Client (SDK moderno v43.0.1)
         $client = new SquareClient([
             'accessToken' => config('square.access_token'),
-            'environment' => $environment
+            'environment' => config('square.environment') // 'sandbox' o 'production' como string
         ]);
 
-        $paymentsApi = $client->getPaymentsApi();
-
         // Crear el objeto Money (Square maneja centavos)
-        $amountMoney = new Money();
-        $amountMoney->setAmount($order->total_amount * 100); // Convertir a centavos
-        $amountMoney->setCurrency('USD');
+        $amountMoney = new Money([
+            'amount' => $order->total_amount * 100, // Convertir a centavos
+            'currency' => 'USD'
+        ]);
 
-        // Crear la petición de pago
-        $createPaymentRequest = new CreatePaymentRequest($request->source_id, 'order_' . $order->id . '_' . time());
-        $createPaymentRequest->setAmountMoney($amountMoney);
-        $createPaymentRequest->setLocationId(config('square.location_id'));
-        $createPaymentRequest->setNote('Order #' . $order->order_number);
+        // Crear la petición de pago usando la nueva sintaxis
+        $createPaymentRequest = new CreatePaymentRequest([
+            'sourceId' => $request->source_id,
+            'idempotencyKey' => 'order_' . $order->id . '_' . time(),
+            'amountMoney' => $amountMoney,
+            'locationId' => config('square.location_id'),
+            'note' => 'Order #' . $order->order_number
+        ]);
 
-        // Procesar el pago
-        $response = $paymentsApi->createPayment($createPaymentRequest);
+        // Procesar el pago usando la nueva API
+        $response = $client->getPaymentsApi()->createPayment($createPaymentRequest);
 
         if ($response->isError()) {
             $errors = $response->getErrors();
@@ -299,7 +297,10 @@ public function processPayment(Request $request, Order $order)
             'paid_at' => now()
         ]);
 
-        // Opcional: Enviar email de confirmación aquí
+        \Log::info('Payment successful', [
+            'order_id' => $order->id,
+            'transaction_id' => $payment->getId()
+        ]);
         
         return redirect()->route('payment.success', $order)->with('success', 'Payment processed successfully!');
 
@@ -309,7 +310,7 @@ public function processPayment(Request $request, Order $order)
     }
 }
 
- public function paymentSuccess(Order $order)
+public function paymentSuccess(Order $order)
 {
     // Verificar que el pago haya sido exitoso
     if ($order->payment_status !== 'paid') {
@@ -318,6 +319,5 @@ public function processPayment(Request $request, Order $order)
 
     return view('payment.success', compact('order'));
 }
-
         
 }
