@@ -14,35 +14,37 @@
                 <div class="card border-success">
                     <div class="card-header bg-success text-white text-center">
                         <i class="fas fa-check-circle fa-3x mb-3"></i>
-                        <h2>Payment Successful!</h2>
+                        <h2>¡Pago Exitoso!</h2>
                     </div>
                     <div class="card-body">
                         <div class="alert alert-success" role="alert">
-                            <h4 class="alert-heading">Thank you for your purchase!</h4>
-                            <p>Your payment has been processed successfully. You will receive a confirmation email shortly.</p>
+                            <h4 class="alert-heading">¡Gracias por tu compra!</h4>
+                            <p>Tu pago ha sido procesado exitosamente. Recibirás un email de confirmación en breve.</p>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6">
-                                <h5><i class="fas fa-receipt"></i> Order Details</h5>
+                                <h5><i class="fas fa-receipt"></i> Detalles de la Orden</h5>
                                 <ul class="list-unstyled">
-                                    <li><strong>Order Number:</strong> #{{ $order->order_number }}</li>
-                                    <li><strong>Transaction ID:</strong> {{ $order->transaction_id }}</li>
-                                    <li><strong>Order Date:</strong> {{ $order->created_at->format('M d, Y H:i') }}</li>
-                                    <li><strong>Payment Date:</strong> {{ $order->paid_at ? $order->paid_at->format('M d, Y H:i') : 'Just now' }}</li>
-                                    <li><strong>Status:</strong> 
+                                    <li><strong>Número de Orden:</strong> #{{ $order->order_number }}</li>
+                                    <li><strong>ID de Transacción:</strong> {{ $order->transaction_id }}</li>
+                                    <li><strong>Fecha de Orden:</strong> {{ $order->created_at->format('M d, Y H:i') }}</li>
+                                    <li><strong>Fecha de Pago:</strong> {{ $order->paid_at ? $order->paid_at->format('M d, Y H:i') : 'Recién procesado' }}</li>
+                                    <li><strong>Estado:</strong> 
                                         <span class="badge bg-success">{{ ucfirst($order->status) }}</span>
+                                    </li>
+                                    <li><strong>Método de Pago:</strong> 
+                                        <span class="badge bg-primary">{{ ucfirst($order->payment_method ?? 'Square') }}</span>
                                     </li>
                                 </ul>
                             </div>
                             
                             <div class="col-md-6">
-                                <h5><i class="fas fa-truck"></i> Shipping Information</h5>
+                                <h5><i class="fas fa-truck"></i> Información de Envío</h5>
                                 <address>
                                     <strong>{{ $order->customer_name }}</strong><br>
                                     {{ $order->customer_address }}<br>
-                                    {{ $order->city->name ?? '' }}, {{ $order->country->name }}<br>
-                                    <strong>Phone:</strong> {{ $order->customer_phone }}<br>
+                                    <strong>Teléfono:</strong> {{ $order->customer_phone }}<br>
                                     <strong>Email:</strong> {{ $order->customer_email }}
                                 </address>
                             </div>
@@ -50,75 +52,65 @@
 
                         <hr>
 
-                        <h5><i class="fas fa-shopping-cart"></i> Order Items</h5>
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-money-bill-wave"></i> Resumen de Pago</h5>
+                                <table class="table table-sm">
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($order->orderItems as $item)
-                                    <tr>
-                                        <td>{{ $item->product_name }}</td>
-                                        <td>${{ number_format($item->product_price, 2) }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        <td>${{ number_format($item->total_price, 2) }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th colspan="3">Subtotal:</th>
-                                        <th>${{ number_format($order->subtotal, 2) }}</th>
+                                        <td>Subtotal:</td>
+                                        <td class="text-end">${{ number_format($order->subtotal, 2) }}</td>
                                     </tr>
                                     <tr>
-                                        <th colspan="3">Tax:</th>
-                                        <th>${{ number_format($order->tax_amount, 2) }}</th>
+                                        <td>Impuestos:</td>
+                                        <td class="text-end">${{ number_format($order->tax_amount, 2) }}</td>
                                     </tr>
                                     <tr>
-                                        <th colspan="3">Shipping:</th>
-                                        <th>${{ number_format($order->shipping_amount, 2) }}</th>
+                                        <td>Envío:</td>
+                                        <td class="text-end">${{ number_format($order->shipping_amount, 2) }}</td>
                                     </tr>
-                                    <tr class="table-success">
-                                        <th colspan="3">Total Paid:</th>
-                                        <th>${{ number_format($order->total_amount, 2) }}</th>
+                                    <tr class="table-success fw-bold">
+                                        <td>Total Pagado:</td>
+                                        <td class="text-end">${{ number_format($order->total_amount, 2) }}</td>
                                     </tr>
-                                </tfoot>
-                            </table>
+                                </table>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-info-circle"></i> ¿Qué sigue?</h5>
+                                <ul class="small">
+                                    <li>Recibirás un email de confirmación en los próximos minutos</li>
+                                    <li>Procesaremos tu orden y la prepararemos para envío</li>
+                                    <li>Te enviaremos información de rastreo una vez que se envíe</li>
+                                    <li>Si tienes preguntas, contacta a nuestro equipo de soporte</li>
+                                </ul>
+                            </div>
                         </div>
 
                         @if($order->notes)
+                        <hr>
                         <div class="mt-3">
-                            <h6><i class="fas fa-sticky-note"></i> Order Notes:</h6>
-                            <p class="text-muted">{{ $order->notes }}</p>
+                            <h6><i class="fas fa-sticky-note"></i> Notas de la Orden:</h6>
+                            <p class="text-muted bg-light p-3 rounded">{{ $order->notes }}</p>
                         </div>
                         @endif
 
                         <div class="text-center mt-4">
-                            <a href="{{ route('shop.index') }}" class="btn btn-primary">
-                                <i class="fas fa-shopping-bag"></i> Continue Shopping
+                            <a href="{{ route('shop.index') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-shopping-bag"></i> Continuar Comprando
                             </a>
                             
                             @auth
-                            <a href="{{ route('account.orders') }}" class="btn btn-outline-secondary ms-2">
-                                <i class="fas fa-list"></i> View My Orders
+                            <a href="{{ route('shop.index') }}" class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-list"></i> Ver Mis Órdenes
                             </a>
                             @endauth
                         </div>
 
-                        <div class="mt-4 p-3 bg-light rounded">
-                            <h6><i class="fas fa-info-circle"></i> What's Next?</h6>
-                            <ul class="mb-0">
-                                <li>You will receive an order confirmation email within the next few minutes</li>
-                                <li>We will process your order and prepare it for shipping</li>
-                                <li>You'll receive tracking information once your order ships</li>
-                                <li>If you have any questions, please contact our support team</li>
-                            </ul>
+                        <div class="mt-4 p-3 bg-light rounded text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt text-success"></i> 
+                                Tu pago fue procesado de forma segura por Square
+                            </small>
                         </div>
                     </div>
                 </div>
