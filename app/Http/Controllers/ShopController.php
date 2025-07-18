@@ -317,19 +317,19 @@ public function processPayment(Request $request, Order $order)
         return back()->with('error', 'Payment processing failed. Please try again.');
     }
 }
-public function paymentSuccess(Order $order)
+public function paymentSuccess(Order $order) 
 {
     // Verificar que el pago haya sido exitoso
     if ($order->payment_status !== 'paid') {
         return redirect()->route('shop.index')->with('error', 'Order not found or payment not completed.');
     }
-    $order->load(['orderItems', 'city', 'country']);
 
-    Log::info('Payment success for order', [
+    // NO cargar relaciones por ahora - usar datos simples
+    \Log::info('Payment success for order', [
         'order_id' => $order->id,
         'transaction_id' => $order->transaction_id
     ]);
 
-    return view('payment.success', compact('order'));}
-        
+    return view('payment.success', compact('order'));
+}      
 }
