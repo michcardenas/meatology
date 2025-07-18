@@ -11,10 +11,10 @@
     }
     .order-summary-card {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-left: 4px solid #007bff;
+        border-left: 4px solid #011904;
     }
     .payment-form-card {
-        border-left: 4px solid #28a745;
+        border-left: 4px solid #011904;
     }
     #card-container {
         min-height: 80px;
@@ -25,18 +25,39 @@
         transition: all 0.3s ease;
     }
     #card-container:focus-within {
-        border-color: #007bff;
+        border-color: #011904;
         background-color: #fff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(1, 25, 4, 0.25);
     }
     .security-badges {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        background: linear-gradient(135deg, #011904 0%, #28a745 100%);
         color: white;
     }
     .total-amount {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #28a745;
+        color: #011904;
+    }
+    .btn-success {
+        background-color: #011904;
+        border-color: #011904;
+    }
+    .btn-success:hover {
+        background-color: #023a07;
+        border-color: #023a07;
+    }
+    .text-brand {
+        color: #011904;
+    }
+    .bg-brand {
+        background-color: #011904;
+    }
+    .card-title {
+        color: #011904;
+    }
+    .order-header {
+        color: #011904;
+        font-weight: bold;
     }
 </style>
 @endpush
@@ -48,16 +69,16 @@
 @section('content')
 <div class="container mt-4">
     <div class="row">
-        <!-- Resumen de la orden -->
+        <!-- Order Summary -->
         <div class="col-lg-4 mb-4">
             <div class="card payment-card order-summary-card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-receipt me-2"></i>Resumen de Orden
+                        <i class="fas fa-receipt me-2"></i>Order Summary
                     </h5>
                 </div>
                 <div class="card-body">
-                    <h6 class="text-primary">Order #{{ $order->order_number }}</h6>
+                    <h6 class="order-header">Order #{{ $order->order_number }}</h6>
                     <hr>
                     
                     <div class="d-flex justify-content-between mb-2">
@@ -66,24 +87,24 @@
                     </div>
                     
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Impuestos:</span>
+                        <span>Tax:</span>
                         <span>${{ number_format($order->tax_amount, 2) }}</span>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-3">
-                        <span>Envío:</span>
+                        <span>Shipping:</span>
                         <span>${{ number_format($order->shipping_amount, 2) }}</span>
                     </div>
                     
                     <hr>
                     <div class="d-flex justify-content-between mb-3">
-                        <span class="fw-bold">Total a Pagar:</span>
+                        <span class="fw-bold">Total to Pay:</span>
                         <span class="total-amount">${{ number_format($order->total_amount, 2) }}</span>
                     </div>
                     
                     <hr>
                     <h6 class="text-info">
-                        <i class="fas fa-shipping-fast me-2"></i>Dirección de Envío:
+                        <i class="fas fa-shipping-fast me-2"></i>Shipping Address:
                     </h6>
                     <address class="small text-muted mb-0">
                         <strong>{{ $order->customer_name }}</strong><br>
@@ -94,12 +115,12 @@
             </div>
         </div>
 
-        <!-- Formulario de pago -->
+        <!-- Payment Form -->
         <div class="col-lg-8">
             <div class="card payment-card payment-form-card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-credit-card me-2"></i>Información de Pago
+                        <i class="fas fa-credit-card me-2"></i>Payment Information
                     </h5>
                 </div>
                 <div class="card-body">
@@ -116,30 +137,30 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded">
-                                    <h6 class="text-success mb-2">
-                                        <i class="fas fa-dollar-sign me-2"></i>Monto a Pagar:
+                                    <h6 class="text-brand mb-2">
+                                        <i class="fas fa-dollar-sign me-2"></i>Amount to Pay:
                                     </h6>
                                     <div class="total-amount">${{ number_format($order->total_amount, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="p-3 bg-primary text-white rounded">
+                                <div class="p-3 bg-brand text-white rounded">
                                     <h6 class="mb-2">
-                                        <i class="fas fa-info-circle me-2"></i>Información:
+                                        <i class="fas fa-info-circle me-2"></i>Information:
                                     </h6>
-                                    <small>Pago seguro procesado por Square</small>
+                                    <small>Secure payment processed by Square</small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">
-                                <i class="fas fa-credit-card me-2"></i>Información de la Tarjeta
+                                <i class="fas fa-credit-card me-2"></i>Card Information
                             </label>
                             <div id="card-container"></div>
                             <small class="form-text text-muted mt-2">
                                 <i class="fas fa-lock me-1"></i>
-                                Tus datos están protegidos con encriptación SSL
+                                Your data is protected with SSL encryption
                             </small>
                         </div>
 
@@ -148,27 +169,27 @@
                         <div class="d-grid gap-2 mb-3">
                             <button type="submit" class="btn btn-success btn-lg" id="payment-button">
                                 <i class="fas fa-lock me-2"></i>
-                                Completar Pago - ${{ number_format($order->total_amount, 2) }}
+                                Complete Payment - ${{ number_format($order->total_amount, 2) }}
                             </button>
                         </div>
                         
                         <div class="text-center">
                             <a href="{{ route('shop.index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Volver a la Tienda
+                                <i class="fas fa-arrow-left me-2"></i>Back to Shop
                             </a>
                         </div>
                     </form>
 
-                    <!-- Badges de seguridad -->
+                    <!-- Security Badges -->
                     <div class="security-badges p-3 rounded mt-4 text-center">
                         <div class="row">
                             <div class="col-4">
                                 <i class="fas fa-shield-alt fa-2x mb-2"></i>
-                                <div class="small">Pago Seguro</div>
+                                <div class="small">Secure Payment</div>
                             </div>
                             <div class="col-4">
                                 <i class="fas fa-lock fa-2x mb-2"></i>
-                                <div class="small">SSL Encriptado</div>
+                                <div class="small">SSL Encrypted</div>
                             </div>
                             <div class="col-4">
                                 <i class="fas fa-certificate fa-2x mb-2"></i>
@@ -192,7 +213,7 @@ async function initializeCard(payments) {
                 backgroundColor: '#ffffff'
             },
             '.input-container.is-focus': {
-                borderColor: '#007bff'
+                borderColor: '#011904'
             },
             '.input-container.is-error': {
                 borderColor: '#dc3545'
@@ -204,7 +225,7 @@ async function initializeCard(payments) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-    // Debug: Verificar que las credenciales estén llegando
+    // Debug: Verify credentials are loading
     console.log('Application ID:', '{{ config("square.application_id") }}');
     console.log('Location ID:', '{{ config("square.location_id") }}');
     
@@ -219,7 +240,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         card = await initializeCard(payments);
     } catch (e) {
         console.error('Initializing Card failed', e);
-        document.getElementById('card-container').innerHTML = '<div class="alert alert-danger">Error al cargar el formulario de pago. Por favor, recarga la página.</div>';
+        document.getElementById('card-container').innerHTML = '<div class="alert alert-danger">Failed to load payment form. Please refresh the page.</div>';
         return;
     }
 
@@ -230,7 +251,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const button = document.getElementById('payment-button');
         const originalText = button.innerHTML;
         button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
 
         try {
             console.log('Starting tokenization...');
@@ -244,17 +265,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                 e.target.submit();
             } else {
                 console.error('Tokenization failed', result);
-                let errorMsg = 'Error al procesar la información de la tarjeta.';
+                let errorMsg = 'Error processing card information.';
                 if (result.errors && result.errors.length > 0) {
                     errorMsg += ' ' + result.errors[0].message;
                 }
-                alert(errorMsg + ' Por favor, verifica los datos y intenta nuevamente.');
+                alert(errorMsg + ' Please check your details and try again.');
                 button.disabled = false;
                 button.innerHTML = originalText;
             }
         } catch (e) {
             console.error('Payment failed', e);
-            alert('Error en el procesamiento del pago. Por favor, intenta nuevamente. Error: ' + e.message);
+            alert('Payment processing failed. Please try again. Error: ' + e.message);
             button.disabled = false;
             button.innerHTML = originalText;
         }
