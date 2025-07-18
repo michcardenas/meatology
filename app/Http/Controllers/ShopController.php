@@ -12,10 +12,12 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Price;
 
-use SquareConnect\Model\CreatePaymentRequest;
-use SquareConnect\Model\Money;
-use SquareConnect\Api\PaymentsApi;
-use SquareConnect\Configuration;
+
+
+use Square\SquareClient;
+use Square\Models\CreatePaymentRequest;
+use Square\Models\Money;
+use Square\Environment;
 
 
 
@@ -224,7 +226,7 @@ class ShopController extends Controller
             }
         }
 
-   public function paymentGateway(Order $order)
+  public function paymentGateway(Order $order)
 {
     // Verificar que la orden exista y esté pendiente
     if ($order->payment_status !== 'pending') {
@@ -257,13 +259,15 @@ public function processPayment(Request $request, Order $order)
             'source_id' => $request->source_id
         ]);
 
-        // Configurar Square
-        Configuration::getDefaultConfiguration()->setAccessToken(config('square.access_token'));
-        Configuration::getDefaultConfiguration()->setHost(
-            config('square.environment') === 'sandbox' ? 'https://connect.squareupsandbox.com' : 'https://connect.squareup.com'
-        );
+        // Configurar Square Client (SDK moderno)
+        $environment = config('square.environment') === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION;
         
-        $paymentsApi = new PaymentsApi();
+        $client = new SquareClient([
+            'accessToken' => config('square.access_token'),
+            'environment' => $environment
+        ]);
+
+        $paymentsApi = $client->getPaymentsApi();
 
         // Crear el objeto Money (Square maneja centavos)
         $amountMoney = new Money();
@@ -271,9 +275,7 @@ public function processPayment(Request $request, Order $order)
         $amountMoney->setCurrency('USD');
 
         // Crear la petición de pago
-        $createPaymentRequest = new CreatePaymentRequest();
-        $createPaymentRequest->setSourceId($request->source_id);
-        $createPaymentRequest->setIdempotencyKey('order_' . $order->id . '_' . time()); // Clave única basada en la orden
+        $createPaymentRequest = new CreatePaymentRequest($request->source_id, 'order_' . $order->id . '_' . time());
         $createPaymentRequest->setAmountMoney($amountMoney);
         $createPaymentRequest->setLocationId(config('square.location_id'));
         $createPaymentRequest->setNote('Order #' . $order->order_number);
@@ -281,12 +283,13 @@ public function processPayment(Request $request, Order $order)
         // Procesar el pago
         $response = $paymentsApi->createPayment($createPaymentRequest);
 
-        if ($response->getErrors()) {
-            return back()->with('error', 'Payment failed: ' . $response->getErrors()[0]->getDetail());
+        if ($response->isError()) {
+            $errors = $response->getErrors();
+            return back()->with('error', 'Payment failed: ' . $errors[0]->getDetail());
         }
 
         // Pago exitoso - actualizar la orden
-        $payment = $response->getPayment();
+        $payment = $response->getResult()->getPayment();
         
         $order->update([
             'payment_status' => 'paid',
@@ -306,7 +309,7 @@ public function processPayment(Request $request, Order $order)
     }
 }
 
-public function paymentSuccess(Order $order)
+ public function paymentSuccess(Order $order)
 {
     // Verificar que el pago haya sido exitoso
     if ($order->payment_status !== 'paid') {
