@@ -15,8 +15,9 @@ use App\Models\Price;
 
 
 use Square\SquareClient;
-use Square\Models\CreatePaymentRequest;
-use Square\Models\Money;
+use Square\Payments\Requests\CreatePaymentRequest;
+use Square\Types\Money;
+use Square\Types\Currency;
 
 
 
