@@ -12,7 +12,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Price;
 
-
+use Illuminate\Support\Facades\Log;
 
 use Square\SquareClient;
 use Square\Payments\Requests\CreatePaymentRequest;
@@ -323,8 +323,13 @@ public function paymentSuccess(Order $order)
     if ($order->payment_status !== 'paid') {
         return redirect()->route('shop.index')->with('error', 'Order not found or payment not completed.');
     }
+    $order->load(['orderItems', 'city', 'country']);
 
-    return view('payment.success', compact('order'));
-}
+    Log::info('Payment success for order', [
+        'order_id' => $order->id,
+        'transaction_id' => $order->transaction_id
+    ]);
+
+    return view('payment.success', compact('order'));}
         
 }
