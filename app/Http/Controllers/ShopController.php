@@ -257,11 +257,8 @@ public function processPayment(Request $request, Order $order)
             'source_id' => $request->source_id
         ]);
 
-        // Configurar Square Client (SDK moderno v43.0.1)
-        $client = new SquareClient([
-            'accessToken' => config('square.access_token'),
-            'environment' => config('square.environment') // 'sandbox' o 'production' como string
-        ]);
+        // Configurar Square Client (SDK moderno v43.0.1 - sintaxis correcta)
+        $client = new SquareClient(config('square.access_token'));
 
         // Crear el objeto Money (Square maneja centavos)
         $amountMoney = new Money([
