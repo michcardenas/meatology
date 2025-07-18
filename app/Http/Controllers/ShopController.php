@@ -237,33 +237,32 @@ class ShopController extends Controller
 }
 public function processPayment(Request $request, Order $order)
 {
-    // Verificar que la orden esté pendiente
-    if ($order->payment_status !== 'pending') {
-        return redirect()->route('shop.index')->with('error', 'Order already processed.');
-    }
-
     try {
-        // Debug: Log de todos los datos recibidos
-        \Log::info('Payment processing started', [
-            'order_id' => $order->id,
-            'request_data' => $request->all()
+        \Log::info('=== SQUARE DEBUG START ===');
+        \Log::info('Access token from config', [
+            'token_length' => strlen(config('square.access_token')),
+            'token_start' => substr(config('square.access_token'), 0, 20),
+            'token_end' => substr(config('square.access_token'), -10),
+            'environment' => config('square.environment'),
+            'location_id' => config('square.location_id')
         ]);
 
         // Validar datos del pago
-        $request->validate([
-            'source_id' => 'required|string'
+        $request->validate(['source_id' => 'required|string']);
+
+        // Configurar Square Client con debug
+        $accessToken = config('square.access_token');
+        
+        \Log::info('Creating SquareClient', [
+            'access_token_provided' => !empty($accessToken),
+            'access_token_length' => strlen($accessToken)
         ]);
 
-        \Log::info('Validation passed, source_id received', [
-            'source_id' => $request->source_id
-        ]);
-
-        // Configurar Square Client (SDK v43.0.1)
-        $client = new SquareClient(config('square.access_token'));
+        $client = new SquareClient($accessToken);
 
         // Crear el objeto Money
         $amountMoney = new Money([
-            'amount' => $order->total_amount * 100, // Convertir a centavos
+            'amount' => $order->total_amount * 100,
             'currency' => Currency::Usd->value
         ]);
 
@@ -276,27 +275,80 @@ public function processPayment(Request $request, Order $order)
             'note' => 'Order #' . $order->order_number
         ]);
 
-        \Log::info('About to call Square API', [
+        \Log::info('Payment request created', [
+            'idempotency_key' => 'order_' . $order->id . '_' . time(),
+            'source_id' => $request->source_id,
             'amount' => $order->total_amount * 100,
             'location_id' => config('square.location_id')
         ]);
 
-        // ✅ PROCESAR EL PAGO - SINTAXIS CORRECTA PARA SDK v43.0.1
-        $response = $client->payments->create(
-            request: $createPaymentRequest
-        );
+        // NUEVO: Intentar hacer la request manualmente con cURL para comparar
+        $curlData = [
+            'idempotency_key' => 'order_' . $order->id . '_' . time() . '_curl',
+            'source_id' => $request->source_id,
+            'amount_money' => [
+                'amount' => $order->total_amount * 100,
+                'currency' => 'USD'
+            ],
+            'location_id' => config('square.location_id'),
+            'note' => 'Order #' . $order->order_number . ' (cURL test)'
+        ];
 
-        \Log::info('Square API response received', [
-            'is_error' => $response->isError()
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://connect.squareupsandbox.com/v2/payments');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . config('square.access_token'),
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curlData));
+
+        $curlResponse = curl_exec($ch);
+        $curlHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        \Log::info('cURL test result', [
+            'http_code' => $curlHttpCode,
+            'response' => $curlResponse
+        ]);
+
+        if ($curlHttpCode === 200) {
+            // cURL funciona, procesar con éxito usando cURL
+            $curlResult = json_decode($curlResponse, true);
+            
+            $order->update([
+                'payment_status' => 'paid',
+                'status' => 'confirmed',
+                'payment_method' => 'square',
+                'transaction_id' => $curlResult['payment']['id'],
+                'paid_at' => now()
+            ]);
+
+            \Log::info('Payment successful via cURL', [
+                'order_id' => $order->id,
+                'transaction_id' => $curlResult['payment']['id']
+            ]);
+            
+            return redirect()->route('payment.success', $order)->with('success', 'Payment processed successfully!');
+        }
+
+        // Si cURL también falla, intentar con SDK
+        \Log::info('Attempting payment via SDK...');
+        $response = $client->payments->create(request: $createPaymentRequest);
+
+        \Log::info('SDK response received', [
+            'is_error' => $response->isError(),
+            'response_type' => get_class($response)
         ]);
 
         if ($response->isError()) {
             $errors = $response->getErrors();
-            \Log::error('Square payment failed', ['errors' => $errors]);
+            \Log::error('SDK payment failed', ['errors' => $errors]);
             return back()->with('error', 'Payment failed: ' . $errors[0]->getDetail());
         }
 
-        // Pago exitoso - actualizar la orden
+        // Pago exitoso con SDK
         $payment = $response->getResult()->getPayment();
         
         $order->update([
@@ -307,7 +359,7 @@ public function processPayment(Request $request, Order $order)
             'paid_at' => now()
         ]);
 
-        \Log::info('Payment successful', [
+        \Log::info('Payment successful via SDK', [
             'order_id' => $order->id,
             'transaction_id' => $payment->getId()
         ]);
