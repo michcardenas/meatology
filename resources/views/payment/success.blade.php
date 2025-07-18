@@ -29,7 +29,7 @@
                                     <li><strong>Order Number:</strong> #{{ $order->order_number }}</li>
                                     <li><strong>Transaction ID:</strong> {{ $order->transaction_id }}</li>
                                     <li><strong>Order Date:</strong> {{ $order->created_at->format('M d, Y H:i') }}</li>
-                                    <li><strong>Payment Date:</strong> {{ $order->paid_at->format('M d, Y H:i') }}</li>
+                                    <li><strong>Payment Date:</strong> {{ $order->paid_at ? $order->paid_at->format('M d, Y H:i') : 'Just now' }}</li>
                                     <li><strong>Status:</strong> 
                                         <span class="badge bg-success">{{ ucfirst($order->status) }}</span>
                                     </li>
