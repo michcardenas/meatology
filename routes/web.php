@@ -53,6 +53,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
     Route::post('/categorias', [CategoryController::class, 'store'])->name('categories.store');
 });
 
+Route::resource('categories', CategoryController::class);
 
 
 Route::prefix('admin')->group(function () {

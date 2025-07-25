@@ -23,7 +23,7 @@
     <style>
 /* Navigation Responsive Styles */
 nav {
-    background-color: #011904;
+    background-color: #013105;
     padding: 12px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
@@ -45,7 +45,7 @@ nav {
 }
 
 .logo img {
-    height: 40px;
+    height: 75px;
 }
 
 .logo span {
