@@ -61,15 +61,15 @@
 </div>
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Category *</label>
-    <select name="category_id" class="form-select bg-dark text-light border-secondary" required>
-        <option value="">-- Select a category --</option>
-        @foreach($categories as $cat)
-            <option value="{{ $cat->id }}"
-                {{ old('category_id', $product->category_id ?? '') == $cat->id ? 'selected' : '' }}>
-                {{ $cat->name }}
-            </option>
-        @endforeach
-    </select>
+  <select name="category_id" class="form-select bg-dark text-light border-secondary" required>
+    <option value="">-- Select a category --</option>
+    @foreach($categories as $cat)
+        <option value="{{ $cat->id }}"
+            {{ old('category_id', $product->category_id ?? '') == $cat->id ? 'selected' : '' }}>
+            {{ $cat->name }} - {{ $cat->country }}
+        </option>
+    @endforeach
+</select>
 </div>
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Impuestos y Envío por País/Ciudad</label>

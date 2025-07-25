@@ -492,6 +492,184 @@ footer {
         font-size: 1.1rem;
     }
 }
+/* ===== SUBMENU STYLES - AGREGADO ===== */
+.nav-item {
+    position: relative;
+    display: inline-block;
+}
+
+.nav-item > a {
+    color: #e0d9c0;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-item:hover > a {
+    color: #f4f1e7;
+}
+
+/* Primer nivel del submenu (países) */
+.submenu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #013105;
+    border: 1px solid rgba(224, 217, 192, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    padding: 8px 0;
+}
+
+.nav-item:hover .submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Items de países */
+.country-item {
+    position: relative;
+}
+
+.country-item > a {
+    display: block;
+    padding: 12px 20px;
+    color: #e0d9c0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.country-item:hover > a {
+    background: rgba(224, 217, 192, 0.1);
+    color: #f4f1e7;
+    border-left-color: #c41e3a;
+}
+
+/* Flecha indicadora */
+.country-item > a::after {
+    content: '▶';
+    float: right;
+    font-size: 10px;
+    color: rgba(224, 217, 192, 0.6);
+    transition: color 0.3s ease;
+}
+
+.country-item:hover > a::after {
+    color: #f4f1e7;
+}
+
+/* Segundo nivel del submenu (categorías) */
+.categories-submenu {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 8px);
+    background: #013105;
+    border: 1px solid rgba(224, 217, 192, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    min-width: 250px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    z-index: 1001;
+    padding: 15px 0;
+}
+
+.country-item:hover .categories-submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* Header del país en el submenu de categorías */
+.categories-header {
+    padding: 0 20px 12px;
+    border-bottom: 2px solid #c41e3a;
+    margin-bottom: 12px;
+}
+
+.categories-header h4 {
+    margin: 0;
+    color: #c41e3a;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Items de categorías */
+.category-item {
+    padding: 1px 0;
+}
+
+.category-item a {
+    display: block;
+    padding: 10px 20px;
+    color: rgba(224, 217, 192, 0.8);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.category-item a:hover {
+    background: rgba(224, 217, 192, 0.1);
+    color: #f4f1e7;
+    border-left-color: #c41e3a;
+    padding-left: 25px;
+}
+
+/* Mobile submenu adaptado a tu estilo */
+.mobile-submenu {
+    display: none;
+    background: rgba(224, 217, 192, 0.1);
+    padding: 15px 20px;
+    margin-top: 10px;
+    border-radius: 8px;
+    margin-left: 10px;
+}
+
+.mobile-submenu.active {
+    display: block;
+}
+
+.mobile-nav .categories-submenu {
+    display: none;
+    margin-left: 20px;
+    margin-top: 10px;
+    background: rgba(224, 217, 192, 0.05);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* Responsive para el submenu */
+@media (max-width: 768px) {
+    .submenu {
+        min-width: 250px;
+        left: 0;
+        transform: translateX(0);
+    }
+    
+    .nav-item:hover .submenu {
+        transform: translateX(0) translateY(0);
+    }
+}
+/* ===== FIN SUBMENU STYLES ===== */
 </style>
 
     @vite(['resources/js/app.js'])
@@ -506,7 +684,34 @@ footer {
             <!-- Desktop Navigation -->
             <div class="nav-links">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-                <a href="{{ route('shop.index') }}">Products</a>
+                <div class="nav-item">
+    <a href="{{ route('shop.index') }}">
+        Products <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 5px;"></i>
+    </a>
+    
+    <!-- Submenu -->
+    <div class="submenu">
+        @foreach($countriesWithCategories as $country => $categories)
+            <div class="country-item">
+                <a href="#">{{ $country }}</a>
+                
+                <!-- Categorías de este país -->
+                <div class="categories-submenu">
+                    <div class="categories-header">
+                        <h4>{{ $country }}</h4>
+                    </div>
+                    @foreach($categories as $category)
+                        <div class="category-item">
+                            <a href="{{ route('shop.index', ['category' => $category->id]) }}">
+                                {{ $category->name }}
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
                 <a href="{{ route('about') }}">About Us</a>
                 <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
             </div>
