@@ -713,6 +713,10 @@ footer {
     </div>
 </div>
                 <a href="{{ route('about') }}">About Us</a>
+                <a href="{{ route('login') }}">Insiders</a>
+                <a href="{{ route('recipes') }}">Recipes</a>
+
+
                 <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
             </div>
 

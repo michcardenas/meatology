@@ -15,8 +15,16 @@ use App\Http\Controllers\DashboardController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+
 Route::view('/about',   'about')->name('about');
-Route::view('/insiders','insiders')->name('insiders');
+Route::view('/insiders','insiders')->name('insiders');//
+
+
+Route::view('/recipes', 'recipes')->name('recipes');
+//los de dentro de recipes
+Route::get('/wholesale', [WholesaleController::class, 'index'])->name('wholesale.form');
+Route::post('/wholesale', [WholesaleController::class, 'submit'])->name('wholesale.submit');
+
 Route::view('/chefs',   'chefs')->name('chefs');
 Route::view('/wholesale','wholesale')->name('wholesale');
 
