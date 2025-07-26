@@ -3,231 +3,300 @@
 @section('content')
 
 <style>
-    :root {
-        --primary-dark: #011904;
-        --accent: #acafab;
-        --highlight: #f7a831;
-        --text-light: #e5e5e5;
-        --bg-card: #112717;
+    body {
+        background-color: #011904;
+        color: #e5e5e5;
+        font-family: 'Inter', Arial, sans-serif;
     }
 
-    body {
-        background-color: var(--primary-dark);
-        color: var(--text-light);
+    .catalog-section {
+        min-height: 100vh;
+        padding: 40px 0;
     }
 
     .catalog-title {
-        color: var(--accent);
-        font-weight: bold;
-        font-size: 2.5rem;
+        color: #acafab;
+        font-size: 2.2rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 40px;
     }
 
-    .sidebar {
-        background-color: #0a1a0f;
+    /* Filtro Simple */
+    .filter-bar {
+        background: rgba(17, 39, 23, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(172, 175, 171, 0.2);
+        border-radius: 12px;
         padding: 20px;
-        border-right: 1px solid #1c3825;
-        color: var(--accent);
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-
-    .sidebar h5 {
-        font-size: 1rem;
-        color: var(--accent);
-        border-bottom: 1px solid #2b4a32;
-        padding-bottom: 10px;
-        margin-top: 20px;
-    }
-
-    .form-label,
-    .form-select,
-    input[type="number"] {
-        background-color: #1c3825;
-        border: none;
-        color: var(--text-light);
-    }
-
-    .form-select:focus,
-    input[type="number"]:focus {
-        box-shadow: 0 0 0 0.25rem #acafab55;
-    }
-
-    .catalog-container {
+        margin-bottom: 40px;
         display: flex;
         gap: 20px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
     }
 
-    .product-grid {
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filter-label {
+        color: #acafab;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .filter-select {
+        background: rgba(1, 25, 4, 0.8);
+        border: 1px solid rgba(172, 175, 171, 0.3);
+        border-radius: 8px;
+        color: #e5e5e5;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #acafab;
+        box-shadow: 0 0 0 2px rgba(172, 175, 171, 0.1);
+    }
+
+    /* Grid de Productos */
+    .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 2rem;
-        justify-items: center;
-        flex: 1;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
     }
 
     .product-card {
-        background-color: var(--bg-card);
-        border-radius: 10px;
+        background: rgba(17, 39, 23, 0.4);
+        border: 1px solid rgba(172, 175, 171, 0.15);
+        border-radius: 12px;
         overflow: hidden;
-        transition: transform 0.3s ease;
-        width: 100%;
-        max-width: 300px;
+        transition: all 0.3s ease;
+        cursor: pointer;
     }
 
     .product-card:hover {
-        transform: scale(1.03);
-        box-shadow: 0 0 10px #acafab33;
+        transform: translateY(-5px);
+        border-color: rgba(172, 175, 171, 0.4);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
-    .product-card img {
+    .product-image {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image img {
         width: 100%;
         height: 250px;
         object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.05);
     }
 
     .product-info {
-        padding: 15px;
+        padding: 20px;
     }
 
-    .product-info h5 {
-        color: var(--accent);
-        margin-bottom: 10px;
+    .product-name {
+        color: #acafab;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
     }
 
-    .product-info p {
-        color: #ccc;
-        font-size: 0.9rem;
+    .product-category {
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .product-price {
-        font-size: 1.2rem;
-        color: var(--highlight);
-        font-weight: bold;
-        margin-top: 10px;
+        color: #f7a831;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 15px;
     }
 
-    .btn-buy {
-        background-color: var(--highlight);
-        color: #000;
-        border: none;
-        font-weight: bold;
+    .add-to-cart-btn {
         width: 100%;
+        background: transparent;
+        border: 2px solid #acafab;
+        color: #acafab;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
         transition: all 0.3s ease;
     }
 
-    .btn-buy:hover {
-        background-color: #e69b1f;
+    .add-to-cart-btn:hover {
+        background: #acafab;
+        color: #011904;
         transform: translateY(-2px);
     }
 
-    .quick-view-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(1, 25, 4, 0.85);
+    /* Responsive */
+    @media (max-width: 768px) {
+        .catalog-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+
+        .filter-bar {
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .filter-group {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .filter-select {
+            min-width: 150px;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-image img {
+            height: 220px;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        /* Carrusel responsive */
+        .carousel-item {
+            height: 45vh;
+            min-height: 350px;
+        }
+
+        .slide-background {
+            width: 100%;
+            opacity: 0.4;
+        }
+
+        .slide-content {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .slide-text {
+            padding-right: 0;
+            margin-bottom: 20px;
+        }
+
+        .slide-title {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
+        .slide-description {
+            margin: 0 auto 20px;
+            font-size: 1rem;
+            padding: 0 20px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 45px;
+            height: 45px;
+        }
+
+        .carousel-control-prev {
+            left: 15px;
+        }
+
+        .carousel-control-next {
+            right: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .catalog-section {
+            padding: 20px 0;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .product-image img {
+            height: 200px;
+        }
+
+        /* Carrusel móvil */
+        .carousel-item {
+            height: 40vh;
+            min-height: 300px;
+        }
+
+        .slide-title {
+            font-size: 1.8rem;
+        }
+
+        .category-label {
+            padding: 6px 15px;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+        }
+
+        .slide-description {
+            font-size: 0.9rem;
+            padding: 0 15px;
+        }
+
+        .shop-category-btn {
+            padding: 12px 25px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .carousel-indicators {
+            bottom: 15px;
+        }
+
+        .category-product-image {
+            max-height: 200px;
+        }
+    }
+
+    /* No products message */
+    .no-products {
+        text-align: center;
+        color: #888;
+        font-size: 1.1rem;
+        margin-top: 60px;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        margin-top: 50px;
         display: flex;
-        align-items: center;
         justify-content: center;
-        color: var(--accent);
-        font-weight: bold;
-        font-size: 1.2rem;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        cursor: pointer;
-    }
-
-    .quick-view-btn {
-        display: none;
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--accent);
-        color: var(--primary-dark);
-        font-size: 0.9rem;
-        font-weight: bold;
-        padding: 6px 12px;
-        border: none;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        z-index: 2;
-    }
-
-    .product-card:hover .quick-view-btn {
-        display: inline-block;
-    }
-
-    .quick-view-btn:hover {
-        background-color: #cbd0e4;
-        color: #000;
-    }
-
-    /* Estilos para el modal oscuro */
-    .modal-content {
-        background-color: var(--primary-dark);
-        border: 1px solid #1c3825;
-        color: var(--text-light);
-    }
-
-    .modal-header {
-        background-color: #0a1a0f;
-        border-bottom: 1px solid #1c3825;
-    }
-
-    .modal-title {
-        color: var(--accent);
-        font-weight: bold;
-    }
-
-    .modal-body {
-        background-color: var(--primary-dark);
-    }
-
-    .btn-close {
-        filter: invert(1);
-        opacity: 0.8;
-    }
-
-    .btn-close:hover {
-        opacity: 1;
-    }
-
-    #quickViewName {
-        color: var(--accent);
-    }
-
-    #quickViewDescription {
-        color: #ccc;
-    }
-
-    #quickViewPrice {
-        color: var(--highlight);
-        font-weight: bold;
-        font-size: 1.3rem;
-    }
-
-    .modal-backdrop {
-        background-color: rgba(1, 25, 4, 0.8);
-    }
-
-    /* Mobile Filter Toggle */
-    .mobile-filter-toggle {
-        display: none;
-        background-color: var(--highlight);
-        color: #000;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-weight: bold;
-        margin-bottom: 20px;
-        width: 100%;
-    }
-
-    .mobile-filter-toggle:hover {
-        background-color: #e69b1f;
     }
 
     /* Carrusel Styles */
@@ -241,12 +310,18 @@
         right: 50%;
         margin-left: -50vw;
         margin-right: -50vw;
+        margin-bottom: 0;
+    }
+
+    .carousel-item {
+        height: 50vh;
+        position: relative;
+        min-height: 400px;
     }
 
     .category-hero-slide {
         position: relative;
-        height: 35vh;
-        min-height: 300px;
+        height: 100%;
         overflow: hidden;
     }
 
@@ -285,7 +360,7 @@
         display: flex;
         align-items: center;
         z-index: 2;
-        padding: 20px 0;
+        padding: 40px 0;
     }
 
     .slide-text {
@@ -309,7 +384,7 @@
     }
 
     .slide-title {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 900;
         margin-bottom: 15px;
         text-transform: uppercase;
@@ -320,8 +395,8 @@
     }
 
     .slide-description {
-        font-size: 1rem;
-        margin-bottom: 20px;
+        font-size: 1.1rem;
+        margin-bottom: 25px;
         opacity: 0.9;
         line-height: 1.5;
         max-width: 450px;
@@ -348,6 +423,7 @@
         transform: translateY(-3px);
         box-shadow: 0 12px 35px rgba(196, 30, 58, 0.4);
         color: white;
+        text-decoration: none;
     }
 
     .slide-image {
@@ -359,7 +435,7 @@
 
     .category-product-image {
         max-width: 100%;
-        max-height: 250px;
+        max-height: 300px;
         object-fit: contain;
         border-radius: 15px;
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
@@ -370,6 +446,7 @@
         transform: scale(1.05);
     }
 
+    /* Controles del carrusel */
     .carousel-control-prev,
     .carousel-control-next {
         width: 50px;
@@ -405,6 +482,7 @@
         height: 20px;
     }
 
+    /* Indicadores */
     .carousel-indicators {
         bottom: 30px;
         margin-bottom: 0;
@@ -417,6 +495,7 @@
         background: rgba(255, 255, 255, 0.4);
         border: 2px solid rgba(255, 255, 255, 0.6);
         transition: all 0.3s ease;
+        margin: 0 5px;
     }
 
     .carousel-indicators button.active {
@@ -424,389 +503,7 @@
         border-color: #fff;
         transform: scale(1.2);
     }
-
-    .carousel-item {
-        height: 49vh;
-        position: relative;
-    }
-
-    /* RESPONSIVE STYLES */
-    
-    /* Large Tablets and Small Desktops */
-    @media (max-width: 1200px) {
-        .slide-title {
-            font-size: 2.2rem;
-        }
-        
-        .catalog-title {
-            font-size: 2.2rem;
-        }
-        
-        .product-grid {
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.5rem;
-        }
-    }
-
-    /* Tablets */
-    @media (max-width: 992px) {
-        .catalog-container {
-            flex-direction: column;
-        }
-        
-        .sidebar {
-            border-right: none;
-            border-bottom: 1px solid #1c3825;
-            margin-bottom: 30px;
-        }
-        
-        .mobile-filter-toggle {
-            display: block;
-        }
-        
-        .sidebar.collapsed {
-            display: none;
-        }
-        
-        .category-hero-slide {
-            height: 30vh;
-            min-height: 280px;
-        }
-        
-        .slide-background {
-            width: 100%;
-            opacity: 0.4;
-        }
-        
-        .slide-content {
-            text-align: center;
-        }
-        
-        .slide-text {
-            padding-right: 0;
-            margin-bottom: 20px;
-        }
-        
-        .slide-title {
-            font-size: 2rem;
-            letter-spacing: 1px;
-        }
-        
-        .slide-description {
-            margin: 0 auto 20px;
-        }
-        
-        .catalog-title {
-            font-size: 2rem;
-        }
-        
-        .product-grid {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-    }
-
-    /* Mobile Landscape and Small Tablets */
-    @media (max-width: 768px) {
-         .carousel-item {
-            height: 40vh;
-            position: relative;
-        }
-        .category-hero-slide {
-            height: 28vh;
-            min-height: 260px;
-        }
-        
-        .slide-title {
-            font-size: 1.8rem;
-            letter-spacing: 1px;
-        }
-        
-        .slide-description {
-            font-size: 0.9rem;
-            padding: 0 20px;
-        }
-        
-        .shop-category-btn {
-            padding: 12px 25px;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-        
-        .category-product-image {
-            max-height: 180px;
-        }
-        
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 45px;
-            height: 45px;
-        }
-        
-        .carousel-control-prev {
-            left: 15px;
-        }
-        
-        .carousel-control-next {
-            right: 15px;
-        }
-        
-        .catalog-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-        }
-        
-        .sidebar {
-            padding: 15px;
-        }
-        
-        .sidebar h5 {
-            font-size: 0.9rem;
-            margin-top: 15px;
-        }
-        
-        .product-grid {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-        }
-        
-        .product-card {
-            max-width: none;
-        }
-        
-        .product-card img {
-            height: 200px;
-        }
-        
-        .product-info {
-            padding: 12px;
-        }
-        
-        .product-info h5 {
-            font-size: 1rem;
-            margin-bottom: 8px;
-        }
-        
-        .product-price {
-            font-size: 1.1rem;
-        }
-        
-        /* Modal responsive */
-        .modal-xl {
-            max-width: 95%;
-            margin: 1rem auto;
-        }
-        
-        .modal-body {
-            padding: 15px;
-        }
-        
-        .modal-body .row {
-            --bs-gutter-x: 0;
-        }
-        
-        .modal-body .col-md-6:first-child {
-            margin-bottom: 20px;
-        }
-        
-        #quickViewMainImage {
-            height: 250px !important;
-        }
-        
-        .quick-view-btn {
-            display: inline-block !important;
-            position: static;
-            transform: none;
-            margin-top: 10px;
-            width: 100%;
-        }
-    }
-
-    /* Mobile Portrait */
-    @media (max-width: 576px) {
-         .carousel-item {
-            height: 40vh;
-            position: relative;
-        }
-        .slide-title {
-            font-size: 1.6rem;
-        }
-        
-        .category-label {
-            padding: 6px 15px;
-            font-size: 0.75rem;
-            margin-bottom: 15px;
-        }
-        
-        .carousel-indicators {
-            bottom: 15px;
-        }
-        
-        .category-hero-slide {
-            min-height: 240px;
-            height: 25vh;
-        }
-        
-        .shop-category-btn {
-            padding: 10px 20px;
-            font-size: 0.75rem;
-        }
-        
-        .catalog-title {
-            font-size: 1.6rem;
-            margin-bottom: 15px;
-        }
-        
-        .container-fluid {
-            padding: 20px 15px;
-        }
-        
-        .sidebar {
-            padding: 12px;
-            border-radius: 8px;
-        }
-        
-        .mobile-filter-toggle {
-            padding: 10px 15px;
-            font-size: 0.9rem;
-        }
-        
-        .product-grid {
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 0.8rem;
-        }
-        
-        .product-card img {
-            height: 180px;
-        }
-        
-        .product-info {
-            padding: 10px;
-        }
-        
-        .product-info h5 {
-            font-size: 0.95rem;
-            margin-bottom: 6px;
-        }
-        
-        .product-price {
-            font-size: 1rem;
-            margin-top: 8px;
-        }
-        
-        .btn-buy {
-            padding: 8px 12px;
-            font-size: 0.85rem;
-        }
-        
-        /* Modal extra responsive */
-        .modal-xl {
-            max-width: 98%;
-            margin: 0.5rem auto;
-        }
-        
-        .modal-header {
-            padding: 10px 15px;
-        }
-        
-        .modal-title {
-            font-size: 1.1rem;
-        }
-        
-        .modal-body {
-            padding: 10px;
-        }
-        
-        #quickViewMainImage {
-            height: 200px !important;
-        }
-        
-        .modal-body .col-md-6 {
-            padding: 0;
-        }
-        
-        .modal-body .row.mb-4 .col-6,
-        .modal-body .row.mb-4 .col-12 {
-            margin-bottom: 10px;
-        }
-        
-        .modal-body .p-3 {
-            padding: 10px !important;
-        }
-        
-        .btn-buy.w-100.py-3 {
-            padding: 12px !important;
-            font-size: 0.95rem !important;
-        }
-    }
-
-    /* Extra Small Mobile */
-    @media (max-width: 480px) {
-         .carousel-item {
-            height: 40vh;
-            position: relative;
-        }
-        .slide-title {
-            font-size: 1.4rem;
-        }
-        
-        .catalog-title {
-            font-size: 1.4rem;
-        }
-        
-        .product-grid {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 0.6rem;
-        }
-        
-        .product-card img {
-            height: 160px;
-        }
-        
-        .product-info h5 {
-            font-size: 0.9rem;
-        }
-        
-        .product-price {
-            font-size: 0.95rem;
-        }
-        
-        .btn-buy {
-            padding: 6px 10px;
-            font-size: 0.8rem;
-        }
-    }
-
-    /* Landscape mode adjustments for mobile */
-    @media (max-height: 500px) and (orientation: landscape) {
-        .carousel-item {
-            height: 40vh;
-            position: relative;
-        }
-        .category-hero-slide {
-            height: 50vh;
-            min-height: 200px;
-        }
-        
-        .slide-title {
-            font-size: 1.5rem;
-        }
-        
-        .slide-description {
-            font-size: 0.85rem;
-        }
-        
-        .shop-category-btn {
-            padding: 8px 16px;
-            font-size: 0.7rem;
-        }
-        
-        .category-product-image {
-            max-height: 120px;
-        }
-    }
 </style>
-
 <div class="meatology-carousel-section">
     <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -857,239 +554,155 @@
         </div>
     </div>
 </div>
+<div class="catalog-section">
+    <div class="container">
+        <h1 class="catalog-title">Our Products</h1>
 
-<div class="container-fluid py-5">
-    <h1 class="text-center catalog-title mb-4">Meatology Catalog 🥩</h1>
-
-    <!-- Mobile Filter Toggle -->
-    <button class="mobile-filter-toggle" onclick="toggleFilters()">
-        <i class="fas fa-filter me-2"></i>Show Filters
-    </button>
-
-    <div class="catalog-container">
-        <!-- Sidebar -->
-        <div class="sidebar col-lg-3" id="filterSidebar">
-            <form method="GET" action="{{ route('shop.index') }}">
-                <h5>Filter by Category</h5>
-                <select name="category" class="form-select mb-3">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                            {{ $cat->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <h5>Filter by Price</h5>
-                <div class="mb-3">
-                    <label for="min_price" class="form-label text-light">Min:</label>
-                    <input type="number" class="form-control" name="min_price" value="{{ request('min_price') }}">
-                </div>
-                <div class="mb-3">
-                    <label for="max_price" class="form-label text-light">Max:</label>
-                    <input type="number" class="form-control" name="max_price" value="{{ request('max_price') }}">
+        <!-- Filtro Simple -->
+        <div class="filter-bar">
+            <form method="GET" action="{{ route('shop.index') }}" class="d-flex gap-3 align-items-center flex-wrap justify-content-center">
+                <div class="filter-group">
+                    <label class="filter-label">Category:</label>
+                    <select name="category" class="filter-select" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                {{ $cat->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
-                <button type="submit" class="btn btn-buy w-100">Apply Filters</button>
+                <div class="filter-group">
+                    <label class="filter-label">Sort by:</label>
+                    <select name="sort" class="filter-select" onchange="this.form.submit()">
+                        <option value="">Featured</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name A-Z</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">{{ $products->total() }} products</span>
+                </div>
             </form>
         </div>
 
-        <!-- Product Grid -->
-        <div class="product-grid-container col-lg-9">
-            <div class="product-grid">
-                @forelse ($products as $product)
-                    <div class="product-card position-relative text-center">
-                        <div class="position-relative">
-                            <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
-                                alt="{{ $product->name }}" class="img-fluid">
-
-                            <!-- Botón de Quick View -->
-                            <button class="quick-view-btn"
-                                data-bs-toggle="modal"
-                                data-bs-target="#quickViewModal"
-                                data-name="{{ $product->name }}"
-                                data-desc="{{ $product->description }}"
-                                data-price="{{ number_format(($product->price ?? 0) + ($product->interest ?? 0), 0) }}"
-                                data-weight="{{ $product->avg_weight }}"
-                                data-stock="{{ $product->stock }}"
-                                data-category="{{ $product->category->name ?? 'N/A' }}"
-                                data-images="{{ $product->images->map(function($img) { return Storage::url($img->image); })->toJson() }}"
-                                data-id="{{ $product->id }}">
-                                Quick View
-                            </button>
-                        </div>
-
-                        <div class="product-info mt-3">
-                            <h5 class="mb-1">{{ $product->name }}</h5>
-                            @php
-                                $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
-                            @endphp
-                            <div class="product-price">${{ number_format($totalPrice, 0, ',', '.') }}</div>
-
-                            <form action="{{ route('cart.add') }}" method="POST" class="mt-2">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <button class="btn btn-buy">Add to Cart</button>
-                            </form>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-12">
-                        <p class="text-light text-center">No products found with the selected filters.</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-    </div>
-
-    <div class="mt-5 text-center">
-        {{ $products->appends(request()->query())->links() }}
-    </div>
-</div>
-
-<!-- Quick View Modal -->
-<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="quickViewLabel">
-                    <i class="fas fa-eye me-2"></i>Product Preview
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <!-- Columna de la imagen con galería -->
-                    <div class="col-md-6">
-                        <div class="position-relative mb-3">
-                            <!-- Imagen principal -->
-                            <div class="main-image-container position-relative">
-                                <img id="quickViewMainImage" src="" alt="Product Image" 
-                                     class="img-fluid rounded shadow" 
-                                     style="height: 350px; width: 100%; object-fit: cover; border: 2px solid var(--accent); transition: all 0.3s ease;">
-                                
-                                <!-- Badge de categoría -->
-                                <span id="quickViewCategoryBadge" 
-                                      class="position-absolute top-0 start-0 m-2 badge px-3 py-2"
-                                      style="background-color: var(--highlight); color: #000; font-size: 0.9rem; display: none;">
-                                </span>
-                                
-                                <!-- Contador de imágenes -->
-                                <div id="imageCounter" class="position-absolute top-0 end-0 m-2 badge px-2 py-1"
-                                     style="background-color: rgba(0,0,0,0.7); color: white; font-size: 0.8rem; display: none;">
-                                </div>
-                                
-                                <!-- Botones de navegación (solo si hay múltiples imágenes) -->
-                                <button id="prevImageBtn" class="btn btn-dark btn-sm position-absolute top-50 start-0 translate-middle-y ms-2"
-                                        style="display: none; opacity: 0.8; z-index: 10;" onclick="changeImage(-1)">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button id="nextImageBtn" class="btn btn-dark btn-sm position-absolute top-50 end-0 translate-middle-y me-2"
-                                        style="display: none; opacity: 0.8; z-index: 10;" onclick="changeImage(1)">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Thumbnails (solo si hay múltiples imágenes) -->
-                            <div id="thumbnailContainer" class="mt-3" style="display: none;">
-                                <div class="d-flex gap-2 justify-content-center flex-wrap" id="thumbnailImages">
-                                    <!-- Los thumbnails se generarán dinámicamente -->
-                                </div>
-                            </div>
-                        </div>
+        <!-- Grid de Productos -->
+        <div class="products-grid">
+            @forelse ($products as $product)
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}" 
+                             alt="{{ $product->name }}"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPnt7ICRwcm9kdWN0LT5uYW1lIH19PC90ZXh0Pjwvc3ZnPic;">
                     </div>
                     
-                    <!-- Columna de información -->
-                    <div class="col-md-6">
-                        <div class="d-flex flex-column h-100">
-                            <!-- Título del producto -->
-                            <div class="mb-3">
-                                <h3 id="quickViewName" class="mb-2" style="color: var(--accent); font-weight: bold;">No name available</h3>
-                                <div id="quickViewDescriptionContainer">
-                                    <p id="quickViewDescription" class="mb-3" style="color: #ccc; line-height: 1.6;"></p>
-                                </div>
-                            </div>
-                            
-                            <!-- Información en cards -->
-                            <div class="row mb-4">
-                                <!-- Precio -->
-                                <div class="col-6 mb-3">
-                                    <div class="text-center p-3 rounded" style="background-color: var(--bg-card); border: 1px solid #1c3825;">
-                                        <i class="fas fa-dollar-sign mb-2" style="color: var(--highlight); font-size: 1.2rem;"></i>
-                                        <div class="fw-bold" style="color: var(--text-light); font-size: 0.9rem;">PRICE</div>
-                                        <div id="quickViewPrice" class="fw-bold" style="color: var(--highlight); font-size: 1.4rem;">N/A</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Stock -->
-                                <div class="col-6 mb-3">
-                                    <div class="text-center p-3 rounded" style="background-color: var(--bg-card); border: 1px solid #1c3825;">
-                                        <i class="fas fa-boxes mb-2" style="color: var(--accent); font-size: 1.2rem;"></i>
-                                        <div class="fw-bold" style="color: var(--text-light); font-size: 0.9rem;">IN STOCK</div>
-                                        <div id="quickViewStock" class="fw-bold" style="color: var(--accent); font-size: 1.4rem;">N/A</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Peso promedio -->
-                                <div class="col-12" id="weightContainer" style="display: none;">
-                                    <div class="text-center p-3 rounded" style="background-color: var(--bg-card); border: 1px solid #1c3825;">
-                                        <i class="fas fa-weight mb-2" style="color: var(--text-light); font-size: 1.2rem;"></i>
-                                        <div class="fw-bold" style="color: var(--text-light); font-size: 0.9rem;">AVG. WEIGHT</div>
-                                        <div id="quickViewWeight" class="fw-bold" style="color: var(--text-light); font-size: 1.2rem;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Botón de agregar al carrito -->
-                            <div class="mt-auto">
-                                <form method="POST" action="{{ route('cart.add') }}">
-                                    @csrf
-                                    <input type="hidden" name="product_id" id="quickViewProductId">
-                                    <button id="addToCartBtn" class="btn btn-buy w-100 py-3 fw-bold" style="font-size: 1.1rem;">
-                                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                    </button>
-                                </form>
-                                
-                                <!-- Información adicional -->
-                                <div class="text-center mt-3">
-                                    <small style="color: #888;">
-                                        <!-- <i class="fas fa-truck me-1"></i>Free shipping on orders over $50 -->
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="product-info">
+                        <div class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
+                        <h3 class="product-name">{{ $product->name }}</h3>
+                        
+                        @php
+                            $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                        @endphp
+                        <div class="product-price">${{ number_format($totalPrice, 0) }}</div>
+                        
+                        <form action="{{ route('cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="col-12">
+                    <div class="no-products">
+                        <p>No products found with the selected filters.</p>
+                    </div>
+                </div>
+            @endforelse
         </div>
+
+        <!-- Paginación -->
+        @if(isset($products) && $products->hasPages())
+            <div class="pagination-wrapper">
+                {{ $products->appends(request()->query())->links() }}
+            </div>
+        @endif
     </div>
 </div>
 
 <script>
-// Mobile filter toggle
-function toggleFilters() {
-    const sidebar = document.getElementById('filterSidebar');
-    const toggleButton = document.querySelector('.mobile-filter-toggle');
-    
-    sidebar.classList.toggle('collapsed');
-    
-    if (sidebar.classList.contains('collapsed')) {
-        toggleButton.innerHTML = '<i class="fas fa-filter me-2"></i>Show Filters';
-    } else {
-        toggleButton.innerHTML = '<i class="fas fa-times me-2"></i>Hide Filters';
-    }
-}
+    // Inicializar carrusel cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si Bootstrap está cargado
+        if (typeof bootstrap !== 'undefined') {
+            // Inicializar carrusel manualmente
+            const carouselElement = document.getElementById('categoryCarousel');
+            if (carouselElement) {
+                const carousel = new bootstrap.Carousel(carouselElement, {
+                    interval: 5000,
+                    ride: 'carousel',
+                    wrap: true,
+                    touch: true
+                });
+                
+                console.log('Carrusel inicializado correctamente');
+            }
+        } else {
+            console.warn('Bootstrap no está cargado. Verifica que Bootstrap JS esté incluido en tu layout.');
+        }
 
-// Auto-hide filters on larger screens
-window.addEventListener('resize', function() {
-    const sidebar = document.getElementById('filterSidebar');
-    const toggleButton = document.querySelector('.mobile-filter-toggle');
-    
-    if (window.innerWidth >= 992) {
-        sidebar.classList.remove('collapsed');
-        toggleButton.innerHTML = '<i class="fas fa-filter me-2"></i>Show Filters';
+        // Manejo de errores de imágenes
+        const images = document.querySelectorAll('.slide-bg-image, .category-product-image, .product-image img');
+        images.forEach(function(img) {
+            img.addEventListener('error', function() {
+                console.log('Error cargando imagen:', this.src);
+                // Usar un placeholder SVG en caso de error
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+            });
+        });
+
+        // Debug: Mostrar información del carrusel
+        setTimeout(function() {
+            const carouselInner = document.querySelector('.carousel-inner');
+            const carouselItems = document.querySelectorAll('.carousel-item');
+            
+            if (carouselInner) {
+                console.log('Carrusel encontrado con', carouselItems.length, 'items');
+            } else {
+                console.error('No se encontró el carrusel en el DOM');
+            }
+        }, 1000);
+    });
+
+    // Función para forzar la reinicialización del carrusel si es necesario
+    function reinitializeCarousel() {
+        const carouselElement = document.getElementById('categoryCarousel');
+        if (carouselElement && typeof bootstrap !== 'undefined') {
+            // Destruir instancia existente si la hay
+            const existingCarousel = bootstrap.Carousel.getInstance(carouselElement);
+            if (existingCarousel) {
+                existingCarousel.dispose();
+            }
+            
+            // Crear nueva instancia
+            const newCarousel = new bootstrap.Carousel(carouselElement, {
+                interval: 5000,
+                ride: 'carousel',
+                wrap: true,
+                touch: true
+            });
+            
+            console.log('Carrusel reinicializado');
+            return newCarousel;
+        }
+        return null;
     }
-});
+
+    // Llamar esta función desde la consola si el carrusel no funciona
+    window.reinitializeCarousel = reinitializeCarousel;
 </script>
 
 @endsection
