@@ -567,7 +567,7 @@
                         <option value="">All</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->name }}
+                                {{ $cat->name . ' - ' . $cat->country }}
                             </option>
                         @endforeach
                     </select>
