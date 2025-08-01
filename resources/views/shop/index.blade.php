@@ -590,40 +590,56 @@
         </div>
 
         <!-- Grid de Productos -->
-        <div class="products-grid">
-            @forelse ($products as $product)
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}" 
-                             alt="{{ $product->name }}"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPnt7ICRwcm9kdWN0LT5uYW1lIH19PC90ZXh0Pjwvc3ZnPic;">
-                    </div>
-                    
-                    <div class="product-info">
-                        <div class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
-                        <h3 class="product-name">{{ $product->name }}</h3>
-                        
-                        @php
-                            $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
-                        @endphp
-                        <div class="product-price">${{ number_format($totalPrice, 0) }}</div>
-                        
-                        <form action="{{ route('cart.add') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
-                        </form>
-                    </div>
+<div class="products-grid">
+    @forelse ($products as $product)
+        <div class="product-card">
+            <!-- Imagen con enlace al detalle del producto -->
+            <div class="product-image">
+                <a href="{{ route('product.show', $product) }}" class="product-link">
+                    <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}" 
+                         alt="{{ $product->name }}"
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPnt7ICRwcm9kdWN0LT5uYW1lIH19PC90ZXh0Pjwvc3ZnPic;">
+                </a>
+            </div>
+            
+            <div class="product-info">
+                <div class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
+                
+                <!-- Nombre del producto también como enlace -->
+                <h3 class="product-name">
+                    <a href="{{ route('product.show', $product) }}" class="product-name-link">
+                        {{ $product->name }}
+                    </a>
+                </h3>
+                
+                @php
+                    $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                @endphp
+                <div class="product-price">${{ number_format($totalPrice, 0) }}</div>
+                
+                <!-- Botones de acción -->
+                <div class="product-actions">
+                    <a href="{{ route('product.show', $product) }}" class="view-details-btn">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <form action="{{ route('cart.add') }}" method="POST" class="add-cart-form">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <button type="submit" class="add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </form>
                 </div>
-            @empty
-                <div class="col-12">
-                    <div class="no-products">
-                        <p>No products found with the selected filters.</p>
-                    </div>
-                </div>
-            @endforelse
+            </div>
         </div>
-
+    @empty
+        <div class="col-12">
+            <div class="no-products">
+                <p>No products found with the selected filters.</p>
+            </div>
+        </div>
+    @endforelse
+</div>
         <!-- Paginación -->
         @if(isset($products) && $products->hasPages())
             <div class="pagination-wrapper">

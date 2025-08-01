@@ -14,8 +14,7 @@ use App\Http\Controllers\DashboardController;
 /* ---------- Landing y páginas públicas ---------- */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
-
+Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
 Route::view('/about',   'about')->name('about');
 Route::view('/insiders','insiders')->name('insiders');//
 

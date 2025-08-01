@@ -153,5 +153,27 @@ public function destroy(Product $product)
         'images.*'    => ['nullable', 'image', 'max:2048'],
     ]);
 }
+ public function show(Product $product)
+    {
+        // Cargar relaciones necesarias
+        $product->load(['images', 'category']);
+        
+        // Productos relacionados de la misma categoría (8 productos)
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->where('stock', '>', 0)
+            ->with('images')
+            ->take(8)
+            ->get();
+        
+        // Productos populares/destacados (8 productos adicionales)
+        $featuredProducts = Product::where('id', '!=', $product->id)
+            ->where('stock', '>', 0)
+            ->with('images')
+            ->inRandomOrder() // o puedes usar ->orderBy('created_at', 'desc') para los más recientes
+            ->take(8)
+            ->get();
 
+        return view('products.show', compact('product', 'relatedProducts', 'featuredProducts'));
+    }
 }

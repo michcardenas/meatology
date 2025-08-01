@@ -114,7 +114,18 @@
             border-color: #e0d9c0;
             transform: scale(1.1);
         }
-        
+        .position-relative {
+    overflow: hidden;
+}
+
+/* Efecto de zoom en las imágenes */
+.card-img-top {
+    transition: transform 0.4s ease-in-out;
+}
+
+.card-img-top:hover {
+    transform: scale(1.08);
+}
         /* Animaciones */
         @keyframes fadeInUp {
             from {
@@ -233,7 +244,7 @@
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <div class="d-flex gap-2">
-                                <a href="{{ route('shop.index') }}" class="btn btn-outline-dark btn-sm rounded-pill flex-fill">
+                              <a href="{{ route('product.show', $product) }}" class="btn btn-outline-dark btn-sm rounded-pill flex-fill">
                                     <i class="fas fa-eye"></i> View
                                 </a>
                                 <button type="submit" class="btn btn-buy btn-sm rounded-pill flex-fill" {{ $product->stock <= 0 ? 'disabled' : '' }}>
