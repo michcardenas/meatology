@@ -207,7 +207,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(45, 80, 22, 0.8) 0%, rgba(45, 80, 22, 0.6) 100%);
 }
 
 .hero-title {
