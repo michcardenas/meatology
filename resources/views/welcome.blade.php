@@ -33,7 +33,6 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(1, 25, 4, 0.8) 0%, rgba(1, 25, 4, 0.6) 50%, rgba(1, 25, 4, 0.9) 100%);
             z-index: 1;
         }
         
