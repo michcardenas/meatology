@@ -46,7 +46,17 @@ Route::delete('/cart/{rowId}', [CartController::class, 'remove'])->name('cart.re
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/partner-chefs', [HomeController::class, 'partnerChefs'])->name('partner.chefs');
 Route::post('/partner-chefs', [HomeController::class, 'submitPartnerChefs'])->name('partner.chefs.submit');
+Route::get('/shipping-policy', function () {
+    return view('policies.shipping');
+})->name('shipping.policy');
 
+Route::get('/return-policy', function () {
+    return view('policies.return');
+})->name('return.policy');
+
+Route::get('/refund-policy', function () {
+    return view('policies.refund');
+})->name('refund.policy');
 /* ---------- Dashboard y perfil ---------- */
 Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

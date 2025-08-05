@@ -12,14 +12,20 @@ class CartController extends Controller
     /**
      * Mostrar el carrito de compras
      */
-    public function index()
+        public function index()
     {
         try {
             $cartItems = Cart::content();
-            $cartTotal = Cart::total();
+            
+            // Calcular manualmente para evitar tax doble
+            $cartSubtotal = 0;
+            foreach ($cartItems as $item) {
+                $cartSubtotal += $item->price * $item->qty;
+            }
+            
+            $cartTax = $cartSubtotal * $this->taxRate;
+            $cartTotal = $cartSubtotal + $cartTax;
             $cartCount = Cart::count();
-            $cartSubtotal = Cart::subtotal();
-            $cartTax = Cart::tax();
             
             return view('cart.index', compact(
                 'cartItems', 

@@ -828,92 +828,146 @@ footer {
     </main>
 
     <!-- Footer -->
-    <footer class="text-white pt-5 pb-4" style="background-color: #011904;">
-        <div class="container">
-            <div class="row">
-                <!-- Logo & descripción -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="footer-logo mb-3">
-                        <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" style="height: 40px; filter: brightness(0) invert(1);">
-                    </div>
-                    <h4 class="fw-bold text-uppercase mb-3">Meatology</h4>
-                    <p class="text-light small">
-                        Premium grass-fed beef cuts, ethically sourced and delivered with care. Taste the tradition and quality from Uruguay to your table.
-                    </p>
-                    <div class="social-links mt-3">
-                        <a href="#" class="social-link me-3" title="Facebook">
-                            <i class="fab fa-facebook fa-lg"></i>
-                        </a>
-                        <a href="#" class="social-link me-3" title="Instagram">
-                            <i class="fab fa-instagram fa-lg"></i>
-                        </a>
-                        <a href="#" class="social-link me-3" title="Twitter">
-                            <i class="fab fa-twitter fa-lg"></i>
-                        </a>
-                        <a href="#" class="social-link" title="WhatsApp">
-                            <i class="fab fa-whatsapp fa-lg"></i>
-                        </a>
-                    </div>
+   <!-- Footer -->
+<!-- Footer -->
+<footer class="text-white pt-5 pb-4" style="background-color: #011904;">
+    <div class="container">
+        <div class="row">
+            <!-- Logo & descripción -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="footer-logo mb-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" style="height: 40px; filter: brightness(0) invert(1);">
                 </div>
-
-                <!-- Navigation Links -->
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-uppercase fw-semibold mb-3">Navigation</h5>
-                    <ul class="list-unstyled footer-links">
-                        <li><a href="{{ route('home') }}" class="footer-link">Home</a></li>
-                        <li><a href="{{ route('shop.index') }}" class="footer-link">Products</a></li>
-                        <li><a href="{{ route('about') }}" class="footer-link">About Us</a></li>
-                        <li><a href="{{ route('partner.chefs') }}" class="footer-link">Partner Chefs</a></li>
-                    </ul>
-                </div>
-
-                <!-- Newsletter -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
-                    <p class="text-light small mb-3">
-                        Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
-                    </p>
-           
-                    
-                    <!-- Contact Info -->
-                    <div class="contact-info mt-4">
-                        <p class="text-light small mb-2">
-                            <i class="fas fa-envelope me-2"></i>
-                            <a href="mailto:sales@meatology.us" class="footer-link">sales@meatology.us</a>
-                        </p>
-                        <p class="text-light small mb-0">
-                            <i class="fas fa-phone me-2"></i>
-                            <a href="tel:+1234567890" class="footer-link">+1 (234) 567-8890</a>
-                        </p>
-                    </div>
+                <h4 class="fw-bold text-uppercase mb-3">Meatology</h4>
+                <p class="text-white small">
+                    Premium grass-fed beef cuts, ethically sourced and delivered with care. Taste the tradition and quality from Uruguay to your table.
+                </p>
+                <div class="social-links mt-3">
+                    <a href="#" class="social-link me-3" title="Facebook">
+                        <i class="fab fa-facebook fa-lg"></i>
+                    </a>
+                    <a href="#" class="social-link me-3" title="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="social-link me-3" title="Twitter">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="social-link" title="WhatsApp">
+                        <i class="fab fa-whatsapp fa-lg"></i>
+                    </a>
                 </div>
             </div>
 
-            <!-- Divider -->
-            <hr class="border-light my-4 opacity-25">
+            <!-- Navigation Links -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="text-uppercase fw-semibold mb-3">Navigation</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="{{ route('home') }}" class="footer-link">Home</a></li>
+                    <li><a href="{{ route('shop.index') }}" class="footer-link">Products</a></li>
+                    <li><a href="{{ route('about') }}" class="footer-link">About Us</a></li>
+                    <li><a href="{{ route('partner.chefs') }}" class="footer-link">Partner Chefs</a></li>
+                </ul>
+            </div>
 
-            <!-- Bottom Footer -->
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <div class="text-muted small">
-                        &copy; {{ date('Y') }} Meatology. All rights reserved.
-                    </div>
+            <!-- NUEVA SECCIÓN: Políticas y Servicios -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="text-uppercase fw-semibold mb-3">Policies</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="#" class="footer-link">Shipping Policy</a></li>
+                    <li><a href="#" class="footer-link">Return Policy</a></li>
+                    <li><a href="#" class="footer-link">Refund Policy</a></li>
+                    <li><a href="#" class="footer-link">Terms & Conditions</a></li>
+                </ul>
+                
+                <!-- Información de envío gratuito -->
+              
+            </div>
+
+            <!-- Contact & Newsletter -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
+                <p class="text-white small mb-3">
+                    Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
+                </p>
+       
+                <!-- Contact Info -->
+                <div class="contact-info mt-4">
+                    <p class="text-white small mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                        <a href="mailto:sales@meatology.us" class="footer-link">sales@meatology.us</a>
+                    </p>
+                    <p class="text-white small mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        <a href="tel:+13058420234" class="footer-link">+1 (305) 842-0234</a>
+                    </p>
+                    <p class="text-white small mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        <span class="text-white">Based in Florida</span>
+                    </p>
                 </div>
-                <div class="col-md-6">
-                    <div class="footer-certifications text-md-end">
-                        <span class="certification-badge me-2">
-                            <i class="fas fa-certificate text-success me-1"></i>
-                            <small>Certified Humane®</small>
-                        </span>
-                        <span class="certification-badge">
-                            <i class="fas fa-leaf text-success me-1"></i>
-                            <small>100% Grass-Fed</small>
-                        </span>
+            </div>
+
+            <!-- NUEVA SECCIÓN: Delivery Areas -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="text-uppercase fw-semibold mb-3">Delivery</h5>
+                <div class="delivery-zones">
+                    <div class="zone mb-3">
+                        <h6 class="text-white mb-2">
+                            <i class="fas fa-clock me-2 text-success"></i>
+                            Same Day Delivery
+                        </h6>
+                        <p class="text-white small mb-1">Palm Beach County</p>
+                        <p class="text-white small">Selected ZIP codes</p>
+                    </div>
+                    
+                    <div class="zone mb-3">
+                        <h6 class="text-white mb-2">
+                            <i class="fas fa-shipping-fast me-2 text-warning"></i>
+                            1-2 Days
+                        </h6>
+                        <p class="text-white small">Florida statewide</p>
+                    </div>
+                    
+                    <div class="zone">
+                        <h6 class="text-white mb-2">
+                            <i class="fas fa-plane me-2 text-info"></i>
+                            2-Day Air
+                        </h6>
+                        <p class="text-white small">All 50 States</p>
                     </div>
                 </div>
             </div>
         </div>
-    </footer>
+
+        <!-- Divider -->
+        <hr class="border-light my-4 opacity-25">
+
+        <!-- Bottom Footer -->
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="text-white small">
+                    &copy; {{ date('Y') }} Meatology. All rights reserved.
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="footer-certifications text-md-end">
+                    <span class="certification-badge me-2">
+                        <i class="fas fa-certificate text-success me-1"></i>
+                        <small>Certified Humane®</small>
+                    </span>
+                    <span class="certification-badge me-2">
+                        <i class="fas fa-leaf text-success me-1"></i>
+                        <small>100% Grass-Fed</small>
+                    </span>
+                    <span class="certification-badge">
+                        <i class="fas fa-shield-alt text-primary me-1"></i>
+                        <small>Quality Guaranteed</small>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 
 <script>
 
