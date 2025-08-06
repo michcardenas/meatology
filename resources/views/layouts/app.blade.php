@@ -873,10 +873,10 @@ footer {
             <div class="col-lg-2 col-md-6 mb-4">
                 <h5 class="text-uppercase fw-semibold mb-3">Policies</h5>
                 <ul class="list-unstyled footer-links">
-                    <li><a href="#" class="footer-link">Shipping Policy</a></li>
-                    <li><a href="#" class="footer-link">Return Policy</a></li>
-                    <li><a href="#" class="footer-link">Refund Policy</a></li>
-                    <li><a href="#" class="footer-link">Terms & Conditions</a></li>
+                    <li><a href="{{ route('shipping.policy') }}" class="footer-link">Shipping Policy</a></li>
+                    <li><a href="{{ route('return.policy') }}" class="footer-link">Return Policy</a></li>
+                    <li><a href="{{ route('refund.policy') }}" class="footer-link">Refund Policy</a></li>
+                    <li><a href="{{ route('terms.conditions') }}" class="footer-link">Terms & Conditions</a></li>
                 </ul>
                 
                 <!-- Información de envío gratuito -->

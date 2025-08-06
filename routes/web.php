@@ -57,6 +57,10 @@ Route::get('/return-policy', function () {
 Route::get('/refund-policy', function () {
     return view('policies.refund');
 })->name('refund.policy');
+
+Route::get('/terms-conditions', function () {
+    return view('policies.terms');
+})->name('terms.conditions');
 /* ---------- Dashboard y perfil ---------- */
 Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
