@@ -5,7 +5,7 @@
 <style>
  
         .hero-video-section {
-            height: 100vh;
+            height: 60vh;
             position: relative;
             overflow: hidden;
             display: flex;
@@ -226,7 +226,7 @@
                                     $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
                                 @endphp
                                 <span class="h5 text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</span>
-                                <small class="text-muted">/ per kg</small>
+                                <small class="text-muted">/ per Lb</small>
 
                                 @if($product->stock <= 0)
                                     <span class="badge bg-danger ms-2">Out of Stock</span>

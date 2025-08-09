@@ -683,42 +683,36 @@ footer {
 
             <!-- Desktop Navigation -->
             <div class="nav-links">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-                <div class="nav-item">
-    <a href="{{ route('shop.index') }}">
-        Products <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 5px;"></i>
+  <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+
+  {{-- NAV ITEM CON SUBMENU --}}
+  <div class="nav-item">
+    <a href="#" class="has-submenu">
+      Products <i class="fas fa-chevron-down" style="font-size: .75rem;"></i>
     </a>
-    
-    <!-- Submenu -->
-    <div class="submenu">
-        @foreach($countriesWithCategories as $country => $categories)
-            <div class="country-item">
-                <a href="#">{{ $country }}</a>
-                
-                <!-- Categorías de este país -->
-                <div class="categories-submenu">
-                    <div class="categories-header">
-                        <h4>{{ $country }}</h4>
-                    </div>
-                    @foreach($categories as $category)
-                        <div class="category-item">
-                            <a href="{{ route('shop.index', ['category' => $category->id]) }}">
-                                {{ $category->name }}
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endforeach
+
+   <div class="submenu">
+  @forelse(($categories ?? collect())->unique(fn($c) => mb_strtolower(trim($c->name))) as $category)
+    <div class="category-item">
+      <a href="{{ route('shop.index', ['category' => $category->id]) }}">
+        {{ $category->name }}
+      </a>
     </div>
+  @empty
+    <div class="category-item">
+      <a href="{{ route('shop.index') }}">All products</a>
+    </div>
+  @endforelse
 </div>
-                <a href="{{ route('about') }}">About Us</a>
-                <a href="{{ route('login') }}">Insiders</a>
-                <a href="{{ route('recipes') }}">Recipes</a>
 
+  </div>
 
-                <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
-            </div>
+  <a href="{{ route('about') }}">About Us</a>
+  <a href="{{ route('login') }}">Insiders</a>
+  <a href="{{ route('recipes') }}">Recipes</a>
+  <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
+</div>
+
 
             <!-- Desktop Icons -->
             <div class="nav-icons">

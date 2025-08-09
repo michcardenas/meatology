@@ -67,32 +67,73 @@
     }
 
     /* Grid de Productos */
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 30px;
-        margin-top: 40px;
-    }
+.products-grid {
+    display: grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap: 20px;
+}
+
 
     .product-card {
-        background: rgba(17, 39, 23, 0.4);
-        border: 1px solid rgba(172, 175, 171, 0.15);
-        border-radius: 12px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        cursor: pointer;
+      display:flex; flex-direction:column;
+  background:linear-gradient(180deg,var(--card),var(--card-2));
+  border:1px solid var(--stroke);
+  border-radius:14px; overflow:hidden; min-height:100%;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
 
-    .product-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(172, 175, 171, 0.4);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
+  .product-card:hover{ transform:translateY(-3px); border-color:#275c34; box-shadow:var(--shadow); }
+.pc-media{ position:relative; overflow:hidden; background:#0a1d0d; }
+.pc-img{ width:100%; height:230px; object-fit:cover; display:block; }
+.product-carousel .carousel-item{ transition:transform .6s ease; }
+/* MEDIA */
+.pc-media{ position:relative; overflow:hidden; background:#0a1d0d; }
+.pc-img{ width:100%; height:230px; object-fit:cover; display:block; }
+.product-carousel .carousel-item{ transition:transform .6s ease; }
 
+/* BODY */
+.pc-body{ padding:14px 14px 8px; color:var(--text); flex:1 1 auto; }
+.pc-category{
+  font-size:.78rem; letter-spacing:.5px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:6px;
+}
+.pc-title{
+  margin:0 0 10px; font-size:1rem; font-weight:700; line-height:1.25;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.pc-title a{ color:var(--accent); text-decoration:none; }
+.pc-title a:hover{ color:var(--accent-strong); }
+.pc-price-row{ display:flex; align-items:baseline; gap:8px; margin-top:auto; }
+.pc-price{ color:#7DFFB3; font-weight:800; font-size:1.15rem; }
+.pc-weight{ color:var(--muted); font-size:.85rem; }
+
+/* ACTIONS */
+.pc-actions{
+  display:flex; justify-content:center; align-items:center; gap:10px;
+  padding:12px 14px 16px; border-top:1px solid var(--stroke); flex-wrap:wrap;
+}
+.btn-ghost,.btn-solid{
+  display:inline-flex; align-items:center; gap:8px; justify-content:center;
+  min-width:150px; padding:8px 14px; border-radius:8px; font-weight:600;
+  text-decoration:none; transition:all .2s ease; cursor:pointer; font-size:.92rem;
+}
+/* Outline */
+.btn-ghost{ color:var(--accent); background:transparent; border:1px solid rgba(209,209,209,.35); }
+.btn-ghost:hover{ color:var(--bg-dark); background:var(--accent); border-color:var(--accent); transform:translateY(-2px); }
+/* Solid */
+.btn-solid{ color:var(--bg-dark); background:var(--accent); border:1px solid var(--accent); }
+.btn-solid:hover{ filter:brightness(1.05); transform:translateY(-2px); }
+
+@media (max-width:576px){
+  .pc-img{ height:200px; }
+  .btn-ghost,.btn-solid{ min-width:100%; }
+}
     .product-image {
         position: relative;
         overflow: hidden;
     }
+    .product-card-img { height: 230px; width: 100%; object-fit: cover; display: block; }
 
     .product-image img {
         width: 100%;
@@ -187,11 +228,7 @@
             padding: 15px;
         }
 
-        /* Carrusel responsive */
-        .carousel-item {
-            height: 45vh;
-            min-height: 350px;
-        }
+      
 
         .slide-background {
             width: 100%;
@@ -246,13 +283,7 @@
 
         .product-image img {
             height: 200px;
-        }
 
-        /* Carrusel móvil */
-        .carousel-item {
-            height: 40vh;
-            min-height: 300px;
-        }
 
         .slide-title {
             font-size: 1.8rem;
@@ -313,11 +344,7 @@
         margin-bottom: 0;
     }
 
-    .carousel-item {
-        height: 50vh;
-        position: relative;
-        min-height: 400px;
-    }
+   
 
     .category-hero-slide {
         position: relative;
@@ -497,6 +524,53 @@
         transition: all 0.3s ease;
         margin: 0 5px;
     }
+/* Enlaces dentro de las tarjetas de productos */
+.products-grid .product-card a {
+    color: #d1d1d1; /* gris claro */
+    text-decoration: none;
+}
+
+.products-grid .product-card a:hover {
+    color: #ffffff; /* blanco al pasar el mouse */
+}
+
+/* Botón View Details */
+.view-details-btn {
+    color: #d1d1d1;
+    border: 1px solid #d1d1d1;
+    background: transparent;
+}
+
+.view-details-btn:hover {
+    color: #081f0b; /* texto oscuro en hover */
+    background: #d1d1d1; /* fondo gris claro en hover */
+}
+.view-details-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #d1d1d1; /* gris claro */
+    background: transparent;
+    border: 1px solid rgba(209, 209, 209, 0.4);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.view-details-btn i {
+    font-size: 0.95rem;
+}
+
+.view-details-btn:hover {
+    background: #d1d1d1;
+    color: #081f0b; /* fondo oscuro del sitio */
+    border-color: #d1d1d1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
 
     .carousel-indicators button.active {
         background: #c41e3a;
@@ -572,6 +646,17 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="filter-group">
+                <label class="filter-label">Country:</label>
+                <select name="country" class="filter-select" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    @foreach($countries as $country)
+                        <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
+                            {{ $country }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
                 <div class="filter-group">
                     <label class="filter-label">Sort by:</label>
@@ -591,67 +676,97 @@
 
         <!-- Grid de Productos -->
 <div class="products-grid">
-    @forelse ($products as $product)
-        <div class="product-card">
-            <!-- Imagen con enlace al detalle del producto -->
-            <div class="product-image">
-                <a href="{{ route('product.show', $product) }}" class="product-link">
-                    <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}" 
-                         alt="{{ $product->name }}"
-                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPnt7ICRwcm9kdWN0LT5uYW1lIH19PC90ZXh0Pjwvc3ZnPic;">
-                </a>
-            </div>
-            
-            <div class="product-info">
-                <div class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
-                
-                <!-- Nombre del producto también como enlace -->
-                <h3 class="product-name">
-                    <a href="{{ route('product.show', $product) }}" class="product-name-link">
-                        {{ $product->name }}
-                    </a>
-                </h3>
-                
-                @php
-                    $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
-                @endphp
-                <div class="product-price">${{ number_format($totalPrice, 0) }}</div>
-                
-                <!-- Botones de acción -->
-                <div class="product-actions">
-                    <a href="{{ route('product.show', $product) }}" class="view-details-btn">
-                        <i class="fas fa-eye"></i> View Details
-                    </a>
-                    <form action="{{ route('cart.add') }}" method="POST" class="add-cart-form">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <button type="submit" class="add-to-cart-btn">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </form>
+  @forelse ($products as $product)
+    <div class="product-card">
+      {{-- MEDIA --}}
+      <div class="pc-media">
+        @php $imgs = $product->images; @endphp
+        @if($imgs->count() > 1)
+          <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="carousel" data-bs-interval="3000">
+            <div class="carousel-inner">
+              @foreach($imgs as $k => $img)
+                <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
+                  <img src="{{ Storage::url($img->image) }}"
+                       class="pc-img"
+                       alt="{{ $product->name }}"
+                       loading="lazy"
+                       onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
                 </div>
+              @endforeach
             </div>
-        </div>
-    @empty
-        <div class="col-12">
-            <div class="no-products">
-                <p>No products found with the selected filters.</p>
-            </div>
-        </div>
-    @endforelse
-</div>
-        <!-- Paginación -->
-        @if(isset($products) && $products->hasPages())
-            <div class="pagination-wrapper">
-                {{ $products->appends(request()->query())->links() }}
-            </div>
+          </div>
+        @else
+          <a href="{{ route('product.show', $product) }}" class="pc-media-link">
+            <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
+                 class="pc-img"
+                 alt="{{ $product->name }}"
+                 loading="lazy">
+          </a>
         @endif
+      </div>
+
+      {{-- BODY --}}
+      <div class="pc-body">
+        <div class="pc-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
+
+        <h3 class="pc-title">
+          <a href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
+        </h3>
+
+        @php
+          $totalPrice = (float)($product->price ?? 0) + (float)($product->interest ?? 0);
+          $avg = $product->avg_weight;
+          if ($avg && !str_ends_with(strtolower($avg), 'lb') && !str_ends_with(strtolower($avg), 'kg')) {
+            $avg .= ' lb';
+          }
+        @endphp
+        <div class="pc-price-row">
+          <div class="pc-price">${{ number_format($totalPrice, 0, ',', '.') }}</div>
+          <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
+        </div>
+      </div>
+
+      {{-- ACTIONS --}}
+      <div class="pc-actions">
+        <a href="{{ route('product.show', $product) }}" class="btn-ghost">
+          <i class="fas fa-eye"></i> <span>View Details</span>
+        </a>
+        <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block">
+          @csrf
+          <input type="hidden" name="product_id" value="{{ $product->id }}">
+          <button type="submit" class="btn-solid">
+            <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
+          </button>
+        </form>
+      </div>
     </div>
+  @empty
+    <div class="col-12">
+      <div class="no-products">
+        <p>No products found with the selected filters.</p>
+      </div>
+    </div>
+  @endforelse
 </div>
+
+@if(isset($products) && $products->hasPages())
+  <div class="pagination-wrapper">
+    {{ $products->appends(request()->query())->links() }}
+  </div>
+@endif
 
 <script>
     // Inicializar carrusel cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', function() {
+          document.querySelectorAll('.product-carousel').forEach(el => {
+    new bootstrap.Carousel(el, {
+      interval: 3000,
+      ride: 'carousel',
+      pause: 'hover',
+      touch: true,
+      wrap: true
+    });
+  });
         // Verificar si Bootstrap está cargado
         if (typeof bootstrap !== 'undefined') {
             // Inicializar carrusel manualmente

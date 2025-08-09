@@ -7,9 +7,10 @@
 </div>
 
 <div class="mb-4">
-    <label class="form-label fw-bold text-light">Description</label>
-    <textarea name="description" rows="3" class="form-control bg-dark text-light border-secondary">{{ old('description', $product->description ?? '') }}</textarea>
+  <label class="form-label fw-bold text-light">Description</label>
+  <textarea id="description" name="description" rows="6" class="form-control bg-dark text-light border-secondary">{{ old('description', $product->description ?? '') }}</textarea>
 </div>
+
 
 <div class="row">
     
@@ -201,9 +202,32 @@
 
 </div>
 
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 
 
 <script>
+
+    ClassicEditor
+  .create(document.querySelector('#description'), {
+    toolbar: [
+      'heading', '|',
+      'bold','italic','underline','link','bulletedList','numberedList','blockQuote','undo','redo'
+    ],
+    link: { addTargetToExternalLinks: true },
+    removePlugins: [
+      'CKBox','CKFinder','EasyImage','ImageUpload','MediaEmbed','Table','TableToolbar'
+    ]
+  })
+  .then(editor => {
+    // Ajuste visual para dark mode
+    const editable = editor.ui.getEditableElement();
+    editable.style.backgroundColor = '#111';
+    editable.style.color = '#e6e6e6';
+    editable.style.minHeight = '180px';
+    editable.style.border = '1px solid #444';
+    editable.style.borderRadius = '6px';
+  })
+  .catch(console.error);
 let priceIndex = {{ isset($product) && $product->prices->count() > 0 ? $product->prices->count() : 1 }};
 const countries = @json($countries);
 
@@ -268,3 +292,20 @@ function removePriceBlock(button) {
     button.closest('.row').remove();
 }
 </script>
+<style>
+/* Dark mode amigable dentro del editor */
+.ck-content {
+  background: #111 !important;
+  color: #e6e6e6 !important;
+}
+.ck.ck-editor__main>.ck-editor__editable {
+  border-color: #444 !important;
+}
+.ck.ck-toolbar {
+  background: #121212 !important;
+  border-color: #444 !important;
+}
+.ck.ck-button, .ck.ck-toolbar__separator {
+  filter: brightness(0.9);
+}
+</style>

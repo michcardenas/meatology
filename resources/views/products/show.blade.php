@@ -7,37 +7,53 @@
 <div class="container py-5">
     <div class="row">
         <!-- Imágenes del producto -->
-        <div class="col-md-6">
-            <div class="product-images">
-                @if($product->images->count() > 0)
-                    <div class="main-image mb-3">
-                        <img src="{{ Storage::url($product->images->first()->image) }}" 
-                             class="img-fluid rounded" 
-                             alt="{{ $product->name }}"
-                             style="width: 100%; object-fit: cover;">
-                    </div>
-                    
-                    @if($product->images->count() > 1)
-                    <div class="image-thumbnails">
-                        <div class="row g-2">
-                            @foreach($product->images->take(4) as $image)
-                            <div class="col-3">
-                                <img src="{{ Storage::url($image->image) }}" 
-                                     class="img-fluid rounded thumbnail-img" 
-                                     alt="{{ $product->name }}"
-                                     style="height: 80px; object-fit: cover; cursor: pointer;">
-                            </div>
-                            @endforeach
+       <div class="col-md-6">
+    <div class="product-images">
+        @if($product->images->count() > 0)
+            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                
+                <!-- Indicadores tipo puntos -->
+                <div class="carousel-indicators" style="bottom: 10px;">
+                    @foreach($product->images as $index => $image)
+                        <button type="button"
+                                data-bs-target="#productCarousel"
+                                data-bs-slide-to="{{ $index }}"
+                                class="{{ $index === 0 ? 'active' : '' }}"
+                                aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                                aria-label="Slide {{ $index + 1 }}">
+                        </button>
+                    @endforeach
+                </div>
+
+                <!-- Slides -->
+                <div class="carousel-inner rounded" style="max-height: 500px; overflow: hidden;">
+                    @foreach($product->images as $index => $image)
+                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                            <img src="{{ Storage::url($image->image) }}"
+                                 class="d-block w-100"
+                                 alt="{{ $product->name }}"
+                                 style="height: 500px; object-fit: cover;">
                         </div>
-                    </div>
-                    @endif
-                @else
-                    <img src="{{ asset('images/placeholder.jpg') }}" 
-                         class="img-fluid rounded" 
-                         alt="{{ $product->name }}">
-                @endif
+                    @endforeach
+                </div>
+
+                <!-- Controles -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
             </div>
-        </div>
+        @else
+            <img src="{{ asset('images/placeholder.jpg') }}" 
+                 class="img-fluid rounded" 
+                 alt="{{ $product->name }}"
+                 style="width: 100%; height: 500px; object-fit: cover;">
+        @endif
+    </div>
+</div>
+
 
         <!-- Información del producto -->
         <div class="col-md-6">
@@ -49,7 +65,7 @@
                         $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
                     @endphp
                     <h3 class="text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</h3>
-                    <small class="text-white">/ per kg</small>
+<small class="text-white">/ {{ $product->avg_weight ?: 'per lb' }}</small>
                 </div>
 
                 <div class="stock-info mb-4">
@@ -62,10 +78,11 @@
                     @endif
                 </div>
 
-                <div class="description mb-4">
-                    <h5>Description</h5>
-                    <p class="text-white">{{ $product->description }}</p>
-                </div>
+          <div class="description mb-4">
+    <h5>Description</h5>
+    <div class="text-white">{!! $product->description !!}</div>
+</div>
+
 
                 <!-- Formulario para agregar al carrito -->
                 @if($product->stock > 0)
@@ -75,7 +92,7 @@
                     
                     <div class="row g-3">
                         <div class="col-4">
-                            <label for="quantity" class="form-label">Quantity (kg)</label>
+                            <label for="quantity" class="form-label">Quantity</label>
                             <input type="number" class="form-control" id="quantity" name="quantity" 
                                    value="1" min="1" max="{{ $product->stock }}">
                         </div>
@@ -104,7 +121,7 @@
                     <ul class="list-unstyled">
                         <li><strong>SKU:</strong> #{{ $product->id }}</li>
                         <li><strong>Category:</strong> {{ $product->category->name ?? 'N/A' }}</li>
-                        <li><strong>Weight:</strong> Sold per kg</li>
+                        <li><strong>Weight:</strong> Sold per lb</li>
                     </ul>
                 </div>
             </div>
@@ -147,7 +164,7 @@
                                 <span class="text-white fw-bold">
                                     ${{ number_format(($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0), 0, ',', '.') }}
                                 </span>
-                                <small class="text-white">/ per kg</small>
+                                <small class="text-white">/ per lb</small>
                             </div>
                             <div class="d-flex gap-1">
                                 <a href="{{ route('product.show', $featuredProduct) }}" 
@@ -195,6 +212,16 @@
 .card-img-top:hover {
     transform: scale(1.05);
 }
+.carousel-indicators [data-bs-target] {
+    background-color: white;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.carousel-indicators .active {
+    background-color: #198754; /* verde Bootstrap */
+}
+
 </style>
 
 <script>

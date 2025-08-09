@@ -24,30 +24,48 @@ use Square\Types\Currency;
 class ShopController extends Controller
 {
 
-        public function index(Request $request)
-        {
-            $query = Product::query()->with('images', 'category');
+public function index(Request $request)
+{
+    $query = Product::query()->with(['images', 'category']);
 
-            // Filtro por categoría
-            if ($request->filled('category')) {
-                $query->where('category_id', $request->category);
-            }
+    // 🔹 Filtro por categoría (por NOMBRE, no por id)
+    if ($request->filled('category')) {
+        $catName = mb_strtolower(trim($request->category));
+        $query->whereHas('category', function ($q) use ($catName) {
+            $q->whereRaw('LOWER(name) = ?', [$catName]);
+        });
+    }
 
-            // Filtro por precio mínimo
-            if ($request->filled('min_price')) {
-                $query->where('price', '>=', $request->min_price);
-            }
+    // 🔹 Filtro por país (en la categoría)
+    if ($request->filled('country')) {
+        $country = trim($request->country);
+        $query->whereHas('category', function ($q) use ($country) {
+            $q->where('country', $country);
+        });
+    }
 
-            // Filtro por precio máximo
-            if ($request->filled('max_price')) {
-                $query->where('price', '<=', $request->max_price);
-            }
+    // Sort
+    switch ($request->get('sort')) {
+        case 'price_low':  $query->orderBy('price', 'asc'); break;
+        case 'price_high': $query->orderBy('price', 'desc'); break;
+        case 'name':       $query->orderBy('name', 'asc');   break;
+        default:           $query->latest();                 break;
+    }
 
-            $products = $query->latest()->paginate(9);
-            $categories = Category::withCount('products')->get(); // ← actualizado
+    $products = $query->paginate(9)->appends($request->query());
 
-            return view('shop.index', compact('products', 'categories'));
-        }
+    // 🔹 Selects
+    $categoryNames = \App\Models\Category::query()
+        ->select('name')->distinct()->orderBy('name')->pluck('name');
+
+    $countries = \App\Models\Category::query()
+        ->select('country')->whereNotNull('country')->distinct()->orderBy('country')->pluck('country');
+
+    return view('shop.index', compact('products', 'categoryNames', 'countries'));
+}
+
+
+
 
 
         public function checkout() 
