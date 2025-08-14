@@ -67,270 +67,172 @@
     }
 
     /* Grid de Productos */
-.products-grid {
-    display: grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-    gap: 20px;
-}
-
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+    }
 
     .product-card {
-      display:flex; flex-direction:column;
-  background:linear-gradient(180deg,var(--card),var(--card-2));
-  border:1px solid var(--stroke);
-  border-radius:14px; overflow:hidden; min-height:100%;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);
-  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(180deg, rgba(17, 39, 23, 0.8), rgba(17, 39, 23, 0.6));
+        border: 1px solid rgba(172, 175, 171, 0.2);
+        border-radius: 14px;
+        overflow: hidden;
+        min-height: 100%;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+        transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
 
-  .product-card:hover{ transform:translateY(-3px); border-color:#275c34; box-shadow:var(--shadow); }
-.pc-media{ position:relative; overflow:hidden; background:#0a1d0d; }
-.pc-img{ width:100%; height:230px; object-fit:cover; display:block; }
-.product-carousel .carousel-item{ transition:transform .6s ease; }
-/* MEDIA */
-.pc-media{ position:relative; overflow:hidden; background:#0a1d0d; }
-.pc-img{ width:100%; height:230px; object-fit:cover; display:block; }
-.product-carousel .carousel-item{ transition:transform .6s ease; }
+    .product-card:hover {
+        transform: translateY(-3px);
+        border-color: #275c34;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
 
-/* BODY */
-.pc-body{ padding:14px 14px 8px; color:var(--text); flex:1 1 auto; }
-.pc-category{
-  font-size:.78rem; letter-spacing:.5px; text-transform:uppercase;
-  color:var(--muted); margin-bottom:6px;
-}
-.pc-title{
-  margin:0 0 10px; font-size:1rem; font-weight:700; line-height:1.25;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
-}
-.pc-title a{ color:var(--accent); text-decoration:none; }
-.pc-title a:hover{ color:var(--accent-strong); }
-.pc-price-row{ display:flex; align-items:baseline; gap:8px; margin-top:auto; }
-.pc-price{ color:#7DFFB3; font-weight:800; font-size:1.15rem; }
-.pc-weight{ color:var(--muted); font-size:.85rem; }
-
-/* ACTIONS */
-.pc-actions{
-  display:flex; justify-content:center; align-items:center; gap:10px;
-  padding:12px 14px 16px; border-top:1px solid var(--stroke); flex-wrap:wrap;
-}
-.btn-ghost,.btn-solid{
-  display:inline-flex; align-items:center; gap:8px; justify-content:center;
-  min-width:150px; padding:8px 14px; border-radius:8px; font-weight:600;
-  text-decoration:none; transition:all .2s ease; cursor:pointer; font-size:.92rem;
-}
-/* Outline */
-.btn-ghost{ color:var(--accent); background:transparent; border:1px solid rgba(209,209,209,.35); }
-.btn-ghost:hover{ color:var(--bg-dark); background:var(--accent); border-color:var(--accent); transform:translateY(-2px); }
-/* Solid */
-.btn-solid{ color:var(--bg-dark); background:var(--accent); border:1px solid var(--accent); }
-.btn-solid:hover{ filter:brightness(1.05); transform:translateY(-2px); }
-
-@media (max-width:576px){
-  .pc-img{ height:200px; }
-  .btn-ghost,.btn-solid{ min-width:100%; }
-}
-    .product-image {
+    /* Media del producto */
+    .pc-media {
         position: relative;
         overflow: hidden;
+        background: #0a1d0d;
+        height: 230px;
     }
-    .product-card-img { height: 230px; width: 100%; object-fit: cover; display: block; }
 
-    .product-image img {
+    .pc-img {
         width: 100%;
-        height: 250px;
+        height: 100%;
         object-fit: cover;
+        display: block;
         transition: transform 0.3s ease;
     }
 
-    .product-card:hover .product-image img {
+    .product-card:hover .pc-img {
         transform: scale(1.05);
     }
 
-    .product-info {
-        padding: 20px;
+    /* Carrusel de productos */
+    .product-carousel {
+        height: 100%;
     }
 
-    .product-name {
-        color: #acafab;
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 8px;
+    .product-carousel .carousel-inner {
+        height: 100%;
     }
 
-    .product-category {
-        color: #888;
-        font-size: 0.85rem;
-        margin-bottom: 12px;
+    .product-carousel .carousel-item {
+        height: 100%;
+        transition: transform 0.6s ease;
+    }
+
+    /* Body del producto */
+    .pc-body {
+        padding: 14px 14px 8px;
+        color: #e5e5e5;
+        flex: 1 1 auto;
+    }
+
+    .pc-category {
+        font-size: .78rem;
+        letter-spacing: .5px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        color: #888;
+        margin-bottom: 6px;
     }
 
-    .product-price {
-        color: #f7a831;
-        font-size: 1.3rem;
+    .pc-title {
+        margin: 0 0 10px;
+        font-size: 1rem;
         font-weight: 700;
-        margin-bottom: 15px;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .add-to-cart-btn {
-        width: 100%;
-        background: transparent;
-        border: 2px solid #acafab;
+    .pc-title a {
         color: #acafab;
-        padding: 12px;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .pc-title a:hover {
+        color: #ffffff;
+    }
+
+    .pc-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: auto;
+    }
+
+    .pc-price {
+        color: #7DFFB3;
+        font-weight: 800;
+        font-size: 1.15rem;
+    }
+
+    .pc-weight {
+        color: #888;
+        font-size: .85rem;
+    }
+
+    /* Actions */
+    .pc-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px 16px;
+        border-top: 1px solid rgba(172, 175, 171, 0.2);
+        flex-wrap: wrap;
+    }
+
+    .btn-ghost, .btn-solid {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+        min-width: 130px;
+        padding: 8px 14px;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        text-decoration: none;
+        transition: all .2s ease;
         cursor: pointer;
-        transition: all 0.3s ease;
+        font-size: .92rem;
+        border: none;
     }
 
-    .add-to-cart-btn:hover {
+    /* Outline */
+    .btn-ghost {
+        color: #acafab;
+        background: transparent;
+        border: 1px solid rgba(172, 175, 171, 0.35);
+    }
+
+    .btn-ghost:hover {
+        color: #081f0b;
         background: #acafab;
-        color: #011904;
+        border-color: #acafab;
         transform: translateY(-2px);
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .catalog-title {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-        }
-
-        .filter-bar {
-            flex-direction: column;
-            gap: 15px;
-            padding: 15px;
-        }
-
-        .filter-group {
-            width: 100%;
-            justify-content: space-between;
-        }
-
-        .filter-select {
-            min-width: 150px;
-        }
-
-        .products-grid {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .product-image img {
-            height: 220px;
-        }
-
-        .product-info {
-            padding: 15px;
-        }
-
-      
-
-        .slide-background {
-            width: 100%;
-            opacity: 0.4;
-        }
-
-        .slide-content {
-            text-align: center;
-            padding: 20px 0;
-        }
-
-        .slide-text {
-            padding-right: 0;
-            margin-bottom: 20px;
-        }
-
-        .slide-title {
-            font-size: 2.2rem;
-            letter-spacing: 1px;
-        }
-
-        .slide-description {
-            margin: 0 auto 20px;
-            font-size: 1rem;
-            padding: 0 20px;
-        }
-
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 45px;
-            height: 45px;
-        }
-
-        .carousel-control-prev {
-            left: 15px;
-        }
-
-        .carousel-control-next {
-            right: 15px;
-        }
+    /* Solid */
+    .btn-solid {
+        color: #081f0b;
+        background: #acafab;
+        border: 1px solid #acafab;
     }
 
-    @media (max-width: 480px) {
-        .catalog-section {
-            padding: 20px 0;
-        }
-
-        .products-grid {
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .product-image img {
-            height: 200px;
-
-
-        .slide-title {
-            font-size: 1.8rem;
-        }
-
-        .category-label {
-            padding: 6px 15px;
-            font-size: 0.75rem;
-            margin-bottom: 15px;
-        }
-
-        .slide-description {
-            font-size: 0.9rem;
-            padding: 0 15px;
-        }
-
-        .shop-category-btn {
-            padding: 12px 25px;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-
-        .carousel-indicators {
-            bottom: 15px;
-        }
-
-        .category-product-image {
-            max-height: 200px;
-        }
+    .btn-solid:hover {
+        filter: brightness(1.05);
+        transform: translateY(-2px);
     }
 
-    /* No products message */
-    .no-products {
-        text-align: center;
-        color: #888;
-        font-size: 1.1rem;
-        margin-top: 60px;
-    }
-
-    /* Pagination */
-    .pagination-wrapper {
-        margin-top: 50px;
-        display: flex;
-        justify-content: center;
-    }
-
-    /* Carrusel Styles */
+    /* Carrusel Principal Styles */
     .meatology-carousel-section {
         background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
         margin: 0;
@@ -342,9 +244,8 @@
         margin-left: -50vw;
         margin-right: -50vw;
         margin-bottom: 0;
+        height: 500px; /* Altura fija para el carrusel */
     }
-
-   
 
     .category-hero-slide {
         position: relative;
@@ -515,7 +416,7 @@
         margin-bottom: 0;
     }
 
-    .carousel-indicators button {
+    .carousel-indicators [data-bs-target] {
         width: 12px;
         height: 12px;
         border-radius: 50%;
@@ -524,69 +425,163 @@
         transition: all 0.3s ease;
         margin: 0 5px;
     }
-/* Enlaces dentro de las tarjetas de productos */
-.products-grid .product-card a {
-    color: #d1d1d1; /* gris claro */
-    text-decoration: none;
-}
 
-.products-grid .product-card a:hover {
-    color: #ffffff; /* blanco al pasar el mouse */
-}
-
-/* Botón View Details */
-.view-details-btn {
-    color: #d1d1d1;
-    border: 1px solid #d1d1d1;
-    background: transparent;
-}
-
-.view-details-btn:hover {
-    color: #081f0b; /* texto oscuro en hover */
-    background: #d1d1d1; /* fondo gris claro en hover */
-}
-.view-details-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #d1d1d1; /* gris claro */
-    background: transparent;
-    border: 1px solid rgba(209, 209, 209, 0.4);
-    border-radius: 6px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.view-details-btn i {
-    font-size: 0.95rem;
-}
-
-.view-details-btn:hover {
-    background: #d1d1d1;
-    color: #081f0b; /* fondo oscuro del sitio */
-    border-color: #d1d1d1;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-    .carousel-indicators button.active {
+    .carousel-indicators .active {
         background: #c41e3a;
         border-color: #fff;
         transform: scale(1.2);
     }
+
+    /* No products message */
+    .no-products {
+        text-align: center;
+        color: #888;
+        font-size: 1.1rem;
+        margin-top: 60px;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .catalog-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+
+        .filter-bar {
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .filter-group {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .filter-select {
+            min-width: 150px;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .pc-media {
+            height: 200px;
+        }
+
+        .pc-body {
+            padding: 15px;
+        }
+
+        .btn-ghost, .btn-solid {
+            min-width: 100%;
+        }
+
+        .meatology-carousel-section {
+            height: auto;
+            min-height: 400px;
+        }
+
+        .slide-content {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .slide-text {
+            padding-right: 0;
+            margin-bottom: 20px;
+        }
+
+        .slide-title {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
+        .slide-description {
+            margin: 0 auto 20px;
+            font-size: 1rem;
+            padding: 0 20px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 45px;
+            height: 45px;
+        }
+
+        .carousel-control-prev {
+            left: 15px;
+        }
+
+        .carousel-control-next {
+            right: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .catalog-section {
+            padding: 20px 0;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .pc-media {
+            height: 200px;
+        }
+
+        .slide-title {
+            font-size: 1.8rem;
+        }
+
+        .category-label {
+            padding: 6px 15px;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+        }
+
+        .slide-description {
+            font-size: 0.9rem;
+            padding: 0 15px;
+        }
+
+        .shop-category-btn {
+            padding: 12px 25px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .carousel-indicators {
+            bottom: 15px;
+        }
+
+        .category-product-image {
+            max-height: 200px;
+        }
+    }
 </style>
+
+<!-- Carrusel Principal -->
 <div class="meatology-carousel-section">
-    <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
         <div class="carousel-inner">
             @foreach($categories as $index => $category)
                 <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
                     <div class="category-hero-slide">
                         <div class="slide-background">
                             <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
-                                 class="slide-bg-image" alt="{{ $category->name }}">
+                                 class="slide-bg-image" alt="{{ $category->name }}" loading="lazy">
                             <div class="slide-overlay"></div>
                         </div>
                         <div class="slide-content">
@@ -608,7 +603,7 @@
                                     <div class="col-lg-6 d-none d-lg-block">
                                         <div class="slide-image">
                                             <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
-                                                 alt="{{ $category->name }}" class="category-product-image">
+                                                 alt="{{ $category->name }}" class="category-product-image" loading="lazy">
                                         </div>
                                     </div>
                                 </div>
@@ -619,15 +614,28 @@
             @endforeach
         </div>
         
+        <!-- Controles -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+
         <!-- Indicadores -->
         <div class="carousel-indicators">
             @foreach($categories as $index => $category)
                 <button type="button" data-bs-target="#categoryCarousel" data-bs-slide-to="{{ $index }}" 
-                        class="{{ $index == 0 ? 'active' : '' }}"></button>
+                        class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}" 
+                        aria-label="Slide {{ $index + 1 }}"></button>
             @endforeach
         </div>
     </div>
 </div>
+
+<!-- Sección del Catálogo -->
 <div class="catalog-section">
     <div class="container">
         <h1 class="catalog-title">Our Products</h1>
@@ -647,16 +655,16 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                <label class="filter-label">Country:</label>
-                <select name="country" class="filter-select" onchange="this.form.submit()">
-                    <option value="">All</option>
-                    @foreach($countries as $country)
-                        <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
-                            {{ $country }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+                    <label class="filter-label">Country:</label>
+                    <select name="country" class="filter-select" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach($countries as $country)
+                            <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
+                                {{ $country }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <div class="filter-group">
                     <label class="filter-label">Sort by:</label>
@@ -675,165 +683,168 @@
         </div>
 
         <!-- Grid de Productos -->
-<div class="products-grid">
-  @forelse ($products as $product)
-    <div class="product-card">
-      {{-- MEDIA --}}
-      <div class="pc-media">
-        @php $imgs = $product->images; @endphp
-        @if($imgs->count() > 1)
-          <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="carousel" data-bs-interval="3000">
-            <div class="carousel-inner">
-              @foreach($imgs as $k => $img)
-                <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
-                  <img src="{{ Storage::url($img->image) }}"
-                       class="pc-img"
-                       alt="{{ $product->name }}"
-                       loading="lazy"
-                       onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+        <div class="products-grid">
+            @forelse ($products as $product)
+                <div class="product-card">
+                    {{-- MEDIA --}}
+                    <div class="pc-media">
+                        @php $imgs = $product->images; @endphp
+                        @if($imgs->count() > 1)
+                            <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="false">
+                                <div class="carousel-inner">
+                                    @foreach($imgs as $k => $img)
+                                        <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
+                                            <img src="{{ Storage::url($img->image) }}"
+                                                 class="pc-img"
+                                                 alt="{{ $product->name }}"
+                                                 loading="lazy"
+                                                 onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <a href="{{ route('product.show', $product) }}" class="pc-media-link">
+                                <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
+                                     class="pc-img"
+                                     alt="{{ $product->name }}"
+                                     loading="lazy">
+                            </a>
+                        @endif
+                    </div>
+
+                    {{-- BODY --}}
+                    <div class="pc-body">
+                        <div class="pc-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
+
+                        <h3 class="pc-title">
+                            <a href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
+                        </h3>
+
+                        @php
+                            $totalPrice = (float)($product->price ?? 0) + (float)($product->interest ?? 0);
+                            $avg = $product->avg_weight;
+                            if ($avg && !str_ends_with(strtolower($avg), 'lb') && !str_ends_with(strtolower($avg), 'kg')) {
+                                $avg .= ' lb';
+                            }
+                        @endphp
+                        <div class="pc-price-row">
+                            <div class="pc-price">${{ number_format($totalPrice, 0, ',', '.') }}</div>
+                            <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
+                        </div>
+                    </div>
+
+                    {{-- ACTIONS --}}
+                    <div class="pc-actions">
+                        <a href="{{ route('product.show', $product) }}" class="btn-ghost">
+                            <i class="fas fa-eye"></i> <span>View Details</span>
+                        </a>
+                        <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <button type="submit" class="btn-solid">
+                                <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-              @endforeach
-            </div>
-          </div>
-        @else
-          <a href="{{ route('product.show', $product) }}" class="pc-media-link">
-            <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
-                 class="pc-img"
-                 alt="{{ $product->name }}"
-                 loading="lazy">
-          </a>
-        @endif
-      </div>
-
-      {{-- BODY --}}
-      <div class="pc-body">
-        <div class="pc-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
-
-        <h3 class="pc-title">
-          <a href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
-        </h3>
-
-        @php
-          $totalPrice = (float)($product->price ?? 0) + (float)($product->interest ?? 0);
-          $avg = $product->avg_weight;
-          if ($avg && !str_ends_with(strtolower($avg), 'lb') && !str_ends_with(strtolower($avg), 'kg')) {
-            $avg .= ' lb';
-          }
-        @endphp
-        <div class="pc-price-row">
-          <div class="pc-price">${{ number_format($totalPrice, 0, ',', '.') }}</div>
-          <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
+            @empty
+                <div class="col-12">
+                    <div class="no-products">
+                        <p>No products found with the selected filters.</p>
+                    </div>
+                </div>
+            @endforelse
         </div>
-      </div>
 
-      {{-- ACTIONS --}}
-      <div class="pc-actions">
-        <a href="{{ route('product.show', $product) }}" class="btn-ghost">
-          <i class="fas fa-eye"></i> <span>View Details</span>
-        </a>
-        <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block">
-          @csrf
-          <input type="hidden" name="product_id" value="{{ $product->id }}">
-          <button type="submit" class="btn-solid">
-            <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
-          </button>
-        </form>
-      </div>
+        @if(isset($products) && $products->hasPages())
+            <div class="pagination-wrapper">
+                {{ $products->appends(request()->query())->links() }}
+            </div>
+        @endif
     </div>
-  @empty
-    <div class="col-12">
-      <div class="no-products">
-        <p>No products found with the selected filters.</p>
-      </div>
-    </div>
-  @endforelse
 </div>
 
-@if(isset($products) && $products->hasPages())
-  <div class="pagination-wrapper">
-    {{ $products->appends(request()->query())->links() }}
-  </div>
-@endif
-
 <script>
-    // Inicializar carrusel cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', function() {
-          document.querySelectorAll('.product-carousel').forEach(el => {
-    new bootstrap.Carousel(el, {
-      interval: 3000,
-      ride: 'carousel',
-      pause: 'hover',
-      touch: true,
-      wrap: true
-    });
-  });
-        // Verificar si Bootstrap está cargado
-        if (typeof bootstrap !== 'undefined') {
-            // Inicializar carrusel manualmente
-            const carouselElement = document.getElementById('categoryCarousel');
-            if (carouselElement) {
-                const carousel = new bootstrap.Carousel(carouselElement, {
-                    interval: 5000,
-                    ride: 'carousel',
-                    wrap: true,
-                    touch: true
-                });
-                
-                console.log('Carrusel inicializado correctamente');
-            }
-        } else {
-            console.warn('Bootstrap no está cargado. Verifica que Bootstrap JS esté incluido en tu layout.');
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar que Bootstrap esté disponible
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap no está cargado. Asegúrate de incluir Bootstrap JS en tu layout.');
+        return;
+    }
 
-        // Manejo de errores de imágenes
-        const images = document.querySelectorAll('.slide-bg-image, .category-product-image, .product-image img');
-        images.forEach(function(img) {
-            img.addEventListener('error', function() {
-                console.log('Error cargando imagen:', this.src);
-                // Usar un placeholder SVG en caso de error
-                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
-            });
-        });
-
-        // Debug: Mostrar información del carrusel
-        setTimeout(function() {
-            const carouselInner = document.querySelector('.carousel-inner');
-            const carouselItems = document.querySelectorAll('.carousel-item');
-            
-            if (carouselInner) {
-                console.log('Carrusel encontrado con', carouselItems.length, 'items');
-            } else {
-                console.error('No se encontró el carrusel en el DOM');
-            }
-        }, 1000);
-    });
-
-    // Función para forzar la reinicialización del carrusel si es necesario
-    function reinitializeCarousel() {
-        const carouselElement = document.getElementById('categoryCarousel');
-        if (carouselElement && typeof bootstrap !== 'undefined') {
-            // Destruir instancia existente si la hay
-            const existingCarousel = bootstrap.Carousel.getInstance(carouselElement);
-            if (existingCarousel) {
-                existingCarousel.dispose();
-            }
-            
-            // Crear nueva instancia
-            const newCarousel = new bootstrap.Carousel(carouselElement, {
+    try {
+        // Inicializar carrusel principal
+        const mainCarouselElement = document.getElementById('categoryCarousel');
+        if (mainCarouselElement) {
+            const mainCarousel = new bootstrap.Carousel(mainCarouselElement, {
                 interval: 5000,
                 ride: 'carousel',
                 wrap: true,
-                touch: true
+                touch: true,
+                pause: 'hover'
             });
-            
-            console.log('Carrusel reinicializado');
-            return newCarousel;
+            console.log('Carrusel principal inicializado correctamente');
         }
-        return null;
+
+        // Inicializar carruseles de productos (solo si tienen múltiples imágenes)
+        const productCarousels = document.querySelectorAll('.product-carousel');
+        productCarousels.forEach(function(carouselElement) {
+            try {
+                const carousel = new bootstrap.Carousel(carouselElement, {
+                    interval: false, // No auto-slide para productos
+                    ride: false,
+                    wrap: true,
+                    touch: true,
+                    pause: 'hover'
+                });
+                
+                // Activar el carrusel en hover
+                carouselElement.addEventListener('mouseenter', function() {
+                    carousel.cycle();
+                });
+                
+                carouselElement.addEventListener('mouseleave', function() {
+                    carousel.pause();
+                });
+                
+            } catch (error) {
+                console.warn('Error inicializando carrusel de producto:', error);
+            }
+        });
+
+        console.log(`${productCarousels.length} carruseles de productos inicializados`);
+
+    } catch (error) {
+        console.error('Error general inicializando carruseles:', error);
     }
 
-    // Llamar esta función desde la consola si el carrusel no funciona
-    window.reinitializeCarousel = reinitializeCarousel;
+    // Manejo de errores de imágenes
+    const images = document.querySelectorAll('img');
+    images.forEach(function(img) {
+        img.addEventListener('error', function() {
+            console.warn('Error cargando imagen:', this.src);
+            // Placeholder SVG
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+        });
+    });
+});
+
+// Función de debug para verificar el estado del carrusel
+function debugCarousel() {
+    const carousel = document.getElementById('categoryCarousel');
+    if (carousel) {
+        const instance = bootstrap.Carousel.getInstance(carousel);
+        console.log('Instancia del carrusel:', instance);
+        console.log('Elemento del carrusel:', carousel);
+        console.log('Items del carrusel:', carousel.querySelectorAll('.carousel-item').length);
+    } else {
+        console.error('No se encontró el carrusel');
+    }
+}
+
+// Hacer disponible la función de debug globalmente
+window.debugCarousel = debugCarousel;
 </script>
 
 @endsection
