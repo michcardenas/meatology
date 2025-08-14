@@ -45,7 +45,7 @@
         }
         
         .hero-content h1 {
-            font-size: 4rem;
+            font-size: 3rem;
             font-weight: 700;
             line-height: 1.1;
             margin-bottom: 30px;
