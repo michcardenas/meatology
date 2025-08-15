@@ -11,10 +11,7 @@
   <textarea id="description" name="description" rows="6" class="form-control bg-dark text-light border-secondary">{{ old('description', $product->description ?? '') }}</textarea>
 </div>
 
-
 <div class="row">
-    
-
     <div class="col-md-4 mb-4">
         <label class="form-label fw-bold text-light">Stock *</label>
         <input type="number" name="stock" class="form-control bg-dark text-light border-secondary"
@@ -60,18 +57,35 @@
         </div>
     @endif
 </div>
+
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Category *</label>
-  <select name="category_id" class="form-select bg-dark text-light border-secondary" required>
-    <option value="">-- Select a category --</option>
-    @foreach($categories as $cat)
-        <option value="{{ $cat->id }}"
-            {{ old('category_id', $product->category_id ?? '') == $cat->id ? 'selected' : '' }}>
-            {{ $cat->name }} - {{ $cat->country }}
-        </option>
-    @endforeach
-</select>
+    <select name="category_id" class="form-select bg-dark text-light border-secondary" required>
+        <option value="">-- Select a category --</option>
+        @foreach($categories as $cat)
+            <option value="{{ $cat->id }}"
+                {{ old('category_id', $product->category_id ?? '') == $cat->id ? 'selected' : '' }}>
+                {{ $cat->name }} - {{ $cat->country }}
+            </option>
+        @endforeach
+    </select>
 </div>
+
+{{-- NUEVO CAMPO: País de Origen del Producto --}}
+<div class="mb-4">
+    <label class="form-label fw-bold text-light">País de Origen *</label>
+    <select name="id_pais" class="form-select bg-dark text-light border-secondary" required>
+        <option value="">-- Selecciona el país de origen --</option>
+        @foreach($countries as $country)
+            <option value="{{ $country->id }}"
+                {{ old('id_pais', $product->id_pais ?? '') == $country->id ? 'selected' : '' }}>
+                {{ $country->name }}
+            </option>
+        @endforeach
+    </select>
+    <small class="text-muted">Selecciona el país donde se produce/origina este producto</small>
+</div>
+
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Impuestos y Envío por País/Ciudad</label>
 
@@ -200,98 +214,96 @@
     <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Cancel</a>
 </div>
 
-</div>
-
 <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 
-
 <script>
-
     ClassicEditor
-  .create(document.querySelector('#description'), {
-    toolbar: [
-      'heading', '|',
-      'bold','italic','underline','link','bulletedList','numberedList','blockQuote','undo','redo'
-    ],
-    link: { addTargetToExternalLinks: true },
-    removePlugins: [
-      'CKBox','CKFinder','EasyImage','ImageUpload','MediaEmbed','Table','TableToolbar'
-    ]
-  })
-  .then(editor => {
-    // Ajuste visual para dark mode
-    const editable = editor.ui.getEditableElement();
-    editable.style.backgroundColor = '#111';
-    editable.style.color = '#e6e6e6';
-    editable.style.minHeight = '180px';
-    editable.style.border = '1px solid #444';
-    editable.style.borderRadius = '6px';
-  })
-  .catch(console.error);
-let priceIndex = {{ isset($product) && $product->prices->count() > 0 ? $product->prices->count() : 1 }};
-const countries = @json($countries);
+        .create(document.querySelector('#description'), {
+            toolbar: [
+                'heading', '|',
+                'bold','italic','underline','link','bulletedList','numberedList','blockQuote','undo','redo'
+            ],
+            link: { addTargetToExternalLinks: true },
+            removePlugins: [
+                'CKBox','CKFinder','EasyImage','ImageUpload','MediaEmbed','Table','TableToolbar'
+            ]
+        })
+        .then(editor => {
+            // Ajuste visual para dark mode
+            const editable = editor.ui.getEditableElement();
+            editable.style.backgroundColor = '#111';
+            editable.style.color = '#e6e6e6';
+            editable.style.minHeight = '180px';
+            editable.style.border = '1px solid #444';
+            editable.style.borderRadius = '6px';
+        })
+        .catch(console.error);
 
-function addPriceBlock() {
-    let block = `
-        <div class="row border rounded p-3 mb-3 bg-dark">
-            <div class="col-md-3 mb-2">
-                <label class="form-label text-light">País</label>
-                <select name="prices[\${priceIndex}][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
-                    <option value="">-- Selecciona país --</option>
-                    ${countries.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
-                </select>
+    let priceIndex = {{ isset($product) && $product->prices->count() > 0 ? $product->prices->count() : 1 }};
+    const countries = @json($countries);
+
+    function addPriceBlock() {
+        let block = `
+            <div class="row border rounded p-3 mb-3 bg-dark">
+                <div class="col-md-3 mb-2">
+                    <label class="form-label text-light">País</label>
+                    <select name="prices[\${priceIndex}][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
+                        <option value="">-- Selecciona país --</option>
+                        ${countries.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-2">
+                    <label class="form-label text-light">Ciudad</label>
+                    <select name="prices[\${priceIndex}][city_id]" class="form-select bg-dark text-light">
+                        <option value="">-- Selecciona país primero --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 mb-2">
+                    <label class="form-label text-light">Impuesto (%)</label>
+                    <input type="number" 
+                           name="prices[\${priceIndex}][interest]" 
+                           class="form-control bg-dark text-light" 
+                           value="0"
+                           step="0.01"
+                           placeholder="15.5">
+                </div>
+
+                <div class="col-md-2 mb-2">
+                    <label class="form-label text-light">Costo Envío</label>
+                    <input type="number" 
+                           name="prices[\${priceIndex}][shipping]" 
+                           class="form-control bg-dark text-light" 
+                           value="0"
+                           step="0.01">
+                </div>
+
+                <div class="col-md-2 mb-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-sm w-100" onclick="removePriceBlock(this)">
+                        🗑️ Eliminar
+                    </button>
+                </div>
             </div>
+        `;
+        document.getElementById('price-location-container').insertAdjacentHTML('beforeend', block);
+        priceIndex++;
+    }
 
-            <div class="col-md-3 mb-2">
-                <label class="form-label text-light">Ciudad</label>
-                <select name="prices[\${priceIndex}][city_id]" class="form-select bg-dark text-light">
-                    <option value="">-- Selecciona país primero --</option>
-                </select>
-            </div>
+    function loadCities(select) {
+        const countryId = parseInt(select.value);
+        const cities = countries.find(c => c.id === countryId)?.cities || [];
+        const citySelect = select.parentElement.nextElementSibling.querySelector('select');
 
-            <div class="col-md-2 mb-2">
-                <label class="form-label text-light">Impuesto (%)</label>
-                <input type="number" 
-                       name="prices[\${priceIndex}][interest]" 
-                       class="form-control bg-dark text-light" 
-                       value="0"
-                       step="0.01"
-                       placeholder="15.5">
-            </div>
+        citySelect.innerHTML = `<option value="">-- Selecciona ciudad --</option>`;
+        citySelect.innerHTML += cities.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
 
-            <div class="col-md-2 mb-2">
-                <label class="form-label text-light">Costo Envío</label>
-                <input type="number" 
-                       name="prices[\${priceIndex}][shipping]" 
-                       class="form-control bg-dark text-light" 
-                       value="0"
-                       step="0.01">
-            </div>
-
-            <div class="col-md-2 mb-2 d-flex align-items-end">
-                <button type="button" class="btn btn-danger btn-sm w-100" onclick="removePriceBlock(this)">
-                    🗑️ Eliminar
-                </button>
-            </div>
-        </div>
-    `;
-    document.getElementById('price-location-container').insertAdjacentHTML('beforeend', block);
-    priceIndex++;
-}
-
-function loadCities(select) {
-    const countryId = parseInt(select.value);
-    const cities = countries.find(c => c.id === countryId)?.cities || [];
-    const citySelect = select.parentElement.nextElementSibling.querySelector('select');
-
-    citySelect.innerHTML = `<option value="">-- Selecciona ciudad --</option>`;
-    citySelect.innerHTML += cities.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-}
-
-function removePriceBlock(button) {
-    button.closest('.row').remove();
-}
+    function removePriceBlock(button) {
+        button.closest('.row').remove();
+    }
 </script>
+
 <style>
 /* Dark mode amigable dentro del editor */
 .ck-content {

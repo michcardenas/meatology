@@ -29,19 +29,37 @@ class ProductController extends Controller
     }
 
     /*──────────────────────── STORE ───────────────────────*/
-public function store(Request $request)
+public function store(Request $request) 
 {
     $data = $this->validated($request);
 
     try {
         DB::beginTransaction();
         
-        $product = Product::create($data);
+        // Crear el producto (sin los precios por ubicación)
+        $productData = collect($data)->except(['images', 'prices'])->toArray();
+        $product = Product::create($productData);
 
+        // Manejar imágenes
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $path = $file->store('products', 'public');
                 $product->images()->create(['image' => $path]);
+            }
+        }
+
+        // Manejar precios por ubicación (si existen)
+        if (!empty($data['prices'])) {
+            foreach ($data['prices'] as $priceData) {
+                // Solo crear si tiene al menos un país seleccionado
+                if (!empty($priceData['country_id'])) {
+                    $product->prices()->create([
+                        'country_id' => $priceData['country_id'],
+                        'city_id' => $priceData['city_id'] ?? null,
+                        'interest' => $priceData['interest'] ?? 0,
+                        'shipping' => $priceData['shipping'] ?? 0,
+                    ]);
+                }
             }
         }
 
@@ -50,7 +68,7 @@ public function store(Request $request)
                         ->with('success', 'Producto creado ✅');
     } catch (\Exception $e) {
         DB::rollback();
-        return back()->with('error', 'Error al crear el producto');
+        return back()->with('error', 'Error al crear el producto: ' . $e->getMessage());
     }
 }
 
@@ -67,7 +85,7 @@ public function edit($id)
     /*──────────────────────── UPDATE ──────────────────────*/
 public function update(Request $request, Product $product) 
 {
-    // Validación manual con todos los campos
+    // Validación manual con todos los campos incluyendo id_pais
     $validatedData = $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
@@ -75,48 +93,58 @@ public function update(Request $request, Product $product)
         'stock' => 'required|integer|min:0',
         'avg_weight' => 'nullable|string|max:50',
         'category_id' => 'required|exists:categories,id',
+        'id_pais' => 'required|exists:countries,id', // ← NUEVO CAMPO AGREGADO
         'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         
-        // 🔴 Nuevas validaciones para precios por ubicación
+        // Validaciones para precios por ubicación
         'prices' => 'nullable|array',
         'prices.*.country_id' => 'required_with:prices.*|exists:countries,id',
         'prices.*.city_id' => 'nullable|exists:cities,id',
-        'prices.*.interest' => 'nullable|numeric|min:0|max:100', // Asumiendo que es porcentaje
+        'prices.*.interest' => 'nullable|numeric|min:0|max:100', 
         'prices.*.shipping' => 'nullable|numeric|min:0',
     ]);
 
-    // Actualizar el producto base (excluyendo images y prices)
-    $productData = collect($validatedData)->except(['images', 'prices'])->toArray();
-    $product->update($productData);
+    try {
+        DB::beginTransaction();
 
-    // 🔴 Manejar configuraciones de precios por ubicación
-    if ($request->has('prices') && is_array($request->prices)) {
-        // Eliminar configuraciones anteriores
-        $product->prices()->delete();
+        // Actualizar el producto base (excluyendo images y prices)
+        $productData = collect($validatedData)->except(['images', 'prices'])->toArray();
+        $product->update($productData);
 
-        // Crear nuevas configuraciones
-        foreach ($request->prices as $priceData) {
-            // Solo crear si tiene al menos un país seleccionado
-            if (!empty($priceData['country_id'])) {
-                $product->prices()->create([
-                    'country_id' => $priceData['country_id'],
-                    'city_id' => !empty($priceData['city_id']) ? $priceData['city_id'] : null,
-                    'interest' => $priceData['interest'] ?? 0,
-                    'shipping' => $priceData['shipping'] ?? 0,
-                ]);
+        // Manejar configuraciones de precios por ubicación
+        if ($request->has('prices') && is_array($request->prices)) {
+            // Eliminar configuraciones anteriores
+            $product->prices()->delete();
+
+            // Crear nuevas configuraciones
+            foreach ($request->prices as $priceData) {
+                // Solo crear si tiene al menos un país seleccionado
+                if (!empty($priceData['country_id'])) {
+                    $product->prices()->create([
+                        'country_id' => $priceData['country_id'],
+                        'city_id' => !empty($priceData['city_id']) ? $priceData['city_id'] : null,
+                        'interest' => $priceData['interest'] ?? 0,
+                        'shipping' => $priceData['shipping'] ?? 0,
+                    ]);
+                }
             }
         }
-    }
 
-    // Agregar nuevas imágenes (se mantiene igual)
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $file) {
-            $path = $file->store('products', 'public');
-            $product->images()->create(['image' => $path]);
+        // Agregar nuevas imágenes
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('products', 'public');
+                $product->images()->create(['image' => $path]);
+            }
         }
-    }
 
-    return back()->with('success', 'Producto actualizado ✔️');
+        DB::commit();
+        return back()->with('success', 'Producto actualizado ✔️');
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return back()->with('error', 'Error al actualizar el producto: ' . $e->getMessage());
+    }
 }
 
     /*──────────────────────── DESTROY ─────────────────────*/
