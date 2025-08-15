@@ -641,47 +641,52 @@
         <h1 class="catalog-title">Our Products</h1>
 
         <!-- Filtro Simple -->
-        <div class="filter-bar">
-            <form method="GET" action="{{ route('shop.index') }}" class="d-flex gap-3 align-items-center flex-wrap justify-content-center">
-                <div class="filter-group">
-                    <label class="filter-label">Category:</label>
-                    <select name="category" class="filter-select" onchange="this.form.submit()">
-                        <option value="">All</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->name . ' - ' . $cat->country }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Country:</label>
-                    <select name="country" class="filter-select" onchange="this.form.submit()">
-                        <option value="">All</option>
-                        @foreach($countries as $country)
-                            <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
-                                {{ $country }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label class="filter-label">Sort by:</label>
-                    <select name="sort" class="filter-select" onchange="this.form.submit()">
-                        <option value="">Featured</option>
-                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name A-Z</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <span class="filter-label">{{ $products->total() }} products</span>
-                </div>
-            </form>
+<div class="filter-bar">
+    <form method="GET" action="{{ route('shop.index') }}" class="d-flex gap-3 align-items-center flex-wrap justify-content-center">
+        
+        <!-- Filtro por Categoría -->
+        <div class="filter-group">
+            <label class="filter-label">Category:</label>
+            <select name="category" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                        {{ $cat->name }}{{ $cat->country ? ' - ' . $cat->country : '' }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        
+        <!-- Filtro por País (del Producto) -->
+        <div class="filter-group">
+            <label class="filter-label">Country:</label>
+            <select name="country" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Countries</option>
+                @foreach($countries as $country)
+                    <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
+                        {{ $country }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
+        <!-- Ordenamiento -->
+        <div class="filter-group">
+            <label class="filter-label">Sort by:</label>
+            <select name="sort" class="filter-select" onchange="this.form.submit()">
+                <option value="">Featured</option>
+                <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name A-Z</option>
+            </select>
+        </div>
+
+        <!-- Contador de productos -->
+        <div class="filter-group">
+            <span class="filter-label">{{ $products->total() }} products</span>
+        </div>
+    </form>
+</div>
         <!-- Grid de Productos -->
         <div class="products-grid">
             @forelse ($products as $product)

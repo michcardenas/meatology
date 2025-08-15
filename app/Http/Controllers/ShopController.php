@@ -24,44 +24,54 @@ use Square\Types\Currency;
 class ShopController extends Controller
 {
 
-public function index(Request $request)
+public function index(Request $request) 
 {
     $query = Product::query()->with(['images', 'category']);
 
-    // 🔹 Filtro por categoría (por NOMBRE, no por id)
+    // 🔹 Filtro por categoría (por ID para mantener consistencia con la vista)
     if ($request->filled('category')) {
-        $catName = mb_strtolower(trim($request->category));
-        $query->whereHas('category', function ($q) use ($catName) {
-            $q->whereRaw('LOWER(name) = ?', [$catName]);
-        });
+        $query->where('category_id', $request->category);
     }
 
-    // 🔹 Filtro por país (en la categoría)
+    // 🔹 Filtro por país (DEL PRODUCTO)
     if ($request->filled('country')) {
         $country = trim($request->country);
-        $query->whereHas('category', function ($q) use ($country) {
-            $q->where('country', $country);
-        });
+        $query->where('pais', $country);
     }
 
     // Sort
     switch ($request->get('sort')) {
-        case 'price_low':  $query->orderBy('price', 'asc'); break;
-        case 'price_high': $query->orderBy('price', 'desc'); break;
-        case 'name':       $query->orderBy('name', 'asc');   break;
-        default:           $query->latest();                 break;
+        case 'price_low':
+            $query->orderBy('price', 'asc');
+            break;
+        case 'price_high':
+            $query->orderBy('price', 'desc');
+            break;
+        case 'name':
+            $query->orderBy('name', 'asc');
+            break;
+        default:
+            $query->latest();
+            break;
     }
 
     $products = $query->paginate(9)->appends($request->query());
 
-    // 🔹 Selects
-    $categoryNames = \App\Models\Category::query()
-        ->select('name')->distinct()->orderBy('name')->pluck('name');
+    // 🔹 Obtener todas las categorías (para mostrar name + country)
+    $categories = \App\Models\Category::query()
+        ->orderBy('name')
+        ->get();
 
-    $countries = \App\Models\Category::query()
-        ->select('country')->whereNotNull('country')->distinct()->orderBy('country')->pluck('country');
+    // 🔹 Obtener países ÚNICOS de los PRODUCTOS
+    $countries = \App\Models\Product::query()
+        ->select('pais')
+        ->whereNotNull('pais')
+        ->where('pais', '!=', '')
+        ->distinct()
+        ->orderBy('pais')
+        ->pluck('pais');
 
-    return view('shop.index', compact('products', 'categoryNames', 'countries'));
+    return view('shop.index', compact('products', 'categories', 'countries'));
 }
 
 

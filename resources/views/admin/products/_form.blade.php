@@ -72,16 +72,13 @@
 </div>
 
 {{-- NUEVO CAMPO: País de Origen del Producto --}}
-<div class="mb-4">
-    <label class="form-label fw-bold text-light">País de Origen *</label>
-    <input type="text"
-           name="pais_origen"
-           class="form-control bg-dark text-light border-secondary"
-           value="{{ old('pais_origen', $product->pais_origen ?? '') }}"
-           placeholder="Escribe el país de origen"
-           required>
-    <small class="text-muted">Escribe el país donde se produce/origina este producto</small>
-</div>
+<input type="text"
+       name="pais"
+       class="form-control bg-dark text-light border-secondary"
+       value="{{ old('pais', $product->pais ?? '') }}"
+       placeholder="Escribe el país de origen"
+       required>
+
 
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Impuestos y Envío por País/Ciudad</label>

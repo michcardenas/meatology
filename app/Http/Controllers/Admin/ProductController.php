@@ -93,9 +93,9 @@ public function update(Request $request, Product $product)
         'stock' => 'required|integer|min:0',
         'avg_weight' => 'nullable|string|max:50',
         'category_id' => 'required|exists:categories,id',
-        'id_pais' => 'required|exists:countries,id', // ← NUEVO CAMPO AGREGADO
         'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        
+        'pais' => 'string|max:255',
+
         // Validaciones para precios por ubicación
         'prices' => 'nullable|array',
         'prices.*.country_id' => 'required_with:prices.*|exists:countries,id',

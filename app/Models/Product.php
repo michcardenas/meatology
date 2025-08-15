@@ -19,6 +19,7 @@ class Product extends Model
         'image',
         'category_id',
         'interest',
+        'pais', // ← NUEVO CAMPO AGREGADO
     ];
 
 
