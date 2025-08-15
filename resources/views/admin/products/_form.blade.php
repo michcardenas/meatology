@@ -74,16 +74,13 @@
 {{-- NUEVO CAMPO: País de Origen del Producto --}}
 <div class="mb-4">
     <label class="form-label fw-bold text-light">País de Origen *</label>
-    <select name="id_pais" class="form-select bg-dark text-light border-secondary" required>
-        <option value="">-- Selecciona el país de origen --</option>
-        @foreach($countries as $country)
-            <option value="{{ $country->id }}"
-                {{ old('id_pais', $product->id_pais ?? '') == $country->id ? 'selected' : '' }}>
-                {{ $country->name }}
-            </option>
-        @endforeach
-    </select>
-    <small class="text-muted">Selecciona el país donde se produce/origina este producto</small>
+    <input type="text"
+           name="pais_origen"
+           class="form-control bg-dark text-light border-secondary"
+           value="{{ old('pais_origen', $product->pais_origen ?? '') }}"
+           placeholder="Escribe el país de origen"
+           required>
+    <small class="text-muted">Escribe el país donde se produce/origina este producto</small>
 </div>
 
 <div class="mb-4">
