@@ -31,102 +31,55 @@ class ProductController extends Controller
     /*──────────────────────── STORE ───────────────────────*/
 public function store(Request $request)
 {
-    // 🔥 CONFIGURACIÓN AGRESIVA PARA EVITAR TIMEOUT
-    ignore_user_abort(true);
-    set_time_limit(0); // Sin límite de tiempo
-    ini_set('memory_limit', '512M');
-    ini_set('max_execution_time', 0);
-    ini_set('max_input_time', 600);
-    
-    // 🔥 VALIDACIÓN REDUCIDA PARA EVITAR SOBRECARGA
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'price' => 'required|numeric|min:0',
-        'stock' => 'required|integer|min:0',
-        'category_id' => 'required|exists:categories,id',
-        'pais' => 'required|string|max:100',
-        
-        // Validación básica para archivos
-        'images' => 'nullable|array|max:5', // REDUCIDO A 5
-        'images.*' => 'image|max:2048', // REDUCIDO A 2MB
-        'certifications' => 'nullable|array|max:5', // REDUCIDO A 5
-        'certifications.*' => 'image|max:2048', // REDUCIDO A 2MB
-    ]);
+    // 🔥 SOLO ESTAS 3 LÍNEAS PARA EVITAR TIMEOUT
+    set_time_limit(300);
+    ini_set('memory_limit', '256M');
+    ini_set('max_execution_time', 300);
+
+    $data = $this->validated($request);
 
     try {
-        // 🔥 CREAR PRODUCTO PRIMERO - SIN TRANSACCIÓN PARA EVITAR LOCKS
-        $product = Product::create([
-            'name' => $request->name,
-            'description' => $request->description ?? '',
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'avg_weight' => $request->avg_weight ?? '',
-            'category_id' => $request->category_id,
-            'pais' => $request->pais,
-        ]);
+        DB::beginTransaction();
 
-        // 🔥 PROCESAR IMÁGENES UNA POR UNA CON MÁXIMA OPTIMIZACIÓN
+        // Crear el producto (sin los precios por ubicación, imágenes y certificaciones)
+        $productData = collect($data)->except(['images', 'prices', 'certifications'])->toArray();
+        $product = Product::create($productData);
+
+        // 🔥 CAMBIO MÍNIMO: Procesar imágenes una por una + liberar memoria
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
-                try {
-                    // Nombre único simple
-                    $filename = time() . '_img_' . $index . '.' . $file->getClientOriginalExtension();
-                    
-                    // Mover archivo directamente
-                    $file->move(public_path('storage/products'), $filename);
-                    
-                    // Guardar en BD
-                    $product->images()->create(['image' => 'products/' . $filename]);
-                    
-                    // 🔥 LIBERACIÓN AGRESIVA DE MEMORIA
-                    unset($file);
-                    gc_collect_cycles(); // Forzar garbage collection
-                    
-                    // 🔥 PAUSA MÁS LARGA ENTRE ARCHIVOS
-                    sleep(1); // 1 segundo entre imágenes
-                    
-                } catch (\Exception $e) {
-                    \Log::error("Error imagen {$index}: " . $e->getMessage());
-                    continue; // Continuar con las demás
+                $path = $file->store('products', 'public');
+                $product->images()->create(['image' => $path]);
+                
+                // 🔥 ESTO ES LO IMPORTANTE: liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 imágenes
                 }
             }
         }
 
-        // 🔥 PROCESAR CERTIFICACIONES UNA POR UNA
+        // 🔥 NUEVO: Procesar certificaciones (mismo patrón que las imágenes)
         if ($request->hasFile('certifications')) {
             foreach ($request->file('certifications') as $index => $file) {
-                try {
-                    // Nombre único simple
-                    $filename = time() . '_cert_' . $index . '.' . $file->getClientOriginalExtension();
-                    
-                    // Crear directorio si no existe
-                    if (!file_exists(public_path('storage/certifications'))) {
-                        mkdir(public_path('storage/certifications'), 0755, true);
-                    }
-                    
-                    // Mover archivo directamente
-                    $file->move(public_path('storage/certifications'), $filename);
-                    
-                    // Guardar en BD
-                    $product->certifications()->create(['image' => 'certifications/' . $filename]);
-                    
-                    // 🔥 LIBERACIÓN AGRESIVA DE MEMORIA
-                    unset($file);
-                    gc_collect_cycles(); // Forzar garbage collection
-                    
-                    // 🔥 PAUSA MÁS LARGA ENTRE ARCHIVOS
-                    sleep(1); // 1 segundo entre certificaciones
-                    
-                } catch (\Exception $e) {
-                    \Log::error("Error certificación {$index}: " . $e->getMessage());
-                    continue; // Continuar con las demás
+                $path = $file->store('certifications', 'public');
+                $product->certifications()->create(['image' => $path]);
+                
+                // 🔥 Liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 certificaciones
                 }
             }
         }
 
-        // 🔥 PROCESAR PRECIOS AL FINAL
-        if (!empty($request->prices)) {
-            foreach ($request->prices as $priceData) {
+        // Manejar precios por ubicación (sin cambios)
+        if (!empty($data['prices'])) {
+            foreach ($data['prices'] as $priceData) {
                 if (!empty($priceData['country_id'])) {
                     $product->prices()->create([
                         'country_id' => $priceData['country_id'],
@@ -138,14 +91,13 @@ public function store(Request $request)
             }
         }
 
+        DB::commit();
         return redirect()->route('admin.products.index')
-                        ->with('success', 'Producto creado exitosamente ✅');
-
+                        ->with('success', 'Producto creado ✅');
+                        
     } catch (\Exception $e) {
-        \Log::error('Error creating product: ' . $e->getMessage());
-        return back()
-            ->withInput()
-            ->with('error', 'Error: Intenta con menos archivos o archivos más pequeños.');
+        DB::rollback();
+        return back()->with('error', 'Error al crear el producto: ' . $e->getMessage());
     }
 }
 
@@ -162,14 +114,12 @@ public function edit($id)
     /*──────────────────────── UPDATE ──────────────────────*/
 public function update(Request $request, Product $product)
 {
-    // 🔥 CONFIGURACIÓN AGRESIVA PARA EVITAR TIMEOUT
-    ignore_user_abort(true);
-    set_time_limit(0); // Sin límite de tiempo
-    ini_set('memory_limit', '512M');
-    ini_set('max_execution_time', 0);
-    ini_set('max_input_time', 600);
+    // 🔥 Optimización para evitar timeout
+    set_time_limit(300);
+    ini_set('memory_limit', '256M');
+    ini_set('max_execution_time', 300);
 
-    // 🔥 VALIDACIÓN REDUCIDA PARA EVITAR SOBRECARGA
+    // Validación manual con todos los campos incluyendo certificaciones
     $validatedData = $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
@@ -179,13 +129,13 @@ public function update(Request $request, Product $product)
         'category_id' => 'required|exists:categories,id',
         'pais' => 'string|max:255',
         
-        // Validación reducida para imágenes del producto
-        'images' => 'nullable|array|max:5', // REDUCIDO A 5
-        'images.*' => 'nullable|image|max:2048', // REDUCIDO A 2MB
+        // Validación para imágenes del producto
+        'images' => 'nullable|array|max:10',
+        'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         
-        // Validación reducida para certificaciones
-        'certifications' => 'nullable|array|max:5', // REDUCIDO A 5
-        'certifications.*' => 'nullable|image|max:2048', // REDUCIDO A 2MB
+        // 🔥 NUEVA VALIDACIÓN PARA CERTIFICACIONES
+        'certifications' => 'nullable|array|max:10',
+        'certifications.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         
         // Validaciones para precios por ubicación
         'prices' => 'nullable|array',
@@ -196,17 +146,20 @@ public function update(Request $request, Product $product)
     ]);
 
     try {
-        // 🔥 ACTUALIZAR PRODUCTO SIN TRANSACCIÓN PARA EVITAR LOCKS
+        DB::beginTransaction();
+
+        // Actualizar el producto base (excluyendo images, prices y certificaciones)
         $productData = collect($validatedData)->except(['images', 'prices', 'certifications'])->toArray();
         $product->update($productData);
 
-        // 🔥 MANEJAR PRECIOS PRIMERO (más rápido)
+        // Manejar configuraciones de precios por ubicación
         if ($request->has('prices') && is_array($request->prices)) {
             // Eliminar configuraciones anteriores
             $product->prices()->delete();
 
             // Crear nuevas configuraciones
             foreach ($request->prices as $priceData) {
+                // Solo crear si tiene al menos un país seleccionado
                 if (!empty($priceData['country_id'])) {
                     $product->prices()->create([
                         'country_id' => $priceData['country_id'],
@@ -218,74 +171,47 @@ public function update(Request $request, Product $product)
             }
         }
 
-        // 🔥 PROCESAR NUEVAS IMÁGENES UNA POR UNA CON MÁXIMA OPTIMIZACIÓN
+        // Agregar nuevas imágenes del producto
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
-                try {
-                    // Nombre único simple
-                    $filename = time() . '_img_' . $index . '.' . $file->getClientOriginalExtension();
-                    
-                    // Mover archivo directamente
-                    $file->move(public_path('storage/products'), $filename);
-                    
-                    // Guardar en BD
-                    $product->images()->create(['image' => 'products/' . $filename]);
-                    
-                    // 🔥 LIBERACIÓN AGRESIVA DE MEMORIA
-                    unset($file);
-                    gc_collect_cycles(); // Forzar garbage collection
-                    
-                    // 🔥 PAUSA MÁS LARGA ENTRE ARCHIVOS
-                    sleep(1); // 1 segundo entre imágenes
-                    
-                } catch (\Exception $e) {
-                    \Log::error("Error updating image {$index}: " . $e->getMessage());
-                    continue; // Continuar con las demás
+                $path = $file->store('products', 'public');
+                $product->images()->create(['image' => $path]);
+                
+                // 🔥 Liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 imágenes
                 }
             }
         }
 
-        // 🔥 PROCESAR NUEVAS CERTIFICACIONES UNA POR UNA
+        // 🔥 NUEVO: Agregar nuevas certificaciones
         if ($request->hasFile('certifications')) {
             foreach ($request->file('certifications') as $index => $file) {
-                try {
-                    // Nombre único simple
-                    $filename = time() . '_cert_' . $index . '.' . $file->getClientOriginalExtension();
-                    
-                    // Crear directorio si no existe
-                    if (!file_exists(public_path('storage/certifications'))) {
-                        mkdir(public_path('storage/certifications'), 0755, true);
-                    }
-                    
-                    // Mover archivo directamente
-                    $file->move(public_path('storage/certifications'), $filename);
-                    
-                    // Guardar en BD
-                    $product->certifications()->create(['image' => 'certifications/' . $filename]);
-                    
-                    // 🔥 LIBERACIÓN AGRESIVA DE MEMORIA
-                    unset($file);
-                    gc_collect_cycles(); // Forzar garbage collection
-                    
-                    // 🔥 PAUSA MÁS LARGA ENTRE ARCHIVOS
-                    sleep(1); // 1 segundo entre certificaciones
-                    
-                } catch (\Exception $e) {
-                    \Log::error("Error updating certification {$index}: " . $e->getMessage());
-                    continue; // Continuar con las demás
+                $path = $file->store('certifications', 'public');
+                $product->certifications()->create(['image' => $path]);
+                
+                // 🔥 Liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 certificaciones
                 }
             }
         }
 
-        return back()->with('success', 'Producto actualizado exitosamente ✔️');
+        DB::commit();
+        return back()->with('success', 'Producto actualizado ✔️');
 
     } catch (\Exception $e) {
-        \Log::error('Error updating product: ' . $e->getMessage());
-        return back()
-            ->withInput()
-            ->with('error', 'Error: Intenta con menos archivos o archivos más pequeños.');
+        DB::rollback();
+        return back()->with('error', 'Error al actualizar el producto: ' . $e->getMessage());
     }
 }
+
     /*──────────────────────── DESTROY ─────────────────────*/
 public function destroy(Product $product)
 {
