@@ -5,42 +5,146 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+    /* 🔥 MEJORADO PARA FONDO VERDE OSCURO */
+    body {
+        background-color: #013105 !important;
+        color: #ffffff !important;
+    }
+    
     .payment-success-card {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+        border: 2px solid #28a745 !important;
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
     }
+    
     .success-header {
-        background: linear-gradient(135deg, #011904 0%, #28a745 100%);
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+        color: #ffffff !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     }
+    
+    .success-header h2 {
+        color: #ffffff !important;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
     .badge-payment {
         font-size: 0.875rem;
     }
+    
     .info-section {
-        background-color: #f8f9fa;
-        border-left: 4px solid #011904;
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        border-left: 4px solid #28a745;
+        color: #ffffff !important;
     }
+    
+    .card {
+        background-color: #2d2d2d !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+    }
+    
     .card-title {
-        color: #011904;
+        color: #28a745 !important;
+        font-weight: bold;
     }
+    
+    .card-body {
+        color: #ffffff !important;
+    }
+    
     .btn-primary {
-        background-color: #011904;
-        border-color: #011904;
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+        color: #ffffff !important;
     }
+    
     .btn-primary:hover {
-        background-color: #023a07;
-        border-color: #023a07;
+        background-color: #20c997 !important;
+        border-color: #20c997 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
     }
+    
+    .btn-outline-secondary {
+        border-color: #ffffff !important;
+        color: #ffffff !important;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #ffffff !important;
+        color: #013105 !important;
+    }
+    
     .text-brand {
-        color: #011904;
+        color: #28a745 !important;
     }
+    
     .border-brand {
-        border-color: #011904 !important;
+        border-color: #28a745 !important;
     }
+    
     .bg-brand {
-        background-color: #011904;
+        background-color: #28a745 !important;
+        color: #ffffff !important;
     }
+    
     .table-success {
-        background-color: rgba(1, 25, 4, 0.1);
+        background-color: rgba(40, 167, 69, 0.2) !important;
+        color: #ffffff !important;
+    }
+    
+    .table {
+        color: #ffffff !important;
+    }
+    
+    .table td {
+        color: #ffffff !important;
+        border-color: #444 !important;
+    }
+    
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.2) !important;
+        border-color: #28a745 !important;
+        color: #ffffff !important;
+    }
+    
+    .alert-heading {
+        color: #ffffff !important;
+    }
+    
+    .text-muted {
+        color: #cccccc !important;
+    }
+    
+    .badge.bg-success {
+        background-color: #28a745 !important;
+    }
+    
+    /* Animación de éxito */
+    .success-header i {
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    /* Efectos hover para las tarjetas */
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(40, 167, 69, 0.2);
+        transition: all 0.3s ease;
     }
 </style>
 @endpush
@@ -52,7 +156,8 @@
             <div class="card payment-success-card border-success">
                 <div class="card-header success-header text-white text-center py-4">
                     <i class="fas fa-check-circle fa-4x mb-3"></i>
-                    <h2 class="mb-0">Payment Successful!</h2>
+                    <h2 class="mb-0">🎉 Payment Successful! 🎉</h2>
+                    <p class="mb-0 mt-2">Your order has been confirmed</p>
                 </div>
                 
                 <div class="card-body p-4">
@@ -126,10 +231,26 @@
                                     <h5 class="card-title">
                                         <i class="fas fa-money-bill-wave text-success me-2"></i>Payment Summary
                                     </h5>
+                                    
+                                    @php
+                                        // 🔥 CALCULAR SUBTOTAL CORRECTO
+                                        $correctSubtotal = $order->total_amount - $order->tax_amount - $order->shipping_amount;
+                                        
+                                        // 🚨 DEBUG: Para ver los valores
+                                        \Log::info('Payment Success Order Debug:', [
+                                            'order_id' => $order->id,
+                                            'total_amount' => $order->total_amount,
+                                            'tax_amount' => $order->tax_amount,
+                                            'shipping_amount' => $order->shipping_amount,
+                                            'subtotal_db' => $order->subtotal,
+                                            'calculated_subtotal' => $correctSubtotal
+                                        ]);
+                                    @endphp
+                                    
                                     <table class="table table-sm mb-0">
                                         <tr>
                                             <td>Subtotal:</td>
-                                            <td class="text-end">${{ number_format($order->subtotal, 2) }}</td>
+                                            <td class="text-end">${{ number_format($correctSubtotal, 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td>Tax:</td>
@@ -144,6 +265,13 @@
                                             <td class="text-end fs-5">${{ number_format($order->total_amount, 2) }}</td>
                                         </tr>
                                     </table>
+                                    
+                                    {{-- 🚨 MOSTRAR ADVERTENCIA SI HAY DISCREPANCIA --}}
+                                    @if(abs($order->subtotal - $correctSubtotal) > 0.01)
+                                        <div class="alert alert-warning mt-2">
+                                            <small><i class="fas fa-exclamation-triangle"></i> Subtotal recalculated for accuracy</small>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -224,12 +352,16 @@
 
 @push('scripts')
 <script>
-// Optional: Auto-scroll to top when page loads
+// Auto-scroll to top when page loads
 document.addEventListener('DOMContentLoaded', function() {
     window.scrollTo(0, 0);
     
-    // Optional: Confetti effect (if you want to add a special effect)
-    // console.log('Payment successful! 🎉');
+    // 🎉 EFECTO DE CONFETTI (opcional)
+    console.log('🎉 Payment successful! 🎉');
+    
+    // Opcional: Agregar efecto de sonido de éxito
+    // const audio = new Audio('/sounds/success.mp3');
+    // audio.play().catch(e => console.log('Audio not available'));
 });
 </script>
 @endpush
