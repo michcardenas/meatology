@@ -219,8 +219,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const placeOrderBtn = document.getElementById('place-order-btn');
     const locationWarning = document.getElementById('location-warning');
     
-    // 🔥 OBTENER SUBTOTAL ORIGINAL SIN FORMATEO
+    // 🔥 OBTENER SUBTOTAL ORIGINAL SIN FORMATEO - CORREGIDO
     const originalSubtotal = parseFloat('{{ $subtotal }}');
+    
+    // 🚨 DEBUG: Verificar si el subtotal está mal
+    console.log('Subtotal recibido:', originalSubtotal);
+    console.log('¿Necesita dividir por 100?:', originalSubtotal > 1000);
     
     // Mostrar advertencia inicialmente
     locationWarning.style.display = 'block';

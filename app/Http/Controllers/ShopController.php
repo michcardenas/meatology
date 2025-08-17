@@ -78,34 +78,52 @@ public function index(Request $request)
 
 
 
-        public function checkout() 
-        {
-            // Verificar que el carrito no esté vacío
-            if (Cart::count() == 0) {
-                return redirect()->route('cart.index')->with('error', 'Your cart is empty. Add some products before checkout.');
-            }
+     public function checkout()
+{
+    // Verificar que el carrito no esté vacío
+    if (Cart::count() == 0) {
+        return redirect()->route('cart.index')->with('error', 'Your cart is empty. Add some products before checkout.');
+    }
 
-            // Obtener información del carrito
-            $cartItems = Cart::content();
-            $cartSubtotal = Cart::subtotal(2, '', ''); // Sin formato
-            
-            // Verificar si el usuario está autenticado
-            $user = Auth::user();
-            
-            // 🔴 Obtener países y ciudades para el envío
-            $countries = Country::with('cities')->orderBy('name')->get();
-            
-            // Datos para la vista
-            $checkoutData = [
-                'cartItems' => $cartItems,
-                'subtotal' => floatval(str_replace(',', '', $cartSubtotal)), // Convertir a número
-                'countries' => $countries, // 🔴 Agregar países
-                'isAuthenticated' => $user ? true : false,
-                'user' => $user
-            ];
+    // Obtener información del carrito
+    $cartItems = Cart::content();
+    
+    // 🔥 SOLUCIÓN: Calcular subtotal manualmente para evitar problemas de formateo
+    $subtotal = 0;
+    foreach ($cartItems as $item) {
+        $subtotal += floatval($item->total);
+    }
+    
+    // 🚨 DEBUG: Para verificar los valores
+    \Log::info('Cart Debug:', [
+        'cart_subtotal_method' => Cart::subtotal(),
+        'manual_subtotal' => $subtotal,
+        'cart_count' => Cart::count(),
+        'first_item' => $cartItems->first() ? [
+            'name' => $cartItems->first()->name,
+            'price' => $cartItems->first()->price,
+            'qty' => $cartItems->first()->qty,
+            'total' => $cartItems->first()->total,
+        ] : null
+    ]);
 
-            return view('shop.checkout', $checkoutData);
-        }
+    // Verificar si el usuario está autenticado
+    $user = Auth::user();
+
+    // 🔴 Obtener países y ciudades para el envío
+    $countries = Country::with('cities')->orderBy('name')->get();
+
+    // Datos para la vista
+    $checkoutData = [
+        'cartItems' => $cartItems,
+        'subtotal' => $subtotal, // 🔥 Usar subtotal calculado manualmente
+        'countries' => $countries,
+        'isAuthenticated' => $user ? true : false,
+        'user' => $user
+    ];
+
+    return view('shop.checkout', $checkoutData);
+}
 
         // 🔴 Nuevo método para calcular costos dinámicamente
         public function calculateShippingAndTax(Request $request)
