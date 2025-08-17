@@ -184,7 +184,7 @@
             <div class="row g-4">
                 @foreach($featuredProducts as $featuredProduct)
                 <div class="col-lg-3 col-md-6 col-sm-6">
-                    <div class="card h-100 shadow-sm border-0">
+                    <div class="card h-100 shadow-sm border-0 bg-dark text-light">
                         <div class="position-relative" style="overflow: hidden;">
                             <img src="{{ $featuredProduct->images->first() ? Storage::url($featuredProduct->images->first()->image) : asset('images/placeholder.jpg') }}" 
                                  class="card-img-top" alt="{{ $featuredProduct->name }}"
@@ -192,25 +192,25 @@
                             
                             <!-- Badge de categoría -->
                             @if($featuredProduct->category)
-                                <span class="position-absolute top-0 start-0 badge bg-dark m-2">
+                                <span class="position-absolute top-0 start-0 badge bg-success m-2">
                                     {{ $featuredProduct->category->name }}
                                 </span>
                             @endif
                         </div>
                         <div class="card-body p-3">
-                            <h6 class="card-title mb-2">{{ Str::limit($featuredProduct->name, 30) }}</h6>
-                            <p class="card-text text-white small mb-2  ">
+                            <h6 class="card-title mb-2 text-light">{{ Str::limit($featuredProduct->name, 30) }}</h6>
+                            <p class="card-text text-light small mb-2">
                                 {{ Str::limit($featuredProduct->description, 60) }}
                             </p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-white fw-bold">
+                                <span class="text-success fw-bold">
                                     ${{ number_format(($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0), 0, ',', '.') }}
                                 </span>
-                                <small class="text-white">/ per lb</small>
+                                <small class="text-light">/ per lb</small>
                             </div>
                             <div class="d-flex gap-1">
                                 <a href="{{ route('product.show', $featuredProduct) }}" 
-                                   class="btn btn-outline-primary btn-sm flex-fill">
+                                   class="btn btn-outline-light btn-sm flex-fill">
                                     <i class="fas fa-eye"></i> View
                                 </a>
                                 <form action="{{ route('cart.add') }}" method="POST" class="flex-fill">
@@ -364,6 +364,43 @@ body {
 .modal-content.bg-dark {
     background-color: #1a1a1a !important;
     border: 1px solid #333;
+}
+
+/* 🔥 ESTILOS PARA LAS TARJETAS EN FONDO VERDE OSCURO */
+.card.bg-dark {
+    background-color: #1a1a1a !important;
+    border: 1px solid #333 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.card.bg-dark:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+    transition: all 0.3s ease;
+}
+
+.card.bg-dark .card-title {
+    color: #ffffff !important;
+}
+
+.card.bg-dark .card-text {
+    color: #e0e0e0 !important;
+}
+
+.btn-outline-light {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.btn-outline-light:hover {
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+
+/* Badge de categoría con mejor contraste */
+.badge.bg-success {
+    background-color: #28a745 !important;
+    color: #ffffff !important;
 }
 </style>
 
