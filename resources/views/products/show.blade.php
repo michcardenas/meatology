@@ -82,7 +82,7 @@
                                             <h6 class="text-light mt-3">{{ $certification->name }}</h6>
                                         @endif
                                         @if($certification->description)
-                                            <p class="text-muted">{{ $certification->description }}</p>
+                                            <p class="text-light">{{ $certification->description }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
                         </div>
                     @endforeach
                 </div>
-                <small class="text-muted d-block text-center mt-2">
+                <small class="text-light d-block text-center mt-2">
                     <i class="fas fa-certificate text-warning"></i> Product Certifications - Click to view
                 </small>
             </div>
@@ -268,10 +268,10 @@
 
 /* 🔥 ESTILOS PARA LAS CERTIFICACIONES */
 .certifications-section {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .certification-badge {
@@ -340,6 +340,30 @@
     .certifications-section {
         padding: 10px;
     }
+}
+
+/* 🔥 ESTILOS ESPECÍFICOS PARA FONDO VERDE OSCURO #013105 */
+body {
+    background-color: #013105;
+}
+
+.certifications-section {
+    color: #ffffff !important;
+}
+
+.certifications-section small {
+    color: #e0e0e0 !important;
+    font-weight: 500;
+}
+
+/* Asegurar que todos los textos sean visibles */
+.text-white, .text-light {
+    color: #ffffff !important;
+}
+
+.modal-content.bg-dark {
+    background-color: #1a1a1a !important;
+    border: 1px solid #333;
 }
 </style>
 
