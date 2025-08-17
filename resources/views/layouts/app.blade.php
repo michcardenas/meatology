@@ -721,7 +721,7 @@ footer {
                     <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
                         <i class="fas fa-user-circle"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul style="background: #013105;" class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a class="dropdown-item" href="{{ route('dashboard') }}">
                                 <i class="fas fa-user me-2"></i>My Account
