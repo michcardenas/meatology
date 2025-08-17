@@ -66,7 +66,7 @@ nav {
 }
 
 .nav-links a {
-    color: #013105;
+    color: #e0d9c0;
     text-decoration: none;
     font-size: 0.95rem;
     position: relative;
