@@ -200,7 +200,7 @@
                         <div class="card-body p-3">
                             <h6 class="card-title mb-2 text-light">{{ Str::limit($featuredProduct->name, 30) }}</h6>
                             <p class="card-text text-light small mb-2">
-                                {{ Str::limit($featuredProduct->description, 60) }}
+                                {{ Str::limit(strip_tags($featuredProduct->description), 80) }}
                             </p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="text-success fw-bold">
