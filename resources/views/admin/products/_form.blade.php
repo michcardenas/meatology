@@ -66,6 +66,50 @@
     @endif
 </div>
 
+<!-- 🔥 NUEVA SECCIÓN: CERTIFICACIONES -->
+<div class="mb-4">
+    <label class="form-label fw-bold text-light">Certifications</label>
+    
+    <small class="text-muted d-block mb-2">Maximum 10 certification images (JPG, PNG, WEBP)</small>
+    <input type="file" 
+           name="certifications[]" 
+           class="form-control bg-dark text-light border-secondary" 
+           multiple 
+           accept="image/*"
+           onchange="validateCertifications(this)">
+    
+    @if(isset($product) && $product->certifications && $product->certifications->count() > 0)
+        <small class="text-muted d-block mt-2 mb-3">
+            Currently has {{ $product->certifications->count() }} certification{{ $product->certifications->count() > 1 ? 's' : '' }}
+        </small>
+        
+        <!-- Grid de certificaciones existentes -->
+        <div class="row mt-3" id="certifications-container">
+            @foreach($product->certifications as $certification)
+                <div class="col-md-3 col-sm-4 col-6 mb-3" id="certification-{{ $certification->id }}">
+                    <div class="position-relative border border-secondary rounded p-2" style="background-color: #1a1a1a;">
+                        <!-- Imagen de certificación -->
+                        <img src="{{ Storage::url($certification->image) }}" 
+                             class="img-fluid rounded mb-2" 
+                             style="height: 120px; width: 100%; object-fit: cover;" 
+                             alt="Certification image">
+                        
+                        <!-- Badge de certificación -->
+                        <small class="badge bg-primary d-block mb-2">📜 Certification</small>
+                        
+                        <!-- Botón de eliminar -->
+                        <button type="button" 
+                                class="btn btn-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-1"
+                                onclick="deleteCertificationAjax({{ $certification->id }})">
+                            <span>🗑️</span> Delete
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Category *</label>
     <select name="category_id" class="form-select bg-dark text-light border-secondary" required>
@@ -246,10 +290,10 @@
     let priceIndex = {{ isset($product) && $product->prices->count() > 0 ? $product->prices->count() : 1 }};
     const countries = @json($countries);
 
-    // 🔥 FUNCIÓN SIMPLE DE VALIDACIÓN (NUEVA)
+    // 🔥 FUNCIÓN SIMPLE DE VALIDACIÓN PARA IMÁGENES (EXISTENTE)
     function validateImages(input) {
         if (input.files.length > 10) {
-            alert('❌ Máximo 10 imágenes permitidas');
+            alert('❌ Maximum 10 images allowed');
             input.value = '';
             return;
         }
@@ -257,11 +301,27 @@
         // Mostrar feedback simple
         if (input.files.length > 0) {
             const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerHTML = '📸 ' + input.files.length + ' imagen' + (input.files.length > 1 ? 'es' : '') + ' seleccionada' + (input.files.length > 1 ? 's' : '') + ' - 💾 Save Product';
+            saveBtn.innerHTML = '📸 ' + input.files.length + ' image' + (input.files.length > 1 ? 's' : '') + ' selected - 💾 Save Product';
         }
     }
 
-    // 🔥 INDICADOR DE PROGRESO AL ENVIAR (NUEVO)
+    // 🔥 NUEVA FUNCIÓN DE VALIDACIÓN PARA CERTIFICACIONES
+    function validateCertifications(input) {
+        if (input.files.length > 10) {
+            alert('❌ Maximum 10 certifications allowed');
+            input.value = '';
+            return;
+        }
+        
+        // Mostrar feedback simple
+        if (input.files.length > 0) {
+            const saveBtn = document.getElementById('saveBtn');
+            const currentText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '📜 ' + input.files.length + ' certification' + (input.files.length > 1 ? 's' : '') + ' selected - 💾 Save Product';
+        }
+    }
+
+    // 🔥 INDICADOR DE PROGRESO AL ENVIAR (EXISTENTE)
     document.querySelector('form').addEventListener('submit', function() {
         const btn = document.getElementById('saveBtn');
         btn.innerHTML = '⏳ Guardando producto...';
@@ -327,6 +387,14 @@
 
     function removePriceBlock(button) {
         button.closest('.row').remove();
+    }
+
+    // 🔥 FUNCIÓN PARA ELIMINAR CERTIFICACIONES (si la necesitas después)
+    function deleteCertificationAjax(certificationId) {
+        if (confirm('Are you sure you want to delete this certification?')) {
+            // Aquí irá tu lógica AJAX para eliminar la certificación
+            console.log('Deleting certification:', certificationId);
+        }
     }
 </script>
 

@@ -35,14 +35,14 @@ public function store(Request $request)
     set_time_limit(300);
     ini_set('memory_limit', '256M');
     ini_set('max_execution_time', 300);
-    
+
     $data = $this->validated($request);
 
     try {
         DB::beginTransaction();
 
-        // Crear el producto (sin los precios por ubicación)
-        $productData = collect($data)->except(['images', 'prices'])->toArray();
+        // Crear el producto (sin los precios por ubicación, imágenes y certificaciones)
+        $productData = collect($data)->except(['images', 'prices', 'certifications'])->toArray();
         $product = Product::create($productData);
 
         // 🔥 CAMBIO MÍNIMO: Procesar imágenes una por una + liberar memoria
@@ -57,6 +57,22 @@ public function store(Request $request)
                 // 🔥 PAUSA MINI para evitar sobrecarga
                 if ($index > 0 && $index % 3 == 0) {
                     usleep(100000); // 0.1 segundos cada 3 imágenes
+                }
+            }
+        }
+
+        // 🔥 NUEVO: Procesar certificaciones (mismo patrón que las imágenes)
+        if ($request->hasFile('certifications')) {
+            foreach ($request->file('certifications') as $index => $file) {
+                $path = $file->store('certifications', 'public');
+                $product->certifications()->create(['image' => $path]);
+                
+                // 🔥 Liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 certificaciones
                 }
             }
         }
@@ -96,9 +112,14 @@ public function edit($id)
 }
 
     /*──────────────────────── UPDATE ──────────────────────*/
-public function update(Request $request, Product $product) 
+public function update(Request $request, Product $product)
 {
-    // Validación manual con todos los campos incluyendo id_pais
+    // 🔥 Optimización para evitar timeout
+    set_time_limit(300);
+    ini_set('memory_limit', '256M');
+    ini_set('max_execution_time', 300);
+
+    // Validación manual con todos los campos incluyendo certificaciones
     $validatedData = $request->validate([
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
@@ -106,22 +127,29 @@ public function update(Request $request, Product $product)
         'stock' => 'required|integer|min:0',
         'avg_weight' => 'nullable|string|max:50',
         'category_id' => 'required|exists:categories,id',
-        'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'pais' => 'string|max:255',
-
+        
+        // Validación para imágenes del producto
+        'images' => 'nullable|array|max:10',
+        'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+        
+        // 🔥 NUEVA VALIDACIÓN PARA CERTIFICACIONES
+        'certifications' => 'nullable|array|max:10',
+        'certifications.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+        
         // Validaciones para precios por ubicación
         'prices' => 'nullable|array',
         'prices.*.country_id' => 'required_with:prices.*|exists:countries,id',
         'prices.*.city_id' => 'nullable|exists:cities,id',
-        'prices.*.interest' => 'nullable|numeric|min:0|max:100', 
+        'prices.*.interest' => 'nullable|numeric|min:0|max:100',
         'prices.*.shipping' => 'nullable|numeric|min:0',
     ]);
 
     try {
         DB::beginTransaction();
 
-        // Actualizar el producto base (excluyendo images y prices)
-        $productData = collect($validatedData)->except(['images', 'prices'])->toArray();
+        // Actualizar el producto base (excluyendo images, prices y certificaciones)
+        $productData = collect($validatedData)->except(['images', 'prices', 'certifications'])->toArray();
         $product->update($productData);
 
         // Manejar configuraciones de precios por ubicación
@@ -143,11 +171,35 @@ public function update(Request $request, Product $product)
             }
         }
 
-        // Agregar nuevas imágenes
+        // Agregar nuevas imágenes del producto
         if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
+            foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('products', 'public');
                 $product->images()->create(['image' => $path]);
+                
+                // 🔥 Liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 imágenes
+                }
+            }
+        }
+
+        // 🔥 NUEVO: Agregar nuevas certificaciones
+        if ($request->hasFile('certifications')) {
+            foreach ($request->file('certifications') as $index => $file) {
+                $path = $file->store('certifications', 'public');
+                $product->certifications()->create(['image' => $path]);
+                
+                // 🔥 Liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 certificaciones
+                }
             }
         }
 
