@@ -17,11 +17,11 @@
         border-left: 4px solid #011904;
     }
     #card-container {
-        min-height: 100px; /* Importante: altura mínima como en la vista que funciona */
-        padding: 0; /* Sin padding para que Square.js maneje el styling */
-        border: none; /* Square.js maneja el border */
-        border-radius: 0; /* Square.js maneja el border-radius */
-        background-color: transparent; /* Square.js maneja el background */
+        min-height: 100px;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background-color: transparent;
     }
     .security-badges {
         background: linear-gradient(135deg, #011904 0%, #28a745 100%);
@@ -71,9 +71,24 @@
                     <h6 class="order-header">Order #{{ $order->order_number }}</h6>
                     <hr>
                     
+                    @php
+                        // 🔥 CALCULAR SUBTOTAL CORRECTO
+                        $correctSubtotal = $order->total_amount - $order->tax_amount - $order->shipping_amount;
+                        
+                        // 🚨 DEBUG: Para ver los valores
+                        \Log::info('Order Debug:', [
+                            'order_id' => $order->id,
+                            'total_amount' => $order->total_amount,
+                            'tax_amount' => $order->tax_amount,
+                            'shipping_amount' => $order->shipping_amount,
+                            'subtotal_db' => $order->subtotal,
+                            'calculated_subtotal' => $correctSubtotal
+                        ]);
+                    @endphp
+                    
                     <div class="d-flex justify-content-between mb-2">
                         <span>Subtotal:</span>
-                        <span>${{ number_format($order->subtotal, 2) }}</span>
+                        <span>${{ number_format($correctSubtotal, 2) }}</span>
                     </div>
                     
                     <div class="d-flex justify-content-between mb-2">
@@ -91,6 +106,13 @@
                         <span class="fw-bold">Total to Pay:</span>
                         <span class="total-amount">${{ number_format($order->total_amount, 2) }}</span>
                     </div>
+                    
+                    {{-- 🚨 MOSTRAR ADVERTENCIA SI HAY DISCREPANCIA --}}
+                    @if(abs($order->subtotal - $correctSubtotal) > 0.01)
+                        <div class="alert alert-warning alert-sm">
+                            <small><i class="fas fa-exclamation-triangle"></i> Note: Subtotal recalculated for accuracy</small>
+                        </div>
+                    @endif
                     
                     <hr>
                     <h6 class="text-info">
@@ -194,7 +216,7 @@
     </div>
 </div>
 
-<!-- Square.js Script - Cargado directamente en el HTML como en la vista que funciona -->
+<!-- Square.js Script -->
 <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
 
 <script>
@@ -218,7 +240,6 @@ async function initializeCard(payments) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-    // Debug: Verify credentials are loading
     console.log('Application ID:', '{{ config("square.application_id") }}');
     console.log('Location ID:', '{{ config("square.location_id") }}');
     
@@ -237,7 +258,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
     }
 
-    // Handle payment form submission
     document.getElementById('payment-form').addEventListener('submit', async function (e) {
         e.preventDefault();
 
