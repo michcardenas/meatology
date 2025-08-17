@@ -19,7 +19,7 @@
     </div>
 
     <div class="col-md-4 mb-4">
-        <label class="form-label fw-bold text-light">Avg. Weight</label>
+        <label class="form-label fw-bold text-light">Descripcion adicional (e.g. 7 Lbs or 3.2 Kg / Price)</label>
         <input type="text" name="avg_weight" class="form-control bg-dark text-light border-secondary"
                value="{{ old('avg_weight', $product->avg_weight ?? '') }}" placeholder="e.g. 7 Lbs or 3.2 Kg">
     </div>
@@ -27,7 +27,15 @@
 
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Product Images</label>
-    <input type="file" name="images[]" class="form-control bg-dark text-light border-secondary" multiple>
+    
+    <!-- 🔥 CAMBIO MÍNIMO: Solo agregué accept, onchange y un pequeño texto informativo -->
+    <small class="text-muted d-block mb-2">Máximo 10 imágenes (JPG, PNG, WEBP)</small>
+    <input type="file" 
+           name="images[]" 
+           class="form-control bg-dark text-light border-secondary" 
+           multiple 
+           accept="image/*"
+           onchange="validateImages(this)">
     
     @if(isset($product) && $product->images && $product->images->count() > 0)
         <small class="text-muted d-block mt-2 mb-3">
@@ -72,13 +80,15 @@
 </div>
 
 {{-- NUEVO CAMPO: País de Origen del Producto --}}
-<input type="text"
-       name="pais"
-       class="form-control bg-dark text-light border-secondary"
-       value="{{ old('pais', $product->pais ?? '') }}"
-       placeholder="Escribe el país de origen"
-       required>
-
+<div class="mb-4">
+    <label class="form-label fw-bold text-light">País de Origen *</label>
+    <input type="text"
+           name="pais"
+           class="form-control bg-dark text-light border-secondary"
+           value="{{ old('pais', $product->pais ?? '') }}"
+           placeholder="Escribe el país de origen"
+           required>
+</div>
 
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Impuestos y Envío por País/Ciudad</label>
@@ -204,7 +214,7 @@
 </div>
 
 <div class="d-flex justify-content-between mt-4">
-    <button class="btn btn-success px-4">💾 Save Product</button>
+    <button class="btn btn-success px-4" id="saveBtn">💾 Save Product</button>
     <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Cancel</a>
 </div>
 
@@ -235,6 +245,28 @@
 
     let priceIndex = {{ isset($product) && $product->prices->count() > 0 ? $product->prices->count() : 1 }};
     const countries = @json($countries);
+
+    // 🔥 FUNCIÓN SIMPLE DE VALIDACIÓN (NUEVA)
+    function validateImages(input) {
+        if (input.files.length > 10) {
+            alert('❌ Máximo 10 imágenes permitidas');
+            input.value = '';
+            return;
+        }
+        
+        // Mostrar feedback simple
+        if (input.files.length > 0) {
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = '📸 ' + input.files.length + ' imagen' + (input.files.length > 1 ? 'es' : '') + ' seleccionada' + (input.files.length > 1 ? 's' : '') + ' - 💾 Save Product';
+        }
+    }
+
+    // 🔥 INDICADOR DE PROGRESO AL ENVIAR (NUEVO)
+    document.querySelector('form').addEventListener('submit', function() {
+        const btn = document.getElementById('saveBtn');
+        btn.innerHTML = '⏳ Guardando producto...';
+        btn.disabled = true;
+    });
 
     function addPriceBlock() {
         let block = `

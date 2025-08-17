@@ -29,29 +29,41 @@ class ProductController extends Controller
     }
 
     /*──────────────────────── STORE ───────────────────────*/
-public function store(Request $request) 
+public function store(Request $request)
 {
+    // 🔥 SOLO ESTAS 3 LÍNEAS PARA EVITAR TIMEOUT
+    set_time_limit(300);
+    ini_set('memory_limit', '256M');
+    ini_set('max_execution_time', 300);
+    
     $data = $this->validated($request);
 
     try {
         DB::beginTransaction();
-        
+
         // Crear el producto (sin los precios por ubicación)
         $productData = collect($data)->except(['images', 'prices'])->toArray();
         $product = Product::create($productData);
 
-        // Manejar imágenes
+        // 🔥 CAMBIO MÍNIMO: Procesar imágenes una por una + liberar memoria
         if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
+            foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('products', 'public');
                 $product->images()->create(['image' => $path]);
+                
+                // 🔥 ESTO ES LO IMPORTANTE: liberar memoria
+                unset($file);
+                
+                // 🔥 PAUSA MINI para evitar sobrecarga
+                if ($index > 0 && $index % 3 == 0) {
+                    usleep(100000); // 0.1 segundos cada 3 imágenes
+                }
             }
         }
 
-        // Manejar precios por ubicación (si existen)
+        // Manejar precios por ubicación (sin cambios)
         if (!empty($data['prices'])) {
             foreach ($data['prices'] as $priceData) {
-                // Solo crear si tiene al menos un país seleccionado
                 if (!empty($priceData['country_id'])) {
                     $product->prices()->create([
                         'country_id' => $priceData['country_id'],
@@ -66,6 +78,7 @@ public function store(Request $request)
         DB::commit();
         return redirect()->route('admin.products.index')
                         ->with('success', 'Producto creado ✅');
+                        
     } catch (\Exception $e) {
         DB::rollback();
         return back()->with('error', 'Error al crear el producto: ' . $e->getMessage());
