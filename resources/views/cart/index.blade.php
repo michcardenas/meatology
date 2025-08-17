@@ -20,18 +20,18 @@
                                     <small class="text-muted d-block">{{ $item->options->category_name }}</small>
 
                                     <small class="d-block text-muted">
-                                        Base price: ${{ number_format($item->options->base_price, 0, ',', '.') }}
+                                        Base price: ${{ number_format($item->options->base_price, 2, '.', ',') }}
                                     </small>
                                     <small class="d-block text-muted">
-                                        Interest: ${{ number_format($item->options->interest, 0, ',', '.') }}
+                                        Interest: ${{ number_format($item->options->interest, 2, '.', ',') }}
                                     </small>
                                     <small class="d-block fw-bold">
-                                        Unit total: ${{ number_format($item->price, 0, ',', '.') }}
+                                        Unit total: ${{ number_format($item->price, 2, '.', ',') }}
                                     </small>
                                 </div>
 
                                 <div class="col-md-2">
-                                    <strong>${{ number_format($item->price, 0) }}</strong>
+                                    <strong>${{ number_format($item->price, 2, '.', ',') }}</strong>
                                 </div>
                                 <div class="col-md-2">
                                     <form action="{{ route('cart.update', $item->rowId) }}" method="POST" class="d-flex">
@@ -44,7 +44,7 @@
                                     </form>
                                 </div>
                                 <div class="col-md-2 text-end">
-                                    <strong>${{ number_format($item->total, 0) }}</strong>
+                                    <strong>${{ number_format($item->total, 2, '.', ',') }}</strong>
                                     <form action="{{ route('cart.remove', $item->rowId) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
@@ -65,16 +65,16 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <span>Subtotal:</span>
-                            <span>${{ Cart::subtotal() }}</span>
+                            <span>${{ number_format((float)str_replace(',', '', Cart::subtotal()), 2, '.', ',') }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span>Tax:</span>
-                            <span>${{ Cart::tax() }}</span>
+                            <span>${{ number_format((float)str_replace(',', '', Cart::tax()), 2, '.', ',') }}</span>
                         </div>
                         <hr>
                         <div class="d-flex justify-content-between">
                             <strong>Total:</strong>
-                            <strong>${{ Cart::total() }}</strong>
+                            <strong>${{ number_format((float)str_replace(',', '', Cart::total()), 2, '.', ',') }}</strong>
                         </div>
                         
 <a href="{{ route('checkout.index') }}" class="btn btn-success w-100 mt-3">Proceed to Checkout</a>                        
