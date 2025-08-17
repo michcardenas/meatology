@@ -26,10 +26,10 @@
                                         <h6>{{ $item->name }}</h6>
                                         <small class="text-muted">{{ $item->options->category_name }}</small>
                                         <br>
-                                        <small class="text-muted">Qty: {{ $item->qty }}</small>
+                                        <small class="text-muted">Qty: {{ $item->qty }} × ${{ number_format($item->price, 2, '.', ',') }}</small>
                                     </div>
                                     <div class="col-md-4 text-end">
-                                        <strong>${{ number_format($item->total, 0) }}</strong>
+                                        <strong>${{ number_format($item->total, 2, '.', ',') }}</strong>
                                     </div>
                                 </div>
                             @endforeach
@@ -44,7 +44,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">State *</label>
+                                    <label class="form-label fw-bold">Country *</label>
                                     <select id="shipping-country" name="shipping_country" class="form-select" required>
                                         <option value="">-- Select Country --</option>
                                         @foreach($countries as $country)
@@ -170,7 +170,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span id="display-subtotal">${{ number_format($subtotal, 2) }}</span>
+                                <span id="display-subtotal">${{ number_format($subtotal, 2, '.', ',') }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tax:</span>
@@ -183,7 +183,7 @@
                             <hr>
                             <div class="d-flex justify-content-between mb-3">
                                 <strong>Total:</strong>
-                                <strong id="display-total">${{ number_format($subtotal, 2) }}</strong>
+                                <strong id="display-total">${{ number_format($subtotal, 2, '.', ',') }}</strong>
                             </div>
                             
                             <div id="location-warning" class="alert alert-warning" style="display: none;">
@@ -218,6 +218,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const citySelect = document.getElementById('shipping-city');
     const placeOrderBtn = document.getElementById('place-order-btn');
     const locationWarning = document.getElementById('location-warning');
+    
+    // 🔥 OBTENER SUBTOTAL ORIGINAL SIN FORMATEO
+    const originalSubtotal = parseFloat('{{ $subtotal }}');
     
     // Mostrar advertencia inicialmente
     locationWarning.style.display = 'block';
@@ -272,37 +275,58 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({
                 country_id: countryId,
-                city_id: cityId
+                city_id: cityId,
+                subtotal: originalSubtotal // 🔥 ENVIAR SUBTOTAL ORIGINAL
             })
         })
         .then(response => response.json())
         .then(data => {
-            // Actualizar display
-            document.getElementById('display-tax').textContent = '$' + data.tax;
-            document.getElementById('display-shipping').textContent = '$' + data.shipping;
-            document.getElementById('display-total').textContent = '$' + data.total;
+            // 🔥 FORMATEAR CORRECTAMENTE LOS VALORES
+            const tax = parseFloat(data.tax_raw || 0);
+            const shipping = parseFloat(data.shipping_raw || 0);
+            const total = originalSubtotal + tax + shipping;
             
-            // Actualizar campos ocultos
+            // Actualizar display con formateo correcto
+            document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
+            document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
+            document.getElementById('display-total').textContent = '$' + total.toFixed(2);
+            
+            // Actualizar campos ocultos con valores exactos
             document.getElementById('final-country').value = countryId;
             document.getElementById('final-city').value = cityId;
-            document.getElementById('final-total').value = data.total_raw;
-            document.getElementById('final-tax').value = data.tax_raw;
-            document.getElementById('final-shipping').value = data.shipping_raw;
+            document.getElementById('final-total').value = total.toFixed(2);
+            document.getElementById('final-tax').value = tax.toFixed(2);
+            document.getElementById('final-shipping').value = shipping.toFixed(2);
             
             // Habilitar botón y ocultar advertencia
             placeOrderBtn.disabled = false;
             locationWarning.style.display = 'none';
+            
+            console.log('Cálculo:', {
+                subtotal: originalSubtotal,
+                tax: tax,
+                shipping: shipping,
+                total: total
+            });
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Error calculating shipping costs. Please try again.');
+            resetCosts();
         });
     }
     
     function resetCosts() {
         document.getElementById('display-tax').textContent = '$0.00';
         document.getElementById('display-shipping').textContent = 'Select location';
-        document.getElementById('display-total').textContent = '{{ "$" . number_format($subtotal, 2) }}';
+        document.getElementById('display-total').textContent = '$' + originalSubtotal.toFixed(2);
+        
+        // Limpiar campos ocultos
+        document.getElementById('final-country').value = '';
+        document.getElementById('final-city').value = '';
+        document.getElementById('final-total').value = '';
+        document.getElementById('final-tax').value = '';
+        document.getElementById('final-shipping').value = '';
         
         placeOrderBtn.disabled = true;
         locationWarning.style.display = 'block';
