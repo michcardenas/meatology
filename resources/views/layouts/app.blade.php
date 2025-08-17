@@ -66,7 +66,7 @@ nav {
 }
 
 .nav-links a {
-    color: #e0d9c0;
+    color: #013105;
     text-decoration: none;
     font-size: 0.95rem;
     position: relative;
@@ -724,19 +724,19 @@ footer {
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                <i class="fas fa-user me-2"></i>Mi Cuenta
+                                <i class="fas fa-user me-2"></i>My Account
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('cart.index') }}">
-                                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                                <i class="fas fa-shopping-cart me-2"></i>My Cart
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item" href="{{ route('logout') }}" 
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                <i class="fas fa-sign-out-alt me-2"></i>Log Out
                             </a>
                         </li>
                     </ul>
