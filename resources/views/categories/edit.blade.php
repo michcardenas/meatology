@@ -33,15 +33,7 @@
             <textarea name="description" id="description" class="form-control" rows="4" placeholder="Enter category description">{{ old('description', $category->description) }}</textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="country" class="form-label text-light">Country of Origin</label>
-            <select name="country" id="country" class="form-control" required>
-                <option value="">Select a country</option>
-                <option value="Uruguay" {{ old('country', $category->country) == 'Uruguay' ? 'selected' : '' }}>Uruguay</option>
-                <option value="Argentina" {{ old('country', $category->country) == 'Argentina' ? 'selected' : '' }}>Argentina</option>
-                <option value="America" {{ old('country', $category->country) == 'America' ? 'selected' : '' }}>America</option>
-            </select>
-        </div>
+    
 
         <div class="mb-3">
             <label for="image" class="form-label text-light">Category Image</label>
