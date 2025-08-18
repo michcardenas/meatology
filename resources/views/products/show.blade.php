@@ -158,97 +158,91 @@
                 </div>
 
                 <!-- Información adicional -->
-         <!-- OPCIÓN 1: Layout vertical con texto truncado -->
-<div class="d-flex flex-column align-items-start mt-4">
-    <div class="mb-2">
-        @php
-            $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
-        @endphp
-        <span class="h5 text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</span>
-        
-        @if($product->stock <= 0)
-            <span class="badge bg-danger ms-2">Out of Stock</span>
-        @elseif($product->stock <= 5)
-            <span class="badge bg-warning text-dark ms-2">Limited Stock</span>
-        @else
-            <span class="badge bg-success ms-2">Available</span>
-        @endif
-    </div>
-    
-    <!-- Mostrar avg_weight en línea separada y truncado -->
-    @if(!empty($product->avg_weight))
-        <small class="text-muted fw-medium">{{ Str::limit($product->avg_weight, 25) }}</small>
-    @endif
-</div>
-
-<!-- OPCIÓN 2: Layout horizontal con mejor manejo del espacio -->
-<div class="mt-4">
-    <div class="d-flex justify-content-between align-items-start mb-2">
-        <div class="flex-grow-1 me-2">
-            @php
-                $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
-            @endphp
-            <span class="h5 text-success fw-bold d-block">${{ number_format($totalPrice, 0, ',', '.') }}</span>
-            
-            <!-- avg_weight en línea separada con texto más pequeño -->
-            @if(!empty($product->avg_weight))
-                <small class="text-muted" style="font-size: 0.75rem; line-height: 1.2;">
-                    {{ Str::limit($product->avg_weight, 30) }}
-                </small>
-            @endif
-        </div>
-        
-        <div class="text-end">
-            @if($product->stock <= 0)
-                <span class="badge bg-danger">Out of Stock</span>
-            @elseif($product->stock <= 5)
-                <span class="badge bg-warning text-dark">Limited Stock</span>
-            @else
-                <span class="badge bg-success">Available</span>
-            @endif
+                <div class="product-details">
+                    <h6>Product Details</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>SKU:</strong> #{{ $product->id }}</li>
+                        <li><strong>Category:</strong> {{ $product->category->name ?? 'N/A' }}</li>
+                        <li><strong>Weight:</strong> Sold per lb</li>
+                        @if($product->pais)
+                            <li><strong>Origin:</strong> {{ $product->pais }}</li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- OPCIÓN 3: Con tooltip para texto completo -->
-<div class="d-flex justify-content-between align-items-center mt-4">
-    <div>
-        @php
-            $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
-        @endphp
-        <span class="h5 text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</span>
-        
-        <!-- Mostrar avg_weight truncado con tooltip -->
-        @if(!empty($product->avg_weight))
-            <small class="text-muted d-block" 
-                   data-bs-toggle="tooltip" 
-                   data-bs-placement="top" 
-                   title="{{ $product->avg_weight }}"
-                   style="cursor: help;">
-                / {{ Str::limit($product->avg_weight, 20) }}
-            </small>
-        @endif
-
-        @if($product->stock <= 0)
-            <span class="badge bg-danger ms-2">Out of Stock</span>
-        @elseif($product->stock <= 5)
-            <span class="badge bg-warning text-dark ms-2">Limited Stock</span>
-        @else
-            <span class="badge bg-success ms-2">Available</span>
-        @endif
+    <!-- Productos destacados/populares -->
+    @if($featuredProducts->count() > 0)
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">
+                <i class="fas fa-star text-warning"></i> You Might Also Like
+                <small class="text-white fs-6">Popular products</small>
+            </h3>
+            <div class="row g-4">
+                @foreach($featuredProducts as $featuredProduct)
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="card h-100 shadow-sm border-0 bg-dark text-light">
+                        <div class="position-relative" style="overflow: hidden;">
+                            <img src="{{ $featuredProduct->images->first() ? Storage::url($featuredProduct->images->first()->image) : asset('images/placeholder.jpg') }}" 
+                                 class="card-img-top" alt="{{ $featuredProduct->name }}"
+                                 style="height: 220px; object-fit: cover; transition: transform 0.3s ease;">
+                            
+                            <!-- Badge de categoría -->
+                            @if($featuredProduct->category)
+                                <span class="position-absolute top-0 start-0 badge bg-success m-2">
+                                    {{ $featuredProduct->category->name }}
+                                </span>
+                            @endif
+                        </div>
+                        <div class="card-body p-3">
+                            <h6 class="card-title mb-2 text-light">{{ Str::limit($featuredProduct->name, 30) }}</h6>
+                            <p class="card-text text-light small mb-2">
+                                {{ Str::limit(strip_tags($featuredProduct->description), 80) }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-success fw-bold">
+                                    ${{ number_format(($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0), 0, ',', '.') }}
+                                </span>
+                                <small class="text-light">/ per lb</small>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <a href="{{ route('product.show', $featuredProduct) }}" 
+                                   class="btn btn-outline-light btn-sm flex-fill">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <form action="{{ route('cart.add') }}" method="POST" class="flex-fill">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $featuredProduct->id }}">
+                                    <button type="submit" class="btn btn-success btn-sm w-100" 
+                                            {{ $featuredProduct->stock <= 0 ? 'disabled' : '' }}>
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
     </div>
-</div>
-
-<!-- Para la sección "You Might Also Like" (tarjetas más pequeñas) -->
-<div class="mb-2">
-    <span class="text-success fw-bold d-block">
-        ${{ number_format(($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0), 0, ',', '.') }}
-    </span>
-    @if(!empty($featuredProduct->avg_weight))
-        <small class="text-light" style="font-size: 0.7rem;">
-            {{ Str::words($featuredProduct->avg_weight, 3) }}
-        </small>
     @endif
+
+    <!-- Sección adicional: Últimos productos agregados -->
+    <div class="row mt-5 mb-5">
+        <div class="col-12">
+            <div class="text-center">
+                <h4 class="mb-3">Discover More Products</h4>
+                <p class="text-white mb-4">Explore our complete collection of premium cuts</p>
+                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-store"></i> Browse All Products
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
