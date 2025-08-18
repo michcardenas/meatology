@@ -158,12 +158,14 @@
                 </div>
 
                 <!-- Información adicional -->
-                <div class="product-details">
+         <div class="product-details">
                     <h6>Product Details</h6>
                     <ul class="list-unstyled">
                         <li><strong>SKU:</strong> #{{ $product->id }}</li>
                         <li><strong>Category:</strong> {{ $product->category->name ?? 'N/A' }}</li>
-                        <li><strong>Weight:</strong> Sold per lb</li>
+                        @if(!empty($product->avg_weight))
+                            <li><strong>Weight:</strong> {{ $product->avg_weight }}</li>
+                        @endif
                         @if($product->pais)
                             <li><strong>Origin:</strong> {{ $product->pais }}</li>
                         @endif
@@ -206,7 +208,9 @@
                                 <span class="text-success fw-bold">
                                     ${{ number_format(($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0), 0, ',', '.') }}
                                 </span>
-                                <small class="text-light">/ per lb</small>
+                                @if(!empty($featuredProduct->avg_weight))
+                                    <small class="text-light">/ {{ $featuredProduct->avg_weight }}</small>
+                                @endif
                             </div>
                             <div class="d-flex gap-1">
                                 <a href="{{ route('product.show', $featuredProduct) }}" 
