@@ -182,6 +182,7 @@
     </div>
 </section>
 <!-- Sección de Productos Destacados con Fondo Verde Oscuro -->
+<!-- Sección de Productos Destacados con Fondo Verde Oscuro -->
 <section class="py-5" style="background-color: #011904;">
     <div class="container">
         <!-- Encabezado -->
@@ -218,7 +219,8 @@
                             {{ $product->name }}
                         </h4>
 
-                        <p class="card-text text-muted">{{ Str::limit($product->description, 120) }}</p>
+                        <!-- Descripción sin etiquetas HTML -->
+                        <p class="card-text text-muted">{{ Str::limit(strip_tags($product->description), 120) }}</p>
 
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <div>
@@ -226,7 +228,11 @@
                                     $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
                                 @endphp
                                 <span class="h5 text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</span>
-                                <small class="text-muted">/ per Lb</small>
+                                
+                                <!-- Mostrar avg_weight si existe, sino no mostrar nada -->
+                                @if(!empty($product->avg_weight))
+                                    <small class="text-muted">/ {{ $product->avg_weight }}</small>
+                                @endif
 
                                 @if($product->stock <= 0)
                                     <span class="badge bg-danger ms-2">Out of Stock</span>
@@ -256,6 +262,7 @@
             </div>
             @endforeach
         </div>
+    </div>
 </section>
 
 <!-- Call to Action: View All Products -->
