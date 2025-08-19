@@ -258,8 +258,21 @@
 </div>
 
 <div class="d-flex justify-content-between mt-4">
-    <button class="btn btn-success px-4" id="saveBtn">💾 Save Product</button>
-    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Cancel</a>
+    {{-- Botón principal de guardar - visible para todos --}}
+    <button type="submit" class="btn btn-success px-4" id="saveBtn">
+        💾 Save Product
+    </button>
+    
+    {{-- Botón de cancelar condicional según el rol --}}
+    @if(auth()->user()->hasRole('admin'))
+        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Cancel</a>
+    @elseif(auth()->user()->hasRole('conductor'))
+        <a href="{{ route('conductor.products.index') }}" class="btn btn-secondary">Cancel</a>
+    @elseif(auth()->user()->hasRole('pasajero'))
+        <a href="{{ route('pasajero.products.index') }}" class="btn btn-secondary">Cancel</a>
+    @else
+        <a href="{{ url()->previous() }}" class="btn btn-secondary">Cancel</a>
+    @endif
 </div>
 
 <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
