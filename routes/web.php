@@ -75,6 +75,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 });
 
 Route::resource('categories', CategoryController::class);
+   
 
 
 Route::prefix('admin')->group(function () {
@@ -87,6 +88,24 @@ Route::prefix('admin')->group(function () {
     Route::get('/cities', [LocationController::class, 'citiesIndex'])->name('admin.cities.index');
     Route::post('/cities', [LocationController::class, 'citiesStore'])->name('admin.cities.store');
     Route::delete('/cities/{id}', [LocationController::class, 'citiesDestroy'])->name('admin.cities.destroy');
+
+//descuentos
+ Route::get('/admin/discounts', [App\Http\Controllers\AdminDiscountController::class, 'index'])
+        ->name('admin.orders.discounts');
+    Route::get('/admin/discounts/create', [App\Http\Controllers\AdminDiscountController::class, 'create'])
+        ->name('admin.discounts.create');
+    Route::post('/admin/discounts', [App\Http\Controllers\AdminDiscountController::class, 'store'])
+        ->name('admin.discounts.store');
+    Route::get('/admin/discounts/{discount}/edit', [App\Http\Controllers\AdminDiscountController::class, 'edit'])
+        ->name('admin.discounts.edit');
+    Route::put('/admin/discounts/{discount}', [App\Http\Controllers\AdminDiscountController::class, 'update'])
+        ->name('admin.discounts.update');
+    Route::delete('/admin/discounts/{discount}', [App\Http\Controllers\AdminDiscountController::class, 'destroy'])
+        ->name('admin.discounts.destroy');
+        // Ruta para validar descuentos en checkout
+    Route::post('/checkout/validate-discount', [App\Http\Controllers\AdminDiscountController::class, 'validateDiscount'])
+        ->name('checkout.validate-discount');
+    
 });
 });
 

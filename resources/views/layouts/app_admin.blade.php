@@ -52,6 +52,7 @@
                 <li><a class="dropdown-item text-light" href="{{ route('categories.index') }}">📂 Admin Categories</a></li>
                 <li><a class="dropdown-item text-light" href="{{ route('admin.countries.index') }}">🌍 Manage State</a></li>
                 <li><a class="dropdown-item text-light" href="{{ route('admin.cities.index') }}">🏙️ Manage Cities</a></li>
+                <li><a class="dropdown-item text-light" href="{{ route('admin.orders.discounts') }}">$ discounts</a></li>
             </ul>
         </div>
 @endrole

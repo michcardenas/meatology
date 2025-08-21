@@ -36,7 +36,7 @@
                         </div>
                     </div>
 
-                    <!-- 🔴 Nueva sección de ubicación de envío -->
+                    <!-- Sección de ubicación de envío -->
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5>🚚 Shipping Location</h5>
@@ -89,6 +89,8 @@
                                     <input type="hidden" id="final-total" name="total">
                                     <input type="hidden" id="final-tax" name="tax">
                                     <input type="hidden" id="final-shipping" name="shipping">
+                                    <input type="hidden" id="applied-discount-code" name="discount_code">
+                                    <input type="hidden" id="applied-discount-amount" name="discount_amount">
                                     
                                     <div class="row">
                                         <div class="col-md-6">
@@ -121,6 +123,8 @@
                                     <input type="hidden" id="final-total" name="total">
                                     <input type="hidden" id="final-tax" name="tax">
                                     <input type="hidden" id="final-shipping" name="shipping">
+                                    <input type="hidden" id="applied-discount-code" name="discount_code">
+                                    <input type="hidden" id="applied-discount-amount" name="discount_amount">
                                     
                                     <div class="row">
                                         <div class="col-md-6">
@@ -168,10 +172,41 @@
                             <h5>💰 Order Summary</h5>
                         </div>
                         <div class="card-body">
+                            <!-- Sección de descuento -->
+                            <div class="mb-3 p-3 bg-light rounded">
+                                <h6 class="mb-2">🎫 Discount Code</h6>
+                                <div class="input-group mb-2">
+                                    <input type="text" id="discount-code" class="form-control" 
+                                        placeholder="Enter discount code" style="text-transform: uppercase;">
+                                    <button type="button" id="apply-discount-btn" class="btn btn-outline-primary">
+                                        Apply
+                                    </button>
+                                </div>
+                                
+                                <!-- Estado del descuento -->
+                                <div id="discount-status" style="display: none;">
+                                    <!-- Se llena dinámicamente -->
+                                </div>
+                                
+                                <!-- Botón para remover descuento -->
+                                <button type="button" id="remove-discount-btn" class="btn btn-sm btn-outline-danger w-100" 
+                                        style="display: none;">
+                                    Remove Discount
+                                </button>
+                            </div>
+
+                            <!-- Resumen de costos -->
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
                                 <span id="display-subtotal">${{ number_format($subtotal, 2, '.', ',') }}</span>
                             </div>
+                            
+                            <!-- Línea de descuento (oculta inicialmente) -->
+                            <div id="discount-line" class="d-flex justify-content-between mb-2 text-success" style="display: none;">
+                                <span id="discount-label">Discount:</span>
+                                <span id="discount-amount">-$0.00</span>
+                            </div>
+                            
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tax:</span>
                                 <span id="display-tax">$0.00</span>
@@ -213,23 +248,110 @@
 </div>
 
 <script>
+// 🔥 Generar datos del carrito en PHP y asignarlos a variable global
+window.cartItemsData = {!! json_encode($cartItems->map(function($item) {
+    return [
+        'id' => $item->id,
+        'name' => $item->name,
+        'price' => $item->price,
+        'qty' => $item->qty,
+        'options' => $item->options
+    ];
+})) !!};
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del DOM
     const countrySelect = document.getElementById('shipping-country');
     const citySelect = document.getElementById('shipping-city');
     const placeOrderBtn = document.getElementById('place-order-btn');
     const locationWarning = document.getElementById('location-warning');
+    const discountCodeInput = document.getElementById('discount-code');
+    const applyDiscountBtn = document.getElementById('apply-discount-btn');
+    const removeDiscountBtn = document.getElementById('remove-discount-btn');
+    const discountStatus = document.getElementById('discount-status');
+    const discountLine = document.getElementById('discount-line');
+    const discountLabel = document.getElementById('discount-label');
+    const discountAmount = document.getElementById('discount-amount');
     
-    // 🔥 OBTENER SUBTOTAL ORIGINAL SIN FORMATEO - CORREGIDO
+    // Variables globales
     const originalSubtotal = parseFloat('{{ $subtotal }}');
+    let currentDiscount = 0;
+    let appliedDiscountData = null;
     
-    // 🚨 DEBUG: Verificar si el subtotal está mal
     console.log('Subtotal recibido:', originalSubtotal);
-    console.log('¿Necesita dividir por 100?:', originalSubtotal > 1000);
     
     // Mostrar advertencia inicialmente
     locationWarning.style.display = 'block';
+
+    // 🎫 Manejar aplicación de descuento
+    applyDiscountBtn.addEventListener('click', function() {
+        const codigo = discountCodeInput.value.trim().toUpperCase();
+        
+        if (!codigo) {
+            showDiscountMessage('❌ Please enter a discount code', 'error');
+            return;
+        }
+        
+        // Usar datos del carrito desde variable global
+        const cartItems = window.cartItemsData;
+        
+        // Mostrar loading
+        applyDiscountBtn.textContent = 'Validating...';
+        applyDiscountBtn.disabled = true;
+        
+        fetch('{{ route("checkout.validate-discount") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                codigo: codigo,
+                subtotal: originalSubtotal,
+                cart_items: cartItems
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Aplicar descuento
+                appliedDiscountData = data.descuento;
+                currentDiscount = appliedDiscountData.monto;
+                
+                // Actualizar UI
+                showDiscountMessage(data.message, 'success');
+                showDiscountLine();
+                updateTotals();
+                
+                // Mostrar botón de remover
+                removeDiscountBtn.style.display = 'block';
+                discountCodeInput.disabled = true;
+                applyDiscountBtn.style.display = 'none';
+                
+                // Actualizar campos ocultos
+                document.getElementById('applied-discount-code').value = appliedDiscountData.codigo;
+                document.getElementById('applied-discount-amount').value = currentDiscount.toFixed(2);
+                
+            } else {
+                showDiscountMessage(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showDiscountMessage('❌ Error validating discount code', 'error');
+        })
+        .finally(() => {
+            applyDiscountBtn.textContent = 'Apply';
+            applyDiscountBtn.disabled = false;
+        });
+    });
     
-    // Manejar cambio de país
+    // 🗑️ Manejar remoción de descuento
+    removeDiscountBtn.addEventListener('click', function() {
+        removeDiscount();
+    });
+    
+    // 📍 Manejar cambio de país
     countrySelect.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const cities = selectedOption.dataset.cities ? JSON.parse(selectedOption.dataset.cities) : [];
@@ -260,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // 🧮 Funciones de cálculo
     function calculateCosts() {
         const countryId = countrySelect.value;
         const cityId = citySelect.value;
@@ -271,6 +394,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('display-shipping').textContent = 'Calculating...';
         document.getElementById('display-total').textContent = 'Calculating...';
         
+        const subtotalConDescuento = originalSubtotal - currentDiscount;
+        
         fetch('{{ route("checkout.calculate") }}', {
             method: 'POST',
             headers: {
@@ -280,34 +405,33 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({
                 country_id: countryId,
                 city_id: cityId,
-                subtotal: originalSubtotal // 🔥 ENVIAR SUBTOTAL ORIGINAL
+                subtotal: subtotalConDescuento
             })
         })
         .then(response => response.json())
         .then(data => {
-            // 🔥 FORMATEAR CORRECTAMENTE LOS VALORES
             const tax = parseFloat(data.tax_raw || 0);
             const shipping = parseFloat(data.shipping_raw || 0);
-            const total = originalSubtotal + tax + shipping;
+            const total = subtotalConDescuento + tax + shipping;
             
-            // Actualizar display con formateo correcto
+            // Actualizar display
             document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
             document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
             document.getElementById('display-total').textContent = '$' + total.toFixed(2);
             
-            // Actualizar campos ocultos con valores exactos
+            // Actualizar campos ocultos
             document.getElementById('final-country').value = countryId;
             document.getElementById('final-city').value = cityId;
             document.getElementById('final-total').value = total.toFixed(2);
             document.getElementById('final-tax').value = tax.toFixed(2);
             document.getElementById('final-shipping').value = shipping.toFixed(2);
             
-            // Habilitar botón y ocultar advertencia
+            // Habilitar botón
             placeOrderBtn.disabled = false;
             locationWarning.style.display = 'none';
             
             console.log('Cálculo:', {
-                subtotal: originalSubtotal,
+                subtotal: subtotalConDescuento,
                 tax: tax,
                 shipping: shipping,
                 total: total
@@ -320,10 +444,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    function updateTotals() {
+        // Solo actualizar el total si no hay país seleccionado
+        if (!countrySelect.value) {
+            const newSubtotal = originalSubtotal - currentDiscount;
+            document.getElementById('display-total').textContent = '$' + newSubtotal.toFixed(2);
+        } else {
+            // Recalcular con país seleccionado
+            calculateCosts();
+        }
+    }
+    
+    function showDiscountLine() {
+        if (appliedDiscountData) {
+            discountLabel.textContent = `Discount (${appliedDiscountData.codigo} - ${appliedDiscountData.porcentaje}%):`;
+            discountAmount.textContent = '-$' + currentDiscount.toFixed(2);
+            discountLine.style.display = 'flex';
+        }
+    }
+    
+    function removeDiscount() {
+        currentDiscount = 0;
+        appliedDiscountData = null;
+        
+        // Limpiar UI
+        discountLine.style.display = 'none';
+        discountStatus.style.display = 'none';
+        removeDiscountBtn.style.display = 'none';
+        applyDiscountBtn.style.display = 'block';
+        discountCodeInput.disabled = false;
+        discountCodeInput.value = '';
+        
+        // Limpiar campos ocultos
+        document.getElementById('applied-discount-code').value = '';
+        document.getElementById('applied-discount-amount').value = '';
+        
+        updateTotals();
+    }
+    
+    function showDiscountMessage(message, type) {
+        discountStatus.innerHTML = `
+            <div class="alert alert-${type === 'success' ? 'success' : 'danger'} alert-sm mb-2">
+                ${message}
+                ${appliedDiscountData ? `<br><small>Applies to: ${appliedDiscountData.productos.join(', ')}</small>` : ''}
+            </div>
+        `;
+        discountStatus.style.display = 'block';
+    }
+    
     function resetCosts() {
         document.getElementById('display-tax').textContent = '$0.00';
         document.getElementById('display-shipping').textContent = 'Select location';
-        document.getElementById('display-total').textContent = '$' + originalSubtotal.toFixed(2);
+        
+        const subtotalConDescuento = originalSubtotal - currentDiscount;
+        document.getElementById('display-total').textContent = '$' + subtotalConDescuento.toFixed(2);
         
         // Limpiar campos ocultos
         document.getElementById('final-country').value = '';
@@ -335,6 +509,13 @@ document.addEventListener('DOMContentLoaded', function() {
         placeOrderBtn.disabled = true;
         locationWarning.style.display = 'block';
     }
+    
+    // Permitir aplicar descuento con Enter
+    discountCodeInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyDiscountBtn.click();
+        }
+    });
 });
 </script>
 @endsection
