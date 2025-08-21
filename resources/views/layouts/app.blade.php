@@ -677,9 +677,11 @@ footer {
 <body>
     <nav>
         <div class="navbar-container">
-            <div class="logo">
+          <div class="logo">
+            <a href="{{ route('home') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo">
-            </div>
+            </a>
+        </div>
 
             <!-- Desktop Navigation -->
             <div class="nav-links">
@@ -837,15 +839,11 @@ footer {
                     Premium grass-fed beef cuts, ethically sourced and delivered with care. Taste the tradition and quality from Uruguay to your table.
                 </p>
                 <div class="social-links mt-3">
-                    <a href="#" class="social-link me-3" title="Facebook">
-                        <i class="fab fa-facebook fa-lg"></i>
-                    </a>
+                    
                     <a href="#" class="social-link me-3" title="Instagram">
                         <i class="fab fa-instagram fa-lg"></i>
                     </a>
-                    <a href="#" class="social-link me-3" title="Twitter">
-                        <i class="fab fa-twitter fa-lg"></i>
-                    </a>
+                  
                     <a href="#" class="social-link" title="WhatsApp">
                         <i class="fab fa-whatsapp fa-lg"></i>
                     </a>

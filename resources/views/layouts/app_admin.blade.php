@@ -30,9 +30,11 @@
 </head>
 <body>
  <nav class="d-flex justify-content-between align-items-center p-3 border-bottom">
-    <div class="logo">
-        <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" height="50">
-    </div>
+   <div class="logo">
+    <a href="{{ route('home') }}">
+        <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo">
+    </a>
+</div>
 
     <div class="nav-links d-flex gap-4 align-items-center">
         <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
