@@ -687,88 +687,106 @@
         </div>
     </form>
 </div>
-        <!-- Grid de Productos -->
-        <div class="products-grid">
-            @forelse ($products as $product)
-                <div class="product-card">
-                    {{-- MEDIA --}}
-                    <div class="pc-media">
-                        @php $imgs = $product->images; @endphp
-                        @if($imgs->count() > 1)
-                            <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="false">
-                                <div class="carousel-inner">
-                                    @foreach($imgs as $k => $img)
-                                        <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
-                                            <img src="{{ Storage::url($img->image) }}"
-                                                 class="pc-img"
-                                                 alt="{{ $product->name }}"
-                                                 loading="lazy"
-                                                 onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
-                                        </div>
-                                    @endforeach
+      <!-- Grid de Productos -->
+<div class="products-grid">
+    @forelse ($products as $product)
+        <div class="product-card">
+            {{-- MEDIA --}}
+            <div class="pc-media">
+                @php $imgs = $product->images; @endphp
+                @if($imgs->count() > 1)
+                    <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="false">
+                        <div class="carousel-inner">
+                            @foreach($imgs as $k => $img)
+                                <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
+                                    <img src="{{ Storage::url($img->image) }}"
+                                         class="pc-img"
+                                         alt="{{ $product->name }}"
+                                         loading="lazy"
+                                         onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
                                 </div>
-                            </div>
-                        @else
-                            <a href="{{ route('product.show', $product) }}" class="pc-media-link">
-                                <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
-                                     class="pc-img"
-                                     alt="{{ $product->name }}"
-                                     loading="lazy">
-                            </a>
-                        @endif
-                    </div>
-
-                    {{-- BODY --}}
-                    <div class="pc-body">
-                        <div class="pc-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
-
-                        <h3 class="pc-title">
-                            <a href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
-                        </h3>
-
-                        @php
-                            $totalPrice = (float)($product->price ?? 0) + (float)($product->interest ?? 0);
-                            $avg = $product->avg_weight;
-                            if ($avg && !str_ends_with(strtolower($avg), 'lb') && !str_ends_with(strtolower($avg), 'kg')) {
-                                $avg .= ' lb';
-                            }
-                        @endphp
-                        <div class="pc-price-row">
-                            <div class="pc-price">${{ number_format($totalPrice, 0, ',', '.') }}</div>
-                            <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
+                            @endforeach
                         </div>
                     </div>
+                @else
+                    <a href="{{ route('product.show', $product) }}" class="pc-media-link">
+                        <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
+                             class="pc-img"
+                             alt="{{ $product->name }}"
+                             loading="lazy">
+                    </a>
+                @endif
 
-                    {{-- ACTIONS --}}
-                    <div class="pc-actions">
-                        <a href="{{ route('product.show', $product) }}" class="btn-ghost">
-                            <i class="fas fa-eye"></i> <span>View Details</span>
-                        </a>
-                        <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <button type="submit" class="btn-solid">
-                                <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12">
-                    <div class="no-products">
-                        <p>No products found with the selected filters.</p>
-                    </div>
-                </div>
-            @endforelse
-        </div>
-
-        @if(isset($products) && $products->hasPages())
-            <div class="pagination-wrapper">
-                {{ $products->appends(request()->query())->links() }}
+                {{-- 🔥 Badge de Descuento --}}
+                @if($product->descuento > 0)
+                    <span class="position-absolute top-0 end-0 badge bg-danger m-2 fs-6">
+                        -{{ $product->descuento }}% OFF
+                    </span>
+                @endif
             </div>
-        @endif
-    </div>
+
+            {{-- BODY --}}
+            <div class="pc-body">
+                <div class="pc-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
+
+                <h3 class="pc-title">
+                    <a href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
+                </h3>
+
+                @php
+                    $basePrice = (float)($product->price ?? 0) + (float)($product->interest ?? 0);
+                    $discountAmount = ($basePrice * ($product->descuento ?? 0)) / 100;
+                    $finalPrice = $basePrice - $discountAmount;
+                    $avg = $product->avg_weight;
+                    if ($avg && !str_ends_with(strtolower($avg), 'lb') && !str_ends_with(strtolower($avg), 'kg')) {
+                        $avg .= ' lb';
+                    }
+                @endphp
+                
+                <div class="pc-price-row">
+                    @if($product->descuento > 0)
+                        {{-- Precio original tachado --}}
+                        <div class="pc-price-original text-muted text-decoration-line-through small">
+                            ${{ number_format($basePrice, 2, '.', ',') }}
+                        </div>
+                        {{-- Precio con descuento --}}
+                        <div class="pc-price text-danger fw-bold">${{ number_format($finalPrice, 2, '.', ',') }}</div>
+                    @else
+                        {{-- Precio normal --}}
+                        <div class="pc-price">${{ number_format($basePrice, 2, '.', ',') }}</div>
+                    @endif
+                    <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
+                </div>
+            </div>
+
+            {{-- ACTIONS --}}
+            <div class="pc-actions">
+                <a href="{{ route('product.show', $product) }}" class="btn-ghost">
+                    <i class="fas fa-eye"></i> <span>View Details</span>
+                </a>
+                <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <button type="submit" class="btn-solid">
+                        <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    @empty
+        <div class="col-12">
+            <div class="no-products">
+                <p>No products found with the selected filters.</p>
+            </div>
+        </div>
+    @endforelse
 </div>
+
+@if(isset($products) && $products->hasPages())
+    <div class="pagination-wrapper">
+        {{ $products->appends(request()->query())->links() }}
+    </div>
+@endif
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

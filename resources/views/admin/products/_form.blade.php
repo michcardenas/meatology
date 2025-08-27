@@ -249,12 +249,23 @@
     </button>
 </div>
 
-{{-- El precio base del producto se mantiene separado --}}
-<div class="col-md-4 mb-4">
-    <label class="form-label fw-bold text-light">Precio Base *</label>
-    <input type="number" name="price" step="0.01" class="form-control bg-dark text-light border-secondary"
-           value="{{ old('price', $product->price ?? 0) }}" required>
-    <small class="text-muted">Este es el precio base del producto</small>
+{{-- Sección de Precio y Descuento --}}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <label class="form-label fw-bold text-light">Precio Base *</label>
+        <input type="number" name="price" step="0.01" class="form-control bg-dark text-light border-secondary"
+               value="{{ old('price', $product->price ?? 0) }}" required>
+        <small class="text-muted">Este es el precio base del producto</small>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <label class="form-label fw-bold text-light">Descuento (%)</label>
+        <input type="number" name="descuento" step="0.01" min="0" max="100" 
+               class="form-control bg-dark text-light border-secondary"
+               value="{{ old('descuento', $product->descuento ?? 0) }}"
+               placeholder="ej: 15.50">
+        <small class="text-muted">Porcentaje de descuento (0-100%)</small>
+    </div>
 </div>
 
 <div class="d-flex justify-content-between mt-4">

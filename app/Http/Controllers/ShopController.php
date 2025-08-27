@@ -78,7 +78,7 @@ public function index(Request $request)
 
 
 
-     public function checkout()
+public function checkout()
 {
     // Verificar que el carrito no esté vacío
     if (Cart::count() == 0) {
@@ -88,35 +88,71 @@ public function index(Request $request)
     // Obtener información del carrito
     $cartItems = Cart::content();
     
-    // 🔥 SOLUCIÓN: Calcular subtotal manualmente para evitar problemas de formateo
-    $subtotal = 0;
+    // Enriquecer items del carrito con información de descuento desde la BD (igual que en CartController)
     foreach ($cartItems as $item) {
-        $subtotal += floatval($item->total);
+        $product = Product::find($item->id);
+        
+        if ($product && $product->descuento > 0) {
+            // Calcular información de descuento
+            $originalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
+            $discountAmount = ($originalPrice * $product->descuento) / 100;
+            
+            // Agregar información de descuento a las opciones del item
+            $newOptions = $item->options->merge([
+                'descuento' => $product->descuento,
+                'original_price' => $originalPrice,
+                'discount_amount' => $discountAmount,
+            ]);
+            
+            // Actualizar las opciones del item en el carrito
+            Cart::update($item->rowId, [
+                'options' => $newOptions->toArray()
+            ]);
+        }
     }
     
-    // 🚨 DEBUG: Para verificar los valores
-    \Log::info('Cart Debug:', [
+    // Obtener items actualizados
+    $cartItems = Cart::content();
+    
+    // Calcular subtotal y ahorros
+    $subtotal = 0;
+    $totalSavings = 0;
+    $originalSubtotal = 0;
+    
+    foreach ($cartItems as $item) {
+        $subtotal += floatval($item->total);
+        
+        // Si tiene descuento, calcular ahorros
+        if (isset($item->options['descuento']) && $item->options['descuento'] > 0) {
+            $originalItemTotal = $item->options['original_price'] * $item->qty;
+            $originalSubtotal += $originalItemTotal;
+            $totalSavings += ($item->options['discount_amount'] * $item->qty);
+        } else {
+            $originalSubtotal += floatval($item->total);
+        }
+    }
+
+    // 🚨 DEBUG: Para verificar los valores con descuentos
+    \Log::info('Checkout Debug with Discounts:', [
         'cart_subtotal_method' => Cart::subtotal(),
         'manual_subtotal' => $subtotal,
+        'original_subtotal' => $originalSubtotal,
+        'total_savings' => $totalSavings,
         'cart_count' => Cart::count(),
-        'first_item' => $cartItems->first() ? [
-            'name' => $cartItems->first()->name,
-            'price' => $cartItems->first()->price,
-            'qty' => $cartItems->first()->qty,
-            'total' => $cartItems->first()->total,
-        ] : null
     ]);
 
     // Verificar si el usuario está autenticado
     $user = Auth::user();
 
-    // 🔴 Obtener países y ciudades para el envío
+    // Obtener países y ciudades para el envío
     $countries = Country::with('cities')->orderBy('name')->get();
 
-    // Datos para la vista
+    // Datos para la vista (incluyendo información de descuentos)
     $checkoutData = [
         'cartItems' => $cartItems,
-        'subtotal' => $subtotal, // 🔥 Usar subtotal calculado manualmente
+        'subtotal' => $subtotal,
+        'originalSubtotal' => $originalSubtotal,  // Nuevo
+        'totalSavings' => $totalSavings,          // Nuevo
         'countries' => $countries,
         'isAuthenticated' => $user ? true : false,
         'user' => $user

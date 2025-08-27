@@ -45,6 +45,7 @@ public function store(Request $request)
         'stock' => 'required|integer|min:0',
         'category_id' => 'required|exists:categories,id',
         'pais' => 'required|string|max:100',
+        'descuento' => 'nullable|numeric|min:0|max:100',
         
         'images' => 'nullable|array|max:5',
         'images.*' => 'image|max:2048',
@@ -62,6 +63,7 @@ public function store(Request $request)
             'avg_weight' => $request->avg_weight ?? '',
             'category_id' => $request->category_id,
             'pais' => $request->pais,
+            'descuento' => $request->descuento ?? 0,
         ]);
 
         // 🔥 PROCESAR IMÁGENES - USANDO STORAGE CORRECTO
@@ -136,7 +138,6 @@ public function store(Request $request)
             ->with('error', 'Error: Intenta con menos archivos o archivos más pequeños.');
     }
 }
-
     /*──────────────────────── EDIT ────────────────────────*/
 public function edit($id)
 {
@@ -147,7 +148,7 @@ public function edit($id)
     return view('admin.products.edit', compact('product', 'categories', 'countries'));
 }
 
-    /*──────────────────────── UPDATE ──────────────────────*/
+/*──────────────────────── UPDATE ──────────────────────*/
 public function update(Request $request, Product $product)
 {
     // 🔥 CONFIGURACIÓN AGRESIVA PARA EVITAR TIMEOUT
@@ -166,6 +167,7 @@ public function update(Request $request, Product $product)
         'avg_weight' => 'nullable|string|max:50',
         'category_id' => 'required|exists:categories,id',
         'pais' => 'string|max:255',
+        'descuento' => 'nullable|numeric|min:0|max:100',
         
         'images' => 'nullable|array|max:5',
         'images.*' => 'nullable|image|max:2048',
@@ -257,7 +259,6 @@ public function update(Request $request, Product $product)
             ->with('error', 'Error: Intenta con menos archivos o archivos más pequeños.');
     }
 }
-
     /*──────────────────────── DESTROY ─────────────────────*/
 public function destroy(Product $product)
 {

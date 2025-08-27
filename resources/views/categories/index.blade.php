@@ -49,7 +49,11 @@
                                 @endif
                                 
                                 @if($cat->description)
-                                    <p class="card-text text-light">{{ Str::limit($cat->description, 100) }}</p>
+                                    {{-- 🔥 SOLUCIÓN: Usar strip_tags para quitar HTML y mostrar solo texto en preview --}}
+                                    <p class="card-text text-light">{{ Str::limit(strip_tags($cat->description), 100) }}</p>
+                                    
+                                    {{-- 🔥 ALTERNATIVA: Si quieres mostrar HTML renderizado (no recomendado para previews) --}}
+                                    {{-- <div class="card-text text-light description-preview">{!! Str::limit($cat->description, 150) !!}</div> --}}
                                 @else
                                     <p class="card-text text-muted">No description available</p>
                                 @endif
@@ -78,6 +82,13 @@
                 </div>
             @endforeach
         </div>
+        
+        {{-- 🔥 PAGINACIÓN (si la tienes configurada) --}}
+        @if(method_exists($categories, 'links'))
+            <div class="d-flex justify-content-center mt-4">
+                {{ $categories->links() }}
+            </div>
+        @endif
         
     @else
         <div class="text-center py-5">
@@ -113,6 +124,50 @@
 
 .category-card:hover .card-img-top {
     transform: scale(1.05);
+}
+
+/* 🔥 ESTILOS PARA DESCRIPCIONES CON HTML RENDERIZADO */
+.description-preview {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    max-height: 80px;
+    overflow: hidden;
+    position: relative;
+}
+
+.description-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(transparent, #212529);
+    pointer-events: none;
+}
+
+/* Estilos para elementos HTML dentro de las descripciones */
+.description-preview p {
+    margin-bottom: 0.5rem;
+}
+
+.description-preview strong {
+    font-weight: 600;
+    color: #ffc107;
+}
+
+.description-preview em {
+    font-style: italic;
+    color: #adb5bd;
+}
+
+.description-preview ul, .description-preview ol {
+    padding-left: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.description-preview li {
+    font-size: 0.85rem;
 }
 
 .btn-warning {

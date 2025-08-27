@@ -28,12 +28,10 @@
             <input type="text" name="name" id="name" class="form-control" required value="{{ old('name', $category->name) }}" placeholder="Enter category name">
         </div>
 
-        <div class="mb-3">
-            <label for="description" class="form-label text-light">Description</label>
-            <textarea name="description" id="description" class="form-control" rows="4" placeholder="Enter category description">{{ old('description', $category->description) }}</textarea>
+        <div class="mb-4">
+            <label for="description" class="form-label fw-bold text-light">Description</label>
+            <textarea name="description" id="description" rows="6" class="form-control bg-dark text-light border-secondary" placeholder="Enter category description">{{ old('description', $category->description) }}</textarea>
         </div>
-
-    
 
         <div class="mb-3">
             <label for="image" class="form-label text-light">Category Image</label>
@@ -55,7 +53,7 @@
         </div>
 
         <div class="d-flex gap-3">
-            <button type="submit" class="btn btn-warning text-dark fw-bold">
+            <button type="submit" class="btn btn-warning text-dark fw-bold" id="saveBtn">
                 <i class="fas fa-save me-2"></i>Update Category
             </button>
             <a href="{{ route('categories.index') }}" class="btn btn-secondary">
@@ -64,6 +62,40 @@
         </div>
     </form>
 </div>
+
+<!-- 🔥 CKEDITOR SCRIPT -->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#description'), {
+            toolbar: [
+                'heading', '|',
+                'bold','italic','underline','link','bulletedList','numberedList','blockQuote','undo','redo'
+            ],
+            link: { addTargetToExternalLinks: true },
+            removePlugins: [
+                'CKBox','CKFinder','EasyImage','ImageUpload','MediaEmbed','Table','TableToolbar'
+            ]
+        })
+        .then(editor => {
+            // Ajuste visual para dark mode
+            const editable = editor.ui.getEditableElement();
+            editable.style.backgroundColor = '#111';
+            editable.style.color = '#e6e6e6';
+            editable.style.minHeight = '180px';
+            editable.style.border = '1px solid #444';
+            editable.style.borderRadius = '6px';
+        })
+        .catch(console.error);
+
+    // 🔥 INDICADOR DE PROGRESO AL ENVIAR
+    document.querySelector('form').addEventListener('submit', function() {
+        const btn = document.getElementById('saveBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating Category...';
+        btn.disabled = true;
+    });
+</script>
 
 <style>
 /* Estilos para el formulario de edición */
@@ -118,6 +150,22 @@
 /* Para la imagen actual */
 .border {
     border: 2px solid #4a5568 !important;
+}
+
+/* 🔥 DARK MODE STYLES PARA CKEDITOR */
+.ck-content {
+  background: #111 !important;
+  color: #e6e6e6 !important;
+}
+.ck.ck-editor__main>.ck-editor__editable {
+  border-color: #444 !important;
+}
+.ck.ck-toolbar {
+  background: #121212 !important;
+  border-color: #444 !important;
+}
+.ck.ck-button, .ck.ck-toolbar__separator {
+  filter: brightness(0.9);
 }
 </style>
 @endsection

@@ -6,33 +6,80 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <h2>🛒 Checkout</h2>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>🛒 Checkout</h2>
+                @if(isset($totalSavings) && $totalSavings > 0)
+                    <div class="badge bg-success fs-6 px-3 py-2">
+                        🏷️ You're saving ${{ number_format($totalSavings, 2, '.', ',') }}!
+                    </div>
+                @endif
+            </div>
             
             <div class="row">
                 <!-- Información del pedido -->
                 <div class="col-md-8">
-                    <div class="card mb-4">
+                    <div class="card mb-4 {{ isset($totalSavings) && $totalSavings > 0 ? 'border-success' : '' }}">
                         <div class="card-header">
                             <h5>📦 Order Details</h5>
+                            @if(isset($totalSavings) && $totalSavings > 0)
+                                <small class="text-success">🎉 Items with discounts applied</small>
+                            @endif
                         </div>
                         <div class="card-body">
                             @foreach($cartItems as $item)
-                                <div class="row align-items-center mb-3 pb-3 border-bottom">
+                                <div class="row align-items-center mb-3 pb-3 border-bottom {{ isset($item->options->descuento) && $item->options->descuento > 0 ? 'bg-success bg-opacity-10' : '' }}">
                                     <div class="col-md-2">
-                                        <img src="{{ $item->options->image ? Storage::url($item->options->image) : asset('images/placeholder.jpg') }}" 
-                                             class="img-fluid rounded" alt="{{ $item->name }}">
+                                        <div class="position-relative">
+                                            <img src="{{ $item->options->image ? Storage::url($item->options->image) : asset('images/placeholder.jpg') }}" 
+                                                 class="img-fluid rounded" alt="{{ $item->name }}">
+                                            @if(isset($item->options->descuento) && $item->options->descuento > 0)
+                                                <span class="position-absolute top-0 start-0 badge bg-danger m-1 small">
+                                                    -{{ $item->options->descuento }}%
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <h6>{{ $item->name }}</h6>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <h6>{{ $item->name }}</h6>
+                                            @if(isset($item->options->descuento) && $item->options->descuento > 0)
+                                                <span class="badge bg-danger">-{{ $item->options->descuento }}% OFF</span>
+                                            @endif
+                                        </div>
                                         <small class="text-muted">{{ $item->options->category_name }}</small>
                                         <br>
-                                        <small class="text-muted">Qty: {{ $item->qty }} × ${{ number_format($item->price, 2, '.', ',') }}</small>
+                                        
+                                        @if(isset($item->options->descuento) && $item->options->descuento > 0)
+                                            <small class="text-muted text-decoration-line-through">
+                                                Original: ${{ number_format($item->options->original_price, 2, '.', ',') }} × {{ $item->qty }}
+                                            </small>
+                                            <br>
+                                            <small class="text-success fw-bold">
+                                                Discounted: ${{ number_format($item->price, 2, '.', ',') }} × {{ $item->qty }}
+                                            </small>
+                                            <br>
+                                            <small class="text-success">
+                                                You save: ${{ number_format($item->options->discount_amount * $item->qty, 2, '.', ',') }}
+                                            </small>
+                                        @else
+                                            <small class="text-muted">Qty: {{ $item->qty }} × ${{ number_format($item->price, 2, '.', ',') }}</small>
+                                        @endif
                                     </div>
                                     <div class="col-md-4 text-end">
-                                        <strong>${{ number_format($item->total, 2, '.', ',') }}</strong>
+                                        @if(isset($item->options->descuento) && $item->options->descuento > 0)
+                                            <div class="text-muted text-decoration-line-through small">
+                                                ${{ number_format($item->options->original_price * $item->qty, 2, '.', ',') }}
+                                            </div>
+                                            <strong class="text-danger">${{ number_format($item->total, 2, '.', ',') }}</strong>
+                                        @else
+                                            <strong>${{ number_format($item->total, 2, '.', ',') }}</strong>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
+                            
+                            {{-- Resumen de ahorros en productos --}}
+                          
                         </div>
                     </div>
 
@@ -91,6 +138,8 @@
                                     <input type="hidden" id="final-shipping" name="shipping">
                                     <input type="hidden" id="applied-discount-code" name="discount_code">
                                     <input type="hidden" id="applied-discount-amount" name="discount_amount">
+                                    {{-- Agregar información de descuentos de productos --}}
+                                    <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
                                     
                                     <div class="row">
                                         <div class="col-md-6">
@@ -125,6 +174,8 @@
                                     <input type="hidden" id="final-shipping" name="shipping">
                                     <input type="hidden" id="applied-discount-code" name="discount_code">
                                     <input type="hidden" id="applied-discount-amount" name="discount_amount">
+                                    {{-- Agregar información de descuentos de productos --}}
+                                    <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
                                     
                                     <div class="row">
                                         <div class="col-md-6">
@@ -167,14 +218,35 @@
 
                 <!-- Resumen del pedido -->
                 <div class="col-md-4">
-                    <div class="card sticky-top">
-                        <div class="card-header">
-                            <h5>💰 Order Summary</h5>
-                        </div>
+                    <div class="card sticky-top {{ isset($totalSavings) && $totalSavings > 0 ? 'border-success' : '' }}">
+                        @if(isset($totalSavings) && $totalSavings > 0)
+                            <div class="card-header bg-success text-white text-center">
+                                <strong>💰 Order Summary - With Savings!</strong>
+                            </div>
+                        @else
+                            <div class="card-header">
+                                <h5>💰 Order Summary</h5>
+                            </div>
+                        @endif
                         <div class="card-body">
-                            <!-- Sección de descuento -->
+                            {{-- Mostrar ahorros de productos primero --}}
+                            @if(isset($totalSavings) && $totalSavings > 0)
+                             
+                                
+                                <div class="d-flex justify-content-between mb-2 text-muted text-decoration-line-through">
+                                    <span>Original subtotal:</span>
+                                    <span>${{ number_format($originalSubtotal ?? 0, 2, '.', ',') }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2 text-success fw-bold">
+                                    <span>Product savings:</span>
+                                    <span>-${{ number_format($totalSavings, 2, '.', ',') }}</span>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+                            
+                            <!-- Sección de descuento adicional -->
                             <div class="mb-3 p-3 bg-light rounded">
-                                <h6 class="mb-2">🎫 Discount Code</h6>
+                                <h6 class="mb-2">🎫 Additional Discount Code</h6>
                                 <div class="input-group mb-2">
                                     <input type="text" id="discount-code" class="form-control" 
                                         placeholder="Enter discount code" style="text-transform: uppercase;">
@@ -201,9 +273,9 @@
                                 <span id="display-subtotal">${{ number_format($subtotal, 2, '.', ',') }}</span>
                             </div>
                             
-                            <!-- Línea de descuento (oculta inicialmente) -->
+                            <!-- Línea de descuento adicional (oculta inicialmente) -->
                             <div id="discount-line" class="d-flex justify-content-between mb-2 text-success" style="display: none;">
-                                <span id="discount-label">Discount:</span>
+                                <span id="discount-label">Additional Discount:</span>
                                 <span id="discount-amount">-$0.00</span>
                             </div>
                             
@@ -221,12 +293,21 @@
                                 <strong id="display-total">${{ number_format($subtotal, 2, '.', ',') }}</strong>
                             </div>
                             
+                            @if(isset($totalSavings) && $totalSavings > 0)
+                                <div class="alert alert-info py-2 text-center">
+                                    <small><strong>🎯 Total Savings: ${{ number_format($totalSavings, 2, '.', ',') }}</strong></small>
+                                </div>
+                            @endif
+                            
                             <div id="location-warning" class="alert alert-warning" style="display: none;">
                                 📍 Please select shipping location to see final costs
                             </div>
                             
                             <button type="submit" form="checkoutForm" class="btn btn-success w-100 mb-2" id="place-order-btn" disabled>
                                 💳 Place Order
+                                @if(isset($totalSavings) && $totalSavings > 0)
+                                    <br><small>With ${{ number_format($totalSavings, 2, '.', ',') }} in savings!</small>
+                                @endif
                             </button>
                             
                             <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary w-100">
@@ -278,12 +359,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDiscount = 0;
     let appliedDiscountData = null;
     
-    console.log('Subtotal recibido:', originalSubtotal);
+    console.log('Subtotal with product discounts:', originalSubtotal);
+    console.log('Product savings:', parseFloat('{{ $totalSavings ?? 0 }}'));
     
     // Mostrar advertencia inicialmente
     locationWarning.style.display = 'block';
 
-    // 🎫 Manejar aplicación de descuento
+    // 🎫 Manejar aplicación de descuento adicional
     applyDiscountBtn.addEventListener('click', function() {
         const codigo = discountCodeInput.value.trim().toUpperCase();
         
@@ -457,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function showDiscountLine() {
         if (appliedDiscountData) {
-            discountLabel.textContent = `Discount (${appliedDiscountData.codigo} - ${appliedDiscountData.porcentaje}%):`;
+            discountLabel.textContent = `Additional Discount (${appliedDiscountData.codigo} - ${appliedDiscountData.porcentaje}%):`;
             discountAmount.textContent = '-$' + currentDiscount.toFixed(2);
             discountLine.style.display = 'flex';
         }

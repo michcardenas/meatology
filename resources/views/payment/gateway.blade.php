@@ -17,11 +17,12 @@
         border-left: 4px solid #011904;
     }
     #card-container {
-        min-height: 100px;
-        padding: 0;
-        border: none;
-        border-radius: 0;
-        background-color: transparent;
+        min-height: 60px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #fff;
+        margin-bottom: 10px;
     }
     .security-badges {
         background: linear-gradient(135deg, #011904 0%, #28a745 100%);
@@ -53,6 +54,18 @@
         color: #011904;
         font-weight: bold;
     }
+    .loading-message {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
 </style>
 @endpush
 
@@ -71,19 +84,25 @@
                     <h6 class="order-header">Order #{{ $order->order_number }}</h6>
                     <hr>
                     
-                    @php
-                        // 🔥 CALCULAR SUBTOTAL CORRECTO
-                        $correctSubtotal = $order->total_amount - $order->tax_amount - $order->shipping_amount;
+                    @if(isset($totalSavings) && $totalSavings > 0)
+                        <div class="alert alert-success py-2 mb-3">
+                            <small><i class="fas fa-tag"></i> <strong>You saved: ${{ number_format($totalSavings, 2) }}</strong></small>
+                        </div>
                         
-                        // 🚨 DEBUG: Para ver los valores
-                        \Log::info('Order Debug:', [
-                            'order_id' => $order->id,
-                            'total_amount' => $order->total_amount,
-                            'tax_amount' => $order->tax_amount,
-                            'shipping_amount' => $order->shipping_amount,
-                            'subtotal_db' => $order->subtotal,
-                            'calculated_subtotal' => $correctSubtotal
-                        ]);
+                        <div class="d-flex justify-content-between mb-2 text-muted text-decoration-line-through">
+                            <span>Original subtotal:</span>
+                            <span>${{ number_format($originalSubtotal ?? 0, 2) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Product savings:</span>
+                            <span>-${{ number_format($totalSavings, 2) }}</span>
+                        </div>
+                        <hr class="my-2">
+                    @endif
+                    
+                    @php
+                        // Calcular subtotal correcto
+                        $correctSubtotal = $order->total_amount - $order->tax_amount - $order->shipping_amount;
                     @endphp
                     
                     <div class="d-flex justify-content-between mb-2">
@@ -106,13 +125,6 @@
                         <span class="fw-bold">Total to Pay:</span>
                         <span class="total-amount">${{ number_format($order->total_amount, 2) }}</span>
                     </div>
-                    
-                    {{-- 🚨 MOSTRAR ADVERTENCIA SI HAY DISCREPANCIA --}}
-                    @if(abs($order->subtotal - $correctSubtotal) > 0.01)
-                        <div class="alert alert-warning alert-sm">
-                            <small><i class="fas fa-exclamation-triangle"></i> Note: Subtotal recalculated for accuracy</small>
-                        </div>
-                    @endif
                     
                     <hr>
                     <h6 class="text-info">
@@ -170,7 +182,18 @@
                             <label class="form-label fw-bold">
                                 <i class="fas fa-credit-card me-2"></i>Card Information
                             </label>
-                            <div id="card-container"></div>
+                            
+                            <!-- Loading message -->
+                            <div id="loading-message" class="loading-message">
+                                <i class="fas fa-spinner fa-spin"></i> Loading payment form...
+                            </div>
+                            
+                            <!-- Error message container -->
+                            <div id="error-message" class="error-message" style="display: none;"></div>
+                            
+                            <!-- Square payment form container -->
+                            <div id="card-container" style="display: none;"></div>
+                            
                             <small class="form-text text-muted mt-2">
                                 <i class="fas fa-lock me-1"></i>
                                 Your data is protected with SSL encryption
@@ -180,7 +203,7 @@
                         <input type="hidden" id="source-id" name="source_id">
                         
                         <div class="d-grid gap-2 mb-3">
-                            <button type="submit" class="btn btn-success btn-lg" id="payment-button">
+                            <button type="submit" class="btn btn-success btn-lg" id="payment-button" disabled>
                                 <i class="fas fa-lock me-2"></i>
                                 Complete Payment - ${{ number_format($order->total_amount, 2) }}
                             </button>
@@ -220,79 +243,113 @@
 <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
 
 <script>
-async function initializeCard(payments) {
-    const card = await payments.card({
-        style: {
-            '.input-container': {
-                borderRadius: '6px',
-                borderColor: '#d1d5db'
-            },
-            '.input-container.is-focus': {
-                borderColor: '#011904'
-            },
-            '.input-container.is-error': {
-                borderColor: '#ef4444'
-            }
-        }
-    });
-    await card.attach('#card-container');
-    return card;
-}
-
 document.addEventListener('DOMContentLoaded', async function () {
+    console.log('Initializing Square payment form...');
+    
+    const loadingMessage = document.getElementById('loading-message');
+    const errorMessage = document.getElementById('error-message');
+    const cardContainer = document.getElementById('card-container');
+    const paymentButton = document.getElementById('payment-button');
+    
+    // Show error function
+    function showError(message) {
+        console.error('Square Error:', message);
+        loadingMessage.style.display = 'none';
+        errorMessage.style.display = 'block';
+        errorMessage.innerHTML = `
+            <strong>Payment form error:</strong> ${message}<br>
+            <small>Please refresh the page or contact support if the problem persists.</small>
+        `;
+    }
+    
+    // Check if Square.js loaded
+    if (!window.Square) {
+        showError('Square.js failed to load. Please check your internet connection and refresh the page.');
+        return;
+    }
+    
+    console.log('Square.js loaded successfully');
     console.log('Application ID:', '{{ config("square.application_id") }}');
     console.log('Location ID:', '{{ config("square.location_id") }}');
     
-    if (!window.Square) {
-        throw new Error('Square.js failed to load properly');
-    }
-
-    const payments = window.Square.payments('{{ config("square.application_id") }}', '{{ config("square.location_id") }}');
-    
-    let card;
     try {
-        card = await initializeCard(payments);
-    } catch (e) {
-        console.error('Initializing Card failed', e);
-        document.getElementById('card-container').innerHTML = '<div class="alert alert-danger">Failed to load payment form. Please refresh the page.</div>';
-        return;
-    }
-
-    document.getElementById('payment-form').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const button = document.getElementById('payment-button');
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-
-        try {
-            console.log('Starting tokenization...');
-            const result = await card.tokenize();
-            console.log('Tokenization result:', result);
-            
-            if (result.status === 'OK') {
-                console.log('Token generated:', result.token);
-                document.getElementById('source-id').value = result.token;
-                console.log('Form submitting with token...');
-                e.target.submit();
-            } else {
-                console.error('Tokenization failed', result);
-                let errorMsg = 'Error processing card information.';
-                if (result.errors && result.errors.length > 0) {
-                    errorMsg += ' ' + result.errors[0].message;
+        // Initialize Square Payments
+        const payments = window.Square.payments('{{ config("square.application_id") }}', '{{ config("square.location_id") }}');
+        
+        // Initialize card
+        const card = await payments.card({
+            style: {
+                '.input-container': {
+                    borderRadius: '6px',
+                    borderColor: '#d1d5db',
+                    padding: '12px'
+                },
+                '.input-container.is-focus': {
+                    borderColor: '#011904'
+                },
+                '.input-container.is-error': {
+                    borderColor: '#ef4444'
+                },
+                '.message-text': {
+                    color: '#ef4444'
                 }
-                alert(errorMsg + ' Please check your details and try again.');
+            }
+        });
+        
+        // Attach card to container
+        await card.attach('#card-container');
+        
+        // Show form and hide loading
+        loadingMessage.style.display = 'none';
+        cardContainer.style.display = 'block';
+        paymentButton.disabled = false;
+        
+        console.log('Square card form initialized successfully');
+        
+        // Handle form submission
+        document.getElementById('payment-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const button = document.getElementById('payment-button');
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Payment...';
+            
+            try {
+                console.log('Starting payment tokenization...');
+                const result = await card.tokenize();
+                console.log('Tokenization result:', result);
+                
+                if (result.status === 'OK') {
+                    console.log('Token generated successfully:', result.token);
+                    document.getElementById('source-id').value = result.token;
+                    console.log('Submitting form with token...');
+                    this.submit();
+                } else {
+                    console.error('Tokenization failed:', result);
+                    let errorMsg = 'Error processing card information.';
+                    
+                    if (result.errors && result.errors.length > 0) {
+                        const firstError = result.errors[0];
+                        errorMsg = firstError.detail || firstError.message || errorMsg;
+                    }
+                    
+                    alert(errorMsg + ' Please check your card details and try again.');
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Payment processing error:', error);
+                alert('Payment processing failed: ' + error.message + '. Please try again.');
                 button.disabled = false;
                 button.innerHTML = originalText;
             }
-        } catch (e) {
-            console.error('Payment failed', e);
-            alert('Payment processing failed. Please try again. Error: ' + e.message);
-            button.disabled = false;
-            button.innerHTML = originalText;
-        }
-    });
+        });
+        
+    } catch (error) {
+        console.error('Error initializing Square payments:', error);
+        showError('Failed to initialize payment form: ' + error.message);
+    }
 });
 </script>
 @endsection

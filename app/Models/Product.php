@@ -20,6 +20,7 @@ class Product extends Model
         'category_id',
         'interest',
         'pais', // ← NUEVO CAMPO AGREGADO
+        'descuento', 
     ];
 
 

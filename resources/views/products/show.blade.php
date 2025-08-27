@@ -9,7 +9,14 @@
        <div class="col-md-6">
     <div class="product-images">
         @if($product->images->count() > 0)
-            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div id="productCarousel" class="carousel slide position-relative" data-bs-ride="carousel">
+                
+                {{-- 🔥 Badge de Descuento --}}
+                @if($product->descuento > 0)
+                    <span class="position-absolute top-0 end-0 badge bg-danger m-3 fs-5" style="z-index: 10;">
+                        -{{ $product->descuento }}% OFF
+                    </span>
+                @endif
                 
                 <!-- Indicadores tipo puntos -->
                 <div class="carousel-indicators" style="bottom: 10px;">
@@ -45,10 +52,19 @@
                 </button>
             </div>
         @else
-            <img src="{{ asset('images/placeholder.jpg') }}" 
-                 class="img-fluid rounded" 
-                 alt="{{ $product->name }}"
-                 style="width: 100%; height: 500px; object-fit: cover;">
+            <div class="position-relative">
+                <img src="{{ asset('images/placeholder.jpg') }}" 
+                     class="img-fluid rounded" 
+                     alt="{{ $product->name }}"
+                     style="width: 100%; height: 500px; object-fit: cover;">
+                
+                {{-- 🔥 Badge de Descuento para imagen placeholder --}}
+                @if($product->descuento > 0)
+                    <span class="position-absolute top-0 end-0 badge bg-danger m-3 fs-5">
+                        -{{ $product->descuento }}% OFF
+                    </span>
+                @endif
+            </div>
         @endif
 
         <!-- 🔥 NUEVA SECCIÓN: CERTIFICACIONES DEBAJO DEL CARRUSEL -->
@@ -105,10 +121,25 @@
                 
                 <div class="price-section mb-4">
                     @php
-                        $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                        $basePrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                        $discountAmount = ($basePrice * ($product->descuento ?? 0)) / 100;
+                        $finalPrice = $basePrice - $discountAmount;
                     @endphp
-                    <h3 class="text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</h3>
-<small class="text-white">/ {{ $product->avg_weight ?: 'per lb' }}</small>
+                    
+                    @if($product->descuento > 0)
+                        {{-- Precio original tachado --}}
+                        <div class="text-muted text-decoration-line-through mb-1">
+                            <span class="h5">${{ number_format($basePrice, 2, '.', ',') }}</span>
+                        </div>
+                        {{-- Precio con descuento --}}
+                        <h3 class="text-danger fw-bold">${{ number_format($finalPrice, 2, '.', ',') }}</h3>
+                        <small class="text-success fw-bold">You save: ${{ number_format($discountAmount, 2, '.', ',') }}</small>
+                    @else
+                        {{-- Precio normal --}}
+                        <h3 class="text-success fw-bold">${{ number_format($basePrice, 2, '.', ',') }}</h3>
+                    @endif
+                    
+                    <small class="text-white d-block">/ {{ $product->avg_weight ?: 'per lb' }}</small>
                 </div>
 
                 <div class="stock-info mb-4">
@@ -169,6 +200,9 @@
                         @if($product->pais)
                             <li><strong>Origin:</strong> {{ $product->pais }}</li>
                         @endif
+                        @if($product->descuento > 0)
+                            <li><strong>Discount:</strong> {{ $product->descuento }}% OFF</li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -176,7 +210,7 @@
     </div>
 
     <!-- Productos destacados/populares -->
-    @if($featuredProducts->count() > 0)
+  @if($featuredProducts->count() > 0)
     <div class="row mt-5">
         <div class="col-12">
             <h3 class="mb-4">
@@ -198,6 +232,13 @@
                                     {{ $featuredProduct->category->name }}
                                 </span>
                             @endif
+
+                            {{-- 🔥 Badge de Descuento --}}
+                            @if($featuredProduct->descuento > 0)
+                                <span class="position-absolute top-0 end-0 badge bg-danger m-2">
+                                    -{{ $featuredProduct->descuento }}% OFF
+                                </span>
+                            @endif
                         </div>
                         <div class="card-body p-3">
                             <h6 class="card-title mb-2 text-light">{{ Str::limit($featuredProduct->name, 30) }}</h6>
@@ -205,9 +246,30 @@
                                 {{ Str::limit(strip_tags($featuredProduct->description), 80) }}
                             </p>
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-success fw-bold">
-                                    ${{ number_format(($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0), 0, ',', '.') }}
-                                </span>
+                                @php
+                                    $featuredBasePrice = ($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0);
+                                    $featuredDiscountAmount = ($featuredBasePrice * ($featuredProduct->descuento ?? 0)) / 100;
+                                    $featuredFinalPrice = $featuredBasePrice - $featuredDiscountAmount;
+                                @endphp
+
+                                <div>
+                                    @if($featuredProduct->descuento > 0)
+                                        {{-- Precio original tachado --}}
+                                        <div class="text-muted text-decoration-line-through small">
+                                            ${{ number_format($featuredBasePrice, 2, '.', ',') }}
+                                        </div>
+                                        {{-- Precio con descuento --}}
+                                        <span class="text-danger fw-bold">
+                                            ${{ number_format($featuredFinalPrice, 2, '.', ',') }}
+                                        </span>
+                                    @else
+                                        {{-- Precio normal --}}
+                                        <span class="text-success fw-bold">
+                                            ${{ number_format($featuredBasePrice, 2, '.', ',') }}
+                                        </span>
+                                    @endif
+                                </div>
+                                
                                 @if(!empty($featuredProduct->avg_weight))
                                     <small class="text-light">/ {{ $featuredProduct->avg_weight }}</small>
                                 @endif
@@ -233,8 +295,7 @@
             </div>
         </div>
     </div>
-    @endif
-
+@endif
     <!-- Sección adicional: Últimos productos agregados -->
     <div class="row mt-5 mb-5">
         <div class="col-12">
@@ -348,7 +409,7 @@
 
 /* 🔥 ESTILOS ESPECÍFICOS PARA FONDO VERDE OSCURO #013105 */
 body {
-    background-color: #013105;
+    background-color: #011904;
 }
 
 .certifications-section {

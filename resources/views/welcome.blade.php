@@ -209,8 +209,12 @@
                              class="card-img-top" alt="{{ $product->name }}"
                              style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
                         
-                        <!-- Botón de Quick View -->
-                      
+                        {{-- 🔥 Badge de Descuento --}}
+                        @if($product->descuento > 0)
+                            <span class="position-absolute top-0 end-0 badge bg-danger m-2 fs-6">
+                                -{{ $product->descuento }}% OFF
+                            </span>
+                        @endif
                     </div>
 
                     <!-- Contenido -->
@@ -225,9 +229,22 @@
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <div>
                                 @php
-                                    $totalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                                    $basePrice = ($product->price ?? 0) + ($product->interest ?? 0);
+                                    $discountAmount = ($basePrice * ($product->descuento ?? 0)) / 100;
+                                    $finalPrice = $basePrice - $discountAmount;
                                 @endphp
-                                <span class="h5 text-success fw-bold">${{ number_format($totalPrice, 0, ',', '.') }}</span>
+                                
+                                {{-- Mostrar precio con o sin descuento --}}
+                                @if($product->descuento > 0)
+                                    {{-- Precio original tachado --}}
+                                    <span class="text-muted text-decoration-line-through small">${{ number_format($basePrice, 2, '.', ',') }}</span>
+                                    <br>
+                                    {{-- Precio con descuento --}}
+                                    <span class="h5 text-danger fw-bold">${{ number_format($finalPrice, 2, '.', ',') }}</span>
+                                @else
+                                    {{-- Precio normal --}}
+                                    <span class="h5 text-success fw-bold">${{ number_format($basePrice, 2, '.', ',') }}</span>
+                                @endif
                                 
                                 <!-- Mostrar avg_weight si existe, sino no mostrar nada -->
                                 @if(!empty($product->avg_weight))
