@@ -38,7 +38,7 @@
                             <img src="{{ Storage::url($image->image) }}"
                                  class="d-block w-100"
                                  alt="{{ $product->name }}"
-                                 style="height: 500px; object-fit: cover;">
+                                 style="height: 500px; object-fit: fill;">
                         </div>
                     @endforeach
                 </div>
