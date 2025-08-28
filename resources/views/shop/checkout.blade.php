@@ -4,7 +4,7 @@
 <div class="container py-4" style="background-color: #011904; min-height: 100vh;">
     <div class="row">
         <div class="col-12">
-            <!-- Header del Usuario -->
+            <!-- Header del Usuario con verificación null -->
             <div class="card border-0 mb-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -14,23 +14,26 @@
                             </div>
                         </div>
                         <div>
-                            <h2 class="text-white mb-1 fw-bold">🛒 Welcome {{ $user->name }}</h2>
-                            <p class="text-white-50 mb-0 fs-5">
-                                <i class="fas fa-envelope me-2"></i>{{ $user->email }}
+                            <h2 class="text-white mb-1 fw-bold" style="color: white !important;">
+                                🛒 Welcome {{ $user->name ?? 'Guest User' }}
+                            </h2>
+                            <p class="text-white-50 mb-0 fs-5" style="color: rgba(255,255,255,0.8) !important;">
+                                <i class="fas fa-envelope me-2"></i>{{ $user->email ?? 'No email provided' }}
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Estadísticas -->
+            <!-- Estadísticas con verificación null -->
+            @if(isset($orders) && $orders)
             <div class="row mb-4">
                 <div class="col-md-3 mb-3">
                     <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #28a745, #20c997);">
                         <div class="card-body text-center py-4">
                             <i class="fas fa-shopping-bag fa-3x text-white mb-3"></i>
-                            <h3 class="text-white fw-bold mb-2">{{ $orders->count() }}</h3>
-                            <p class="text-white mb-0 fs-6 fw-semibold">Total Orders</p>
+                            <h3 class="text-white fw-bold mb-2" style="color: white !important;">{{ $orders->count() }}</h3>
+                            <p class="text-white mb-0 fs-6 fw-semibold" style="color: white !important;">Total Orders</p>
                         </div>
                     </div>
                 </div>
@@ -38,8 +41,8 @@
                     <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #198754, #157347);">
                         <div class="card-body text-center py-4">
                             <i class="fas fa-check-circle fa-3x text-white mb-3"></i>
-                            <h3 class="text-white fw-bold mb-2">{{ $orders->where('status', 'completed')->count() }}</h3>
-                            <p class="text-white mb-0 fs-6 fw-semibold">Completed</p>
+                            <h3 class="text-white fw-bold mb-2" style="color: white !important;">{{ $orders->where('status', 'completed')->count() }}</h3>
+                            <p class="text-white mb-0 fs-6 fw-semibold" style="color: white !important;">Completed</p>
                         </div>
                     </div>
                 </div>
@@ -62,20 +65,23 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <hr class="border-light border-3 my-5" style="opacity: 0.3;">
 
-            <h4 class="text-white mb-4 fw-bold fs-2">
+            <h4 class="text-white mb-4 fw-bold fs-2" style="color: white !important;">
                 📦 Your Orders
-                <span class="badge bg-success ms-3 fs-6">{{ $orders->count() }} orders</span>
+                @if(isset($orders) && $orders)
+                    <span class="badge bg-success ms-3 fs-6" style="color: white !important;">{{ $orders->count() }} orders</span>
+                @endif
             </h4>
 
-            @if($orders->isEmpty())
+            @if(!isset($orders) || $orders->isEmpty())
                 <div class="card border-0 shadow-lg" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
                     <div class="card-body text-center py-5">
-                        <i class="fas fa-shopping-cart fa-4x text-white mb-4" style="opacity: 0.7;"></i>
-                        <h5 class="text-white mb-3 fw-bold fs-4">No orders yet</h5>
-                        <p class="text-white-50 mb-4 fs-5">You haven't made any orders yet. Start shopping now!</p>
+                        <i class="fas fa-shopping-cart fa-4x text-white mb-4" style="opacity: 0.7; color: white !important;"></i>
+                        <h5 class="text-white mb-3 fw-bold fs-4" style="color: white !important;">No orders yet</h5>
+                        <p class="text-white-50 mb-4 fs-5" style="color: rgba(255,255,255,0.8) !important;">You haven't made any orders yet. Start shopping now!</p>
                         <a href="{{ route('shop.index') }}" class="btn btn-success btn-lg px-4 py-3 shadow">
                             <i class="fas fa-shopping-bag me-2"></i>Start Shopping
                         </a>
@@ -93,26 +99,28 @@
                                             data-bs-toggle="collapse" 
                                             data-bs-target="#collapse{{ $index }}" 
                                             aria-expanded="{{ $index === 0 ? 'true' : 'false' }}" 
-                                            aria-controls="collapse{{ $index }}">
+                                            aria-controls="collapse{{ $index }}"
+                                            style="color: white !important;">
                                         <i class="fas fa-chevron-down"></i>
                                     </button>
                                     <div>
-                                        <h6 class="mb-1 text-white fw-bold fs-5">
+                                        <h6 class="mb-1 text-white fw-bold fs-5" style="color: white !important;">
                                             <i class="fas fa-receipt me-2 text-success"></i>
-                                            Order #{{ $order->order_number }}
+                                            Order #{{ $order->order_number ?? 'N/A' }}
                                         </h6>
-                                        <small class="text-white-50 fs-6">
+                                        <small class="text-white-50 fs-6" style="color: rgba(255,255,255,0.8) !important;">
                                             <i class="fas fa-calendar me-1"></i>
-                                            {{ $order->created_at->format('M d, Y - g:i A') }}
+                                            {{ optional($order->created_at)->format('M d, Y - g:i A') ?? 'Date not available' }}
                                         </small>
                                     </div>
                                 </div>
                                 <div class="text-end">
-                                    <span class="badge fs-6 mb-2 px-3 py-2 {{ $order->status === 'completed' ? 'bg-success' : ($order->status === 'pending' ? 'bg-warning text-dark' : 'bg-secondary') }}">
-                                        {{ ucfirst($order->status) }}
+                                    <span class="badge fs-6 mb-2 px-3 py-2 {{ ($order->status ?? '') === 'completed' ? 'bg-success' : (($order->status ?? '') === 'pending' ? 'bg-warning text-dark' : 'bg-secondary') }}"
+                                          style="{{ ($order->status ?? '') === 'pending' ? 'color: #000 !important;' : 'color: white !important;' }}">
+                                        {{ ucfirst($order->status ?? 'Unknown') }}
                                     </span>
-                                    <div class="text-white fw-bold fs-4">
-                                        ${{ number_format($order->total_amount, 2, '.', ',') }}
+                                    <div class="text-white fw-bold fs-4" style="color: white !important;">
+                                        ${{ number_format($order->total_amount ?? 0, 2, '.', ',') }}
                                     </div>
                                 </div>
                             </div>
@@ -123,56 +131,57 @@
                              aria-labelledby="heading{{ $index }}" 
                              data-bs-parent="#ordersAccordion">
                             <div class="card-body" style="background: rgba(255,255,255,0.05);">
-                                <!-- Información de la Orden -->
+                                <!-- Información de la Orden con verificación null -->
                                 <div class="row mb-4">
                                     <div class="col-md-6">
-                                        <h6 class="text-white mb-3 fw-bold fs-5">
+                                        <h6 class="text-white mb-3 fw-bold fs-5" style="color: white !important;">
                                             <i class="fas fa-info-circle me-2 text-success"></i>Order Details
                                         </h6>
-                                        <p class="text-white-50 mb-2 fs-6">
-                                            <strong class="text-white">Payment Status:</strong> 
-                                            <span class="badge ms-2 px-3 py-2 {{ $order->payment_status === 'paid' ? 'bg-success' : 'bg-warning text-dark' }}">
-                                                {{ ucfirst($order->payment_status) }}
+                                        <p class="text-white-50 mb-2 fs-6" style="color: rgba(255,255,255,0.8) !important;">
+                                            <strong class="text-white" style="color: white !important;">Payment Status:</strong> 
+                                            <span class="badge ms-2 px-3 py-2 {{ ($order->payment_status ?? '') === 'paid' ? 'bg-success' : 'bg-warning text-dark' }}"
+                                                  style="{{ ($order->payment_status ?? '') === 'paid' ? 'color: white !important;' : 'color: #000 !important;' }}">
+                                                {{ ucfirst($order->payment_status ?? 'Unknown') }}
                                             </span>
                                         </p>
-                                        @if($order->payment_method)
-                                            <p class="text-white-50 mb-2 fs-6">
-                                                <strong class="text-white">Payment Method:</strong> {{ ucfirst($order->payment_method) }}
+                                        @if($order->payment_method ?? false)
+                                            <p class="text-white-50 mb-2 fs-6" style="color: rgba(255,255,255,0.8) !important;">
+                                                <strong class="text-white" style="color: white !important;">Payment Method:</strong> {{ ucfirst($order->payment_method) }}
                                             </p>
                                         @endif
-                                        @if($order->customer_phone)
-                                            <p class="text-white-50 mb-2 fs-6">
-                                                <strong class="text-white">Phone:</strong> {{ $order->customer_phone }}
+                                        @if($order->customer_phone ?? false)
+                                            <p class="text-white-50 mb-2 fs-6" style="color: rgba(255,255,255,0.8) !important;">
+                                                <strong class="text-white" style="color: white !important;">Phone:</strong> {{ $order->customer_phone }}
                                             </p>
                                         @endif
                                     </div>
                                     <div class="col-md-6">
-                                        <h6 class="text-white mb-3 fw-bold fs-5">
+                                        <h6 class="text-white mb-3 fw-bold fs-5" style="color: white !important;">
                                             <i class="fas fa-shipping-fast me-2 text-success"></i>Shipping Address
                                         </h6>
-                                        <p class="text-white-50 mb-2 fs-6">{{ $order->customer_address }}</p>
-                                        @if($order->city || $order->country)
-                                            <p class="text-white-50 mb-2 fs-6">
-                                                @if($order->city) {{ $order->city->name }}, @endif
-                                                @if($order->country) {{ $order->country->name }} @endif
+                                        <p class="text-white-50 mb-2 fs-6" style="color: rgba(255,255,255,0.8) !important;">{{ $order->customer_address ?? 'No address provided' }}</p>
+                                        @if(($order->city ?? false) || ($order->country ?? false))
+                                            <p class="text-white-50 mb-2 fs-6" style="color: rgba(255,255,255,0.8) !important;">
+                                                @if($order->city ?? false) {{ optional($order->city)->name ?? 'Unknown City' }}, @endif
+                                                @if($order->country ?? false) {{ optional($order->country)->name ?? 'Unknown Country' }} @endif
                                             </p>
                                         @endif
                                     </div>
                                 </div>
 
-                                <!-- Items de la Orden -->
-                                @if($order->items->count() > 0)
-                                    <h6 class="text-white mb-3 fw-bold fs-5">
+                                <!-- Items de la Orden con verificación null -->
+                                @if(isset($order->items) && $order->items->count() > 0)
+                                    <h6 class="text-white mb-3 fw-bold fs-5" style="color: white !important;">
                                         <i class="fas fa-list me-2 text-success"></i>Order Items ({{ $order->items->count() }})
                                     </h6>
                                     <div class="table-responsive">
                                         <table class="table table-borderless">
                                             <thead style="background: rgba(255,255,255,0.1);">
                                                 <tr>
-                                                    <th class="text-white fw-bold fs-6">Product</th>
-                                                    <th class="text-center text-white fw-bold fs-6">Quantity</th>
-                                                    <th class="text-end text-white fw-bold fs-6">Unit Price</th>
-                                                    <th class="text-end text-white fw-bold fs-6">Total</th>
+                                                    <th class="text-white fw-bold fs-6" style="color: white !important;">Product</th>
+                                                    <th class="text-center text-white fw-bold fs-6" style="color: white !important;">Quantity</th>
+                                                    <th class="text-end text-white fw-bold fs-6" style="color: white !important;">Unit Price</th>
+                                                    <th class="text-end text-white fw-bold fs-6" style="color: white !important;">Total</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -180,9 +189,9 @@
                                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                                                     <td class="py-3">
                                                         <div class="d-flex align-items-center">
-                                                            @if($item->product && $item->product->images->first())
+                                                            @if(($item->product ?? false) && optional($item->product)->images->first())
                                                                 <img src="{{ Storage::url($item->product->images->first()->image) }}" 
-                                                                     alt="{{ $item->product_name }}" 
+                                                                     alt="{{ $item->product_name ?? 'Product' }}" 
                                                                      class="me-3 rounded shadow"
                                                                      style="width: 50px; height: 50px; object-fit: cover;">
                                                             @else
@@ -191,18 +200,18 @@
                                                                 </div>
                                                             @endif
                                                             <div>
-                                                                <div class="text-white fw-semibold fs-6">{{ $item->product_name }}</div>
-                                                                @if($item->product)
-                                                                    <small class="text-white-50">SKU: {{ $item->product->id }}</small>
+                                                                <div class="text-white fw-semibold fs-6" style="color: white !important;">{{ $item->product_name ?? 'Unknown Product' }}</div>
+                                                                @if($item->product ?? false)
+                                                                    <small class="text-white-50" style="color: rgba(255,255,255,0.8) !important;">SKU: {{ $item->product->id ?? 'N/A' }}</small>
                                                                 @endif
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td class="text-center py-3">
-                                                        <span class="badge bg-success px-3 py-2 fs-6">{{ $item->quantity }}</span>
+                                                        <span class="badge bg-success px-3 py-2 fs-6" style="color: white !important;">{{ $item->quantity ?? 0 }}</span>
                                                     </td>
-                                                    <td class="text-end text-white py-3 fs-6">${{ number_format($item->product_price, 2) }}</td>
-                                                    <td class="text-end text-white fw-bold py-3 fs-5">${{ number_format($item->total_price, 2) }}</td>
+                                                    <td class="text-end py-3 fs-6" style="color: white !important;">${{ number_format($item->product_price ?? 0, 2) }}</td>
+                                                    <td class="text-end fw-bold py-3 fs-5" style="color: white !important;">${{ number_format($item->total_price ?? 0, 2) }}</td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
@@ -210,41 +219,41 @@
                                     </div>
                                 @endif
 
-                                <!-- Resumen de Totales -->
+                                <!-- Resumen de Totales con verificación null -->
                                 <div class="row mt-4">
                                     <div class="col-md-6 offset-md-6">
                                         <div class="border-top border-light pt-4" style="border-opacity: 0.3 !important;">
-                                            <div class="d-flex justify-content-between text-white-50 mb-2 fs-6">
-                                                <span>Subtotal:</span>
-                                                <span class="text-white">${{ number_format($order->subtotal, 2) }}</span>
+                                            <div class="d-flex justify-content-between mb-2 fs-6">
+                                                <span style="color: rgba(255,255,255,0.8) !important;">Subtotal:</span>
+                                                <span style="color: white !important;">${{ number_format($order->subtotal ?? 0, 2) }}</span>
                                             </div>
-                                            @if($order->tax_amount > 0)
-                                                <div class="d-flex justify-content-between text-white-50 mb-2 fs-6">
-                                                    <span>Tax:</span>
-                                                    <span class="text-white">${{ number_format($order->tax_amount, 2) }}</span>
+                                            @if(($order->tax_amount ?? 0) > 0)
+                                                <div class="d-flex justify-content-between mb-2 fs-6">
+                                                    <span style="color: rgba(255,255,255,0.8) !important;">Tax:</span>
+                                                    <span style="color: white !important;">${{ number_format($order->tax_amount, 2) }}</span>
                                                 </div>
                                             @endif
-                                            @if($order->shipping_amount > 0)
-                                                <div class="d-flex justify-content-between text-white-50 mb-2 fs-6">
-                                                    <span>Shipping:</span>
-                                                    <span class="text-white">${{ number_format($order->shipping_amount, 2) }}</span>
+                                            @if(($order->shipping_amount ?? 0) > 0)
+                                                <div class="d-flex justify-content-between mb-2 fs-6">
+                                                    <span style="color: rgba(255,255,255,0.8) !important;">Shipping:</span>
+                                                    <span style="color: white !important;">${{ number_format($order->shipping_amount, 2) }}</span>
                                                 </div>
                                             @endif
                                             <hr class="border-light" style="border-opacity: 0.5 !important;">
-                                            <div class="d-flex justify-content-between text-white fw-bold fs-4">
-                                                <span>Total:</span>
-                                                <span class="text-success">${{ number_format($order->total_amount, 2) }}</span>
+                                            <div class="d-flex justify-content-between fw-bold fs-4">
+                                                <span style="color: white !important;">Total:</span>
+                                                <span class="text-success">${{ number_format($order->total_amount ?? 0, 2) }}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                @if($order->notes)
+                                @if($order->notes ?? false)
                                     <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.1);">
-                                        <h6 class="text-white mb-2 fw-bold">
+                                        <h6 class="mb-2 fw-bold" style="color: white !important;">
                                             <i class="fas fa-sticky-note me-2 text-success"></i>Notes
                                         </h6>
-                                        <p class="text-white-50 mb-0 fs-6">{{ $order->notes }}</p>
+                                        <p class="mb-0 fs-6" style="color: rgba(255,255,255,0.8) !important;">{{ $order->notes }}</p>
                                     </div>
                                 @endif
                             </div>
@@ -256,6 +265,7 @@
         </div>
     </div>
 </div>
+
 
 <style>
 /* Estilos personalizados para el dashboard del comprador */
