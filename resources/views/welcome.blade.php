@@ -207,7 +207,7 @@
                         <!-- Imagen del producto -->
                         <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
                              class="card-img-top" alt="{{ $product->name }}"
-                             style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+                             style="height: 320px; object-fit: fill; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
                         
                         {{-- 🔥 Badge de Descuento --}}
                         @if($product->descuento > 0)
