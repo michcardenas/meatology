@@ -678,7 +678,7 @@
         </div>
     </form>
 </div>
-      <!-- Grid de Productos -->
+<!-- Grid de Productos -->
 <div class="products-grid">
     @forelse ($products as $product)
         <div class="product-card">
@@ -686,19 +686,21 @@
             <div class="pc-media">
                 @php $imgs = $product->images; @endphp
                 @if($imgs->count() > 1)
-                    <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="false">
-                        <div class="carousel-inner">
-                            @foreach($imgs as $k => $img)
-                                <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
-                                    <img src="{{ Storage::url($img->image) }}"
-                                         class="pc-img"
-                                         alt="{{ $product->name }}"
-                                         loading="lazy"
-                                         onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
-                                </div>
-                            @endforeach
+                    <a href="{{ route('product.show', $product) }}" class="pc-media-link">
+                        <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="false">
+                            <div class="carousel-inner">
+                                @foreach($imgs as $k => $img)
+                                    <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
+                                        <img src="{{ Storage::url($img->image) }}"
+                                             class="pc-img"
+                                             alt="{{ $product->name }}"
+                                             loading="lazy"
+                                             onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 @else
                     <a href="{{ route('product.show', $product) }}" class="pc-media-link">
                         <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
@@ -708,7 +710,7 @@
                     </a>
                 @endif
 
-                {{-- 🔥 Badge de Descuento --}}
+                {{-- Badge de Descuento --}}
                 @if($product->descuento > 0)
                     <span class="position-absolute top-0 end-0 badge bg-danger m-2 fs-6">
                         -{{ $product->descuento }}% OFF
