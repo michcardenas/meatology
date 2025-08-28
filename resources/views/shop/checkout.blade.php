@@ -84,37 +84,47 @@
                     </div>
 
                     <!-- Sección de ubicación de envío -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5>🚚 Shipping Location</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Country *</label>
-                                    <select id="shipping-country" name="shipping_country" class="form-select" required>
-                                        <option value="">-- Select Country --</option>
-                                        @foreach($countries as $country)
-                                            <option value="{{ $country->id }}" data-cities="{{ $country->cities->toJson() }}">
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">City</label>
-                                    <select id="shipping-city" name="shipping_city" class="form-select">
-                                        <option value="">-- Select Country First --</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <small class="text-muted">
-                                    📍 Shipping costs and taxes will be calculated based on your location
-                                </small>
-                            </div>
-                        </div>
-                    </div>
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>🚚 Shipping Location</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Country *</label>
+                <select id="shipping-country" name="shipping_country" class="form-select" required>
+                    <option value="">-- Select Country --</option>
+                    @foreach($countries as $country)
+                        <option value="{{ $country->id }}" data-cities="{{ $country->cities->toJson() }}">
+                            {{ $country->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">City</label>
+                <select id="shipping-city" name="shipping_city" class="form-select">
+                    <option value="">-- Select Country First --</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Postal Code</label>
+                <input type="text" 
+                       id="codigo-postal" 
+                       name="codigo_postal" 
+                       class="form-control" 
+                       placeholder="Enter postal code"
+                       maxlength="20">
+                <small class="text-muted">Optional</small>
+            </div>
+        </div>
+        <div class="mt-3">
+            <small class="text-muted">
+                📍 Shipping costs and taxes will be calculated based on your location
+            </small>
+        </div>
+    </div>
+</div>
 
                     <!-- Información de envío/contacto -->
                     <div class="card">

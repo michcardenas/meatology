@@ -125,7 +125,7 @@
 
 {{-- NUEVO CAMPO: País de Origen del Producto --}}
 <div class="mb-4">
-    <label class="form-label fw-bold text-light">País de Origen *</label>
+    <label class="form-label fw-bold text-light">Country of Origin *</label>
     <input type="text"
            name="pais"
            class="form-control bg-dark text-light border-secondary"
@@ -135,7 +135,7 @@
 </div>
 
 <div class="mb-4">
-    <label class="form-label fw-bold text-light">Impuestos y Envío por País/Ciudad</label>
+    <label class="form-label fw-bold text-light">Taxes and Shipping by State/City</label>
 
     <div id="price-location-container">
         @if(isset($product) && $product->prices->count() > 0)
@@ -143,7 +143,7 @@
             @foreach($product->prices as $i => $price)
                 <div class="row border rounded p-3 mb-3 bg-dark">
                     <div class="col-md-3 mb-2">
-                        <label class="form-label text-light">Countrys</label>
+                        <label class="form-label text-light">State</label>
                         <select name="prices[{{ $i }}][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
                             @foreach($countries as $country)
                                 <option value="{{ $country->id }}" {{ $price->country_id == $country->id ? 'selected' : '' }}>
@@ -200,9 +200,9 @@
             {{-- Si no hay configuraciones, mostrar un bloque vacío --}}
             <div class="row border rounded p-3 mb-3 bg-dark">
                 <div class="col-md-3 mb-2">
-                    <label class="form-label text-light">País</label>
+                    <label class="form-label text-light">State</label>
                     <select name="prices[0][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
-                        <option value="">-- Selecciona país --</option>
+                        <option value="">-- State --</option>
                         @foreach($countries as $country)
                             <option value="{{ $country->id }}">{{ $country->name }}</option>
                         @endforeach
@@ -210,14 +210,14 @@
                 </div>
 
                 <div class="col-md-3 mb-2">
-                    <label class="form-label text-light">Ciudad</label>
+                    <label class="form-label text-light">City</label>
                     <select name="prices[0][city_id]" class="form-select bg-dark text-light">
-                        <option value="">-- Selecciona país primero --</option>
+                        <option value="">-- Select State first --</option>
                     </select>
                 </div>
 
                 <div class="col-md-2 mb-2">
-                    <label class="form-label text-light">Impuesto (%)</label>
+                    <label class="form-label text-light">Tax (%)</label>
                     <input type="number" 
                            name="prices[0][interest]" 
                            class="form-control bg-dark text-light" 
@@ -227,7 +227,7 @@
                 </div>
 
                 <div class="col-md-2 mb-2">
-                    <label class="form-label text-light">Costo Envío</label>
+                    <label class="form-label text-light">Shipping Cost</label>
                     <input type="number" 
                            name="prices[0][shipping]" 
                            class="form-control bg-dark text-light" 
@@ -245,7 +245,7 @@
     </div>
 
     <button type="button" class="btn btn-outline-light btn-sm" onclick="addPriceBlock()">
-        ➕ Añadir configuración por ubicación
+        ➕ Add settings by location
     </button>
 </div>
 

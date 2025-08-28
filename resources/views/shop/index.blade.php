@@ -572,68 +572,59 @@
     }
 </style>
 
-<!-- Carrusel Principal -->
-<div class="meatology-carousel-section">
-    <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-        <div class="carousel-inner">
-            @foreach($categories as $index => $category)
-                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                    <div class="category-hero-slide">
-                        <div class="slide-background">
-                            <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
-                                 class="slide-bg-image" alt="{{ $category->name }}" loading="lazy">
-                            <div class="slide-overlay"></div>
-                        </div>
-                        <div class="slide-content">
-                            <div class="container">
-                                <div class="row align-items-center">
-                                    <div class="col-lg-6">
-                                        <div class="slide-text">
-                                            <div class="category-label">{{ $category->products_count }} Products Available</div>
-                                            <h1 class="slide-title">{{ strtoupper($category->name) }}</h1>
-                                            <p class="slide-description">
-                                                Experience the finest quality {{ strtolower($category->name) }} from family-owned farms. 
-                                                Naturally and sustainably raised for exceptional flavor.
-                                            </p>
-                                            <a href="{{ route('shop.index', ['category' => $category->id]) }}" class="shop-category-btn">
-                                                SHOP {{ strtoupper($category->name) }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 d-none d-lg-block">
-                                        <div class="slide-image">
-                                            <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
-                                                 alt="{{ $category->name }}" class="category-product-image" loading="lazy">
-                                        </div>
-                                    </div>
-                                </div>
+<!-- Hero de Categoría (fijo) -->
+<!-- Hero de Categoría (fijo) -->
+<div class="meatology-hero-section">
+    @php
+        $heroName  = $heroCategory->name ?? 'All Products';
+        $heroImage = isset($heroCategory?->image) ? Storage::url($heroCategory->image) : asset('images/category-placeholder.jpg');
+        // Si hay heroCategory usamos su conteo; si no, usamos total filtrado
+        $heroCount = isset($heroCategory) ? ($heroCategory->products_count ?? 0) : $products->total();
+    @endphp
+
+    <div class="category-hero-slide">
+        <div class="slide-background">
+            <img src="{{ $heroImage }}" class="slide-bg-image" alt="{{ $heroName }}" loading="lazy">
+            <div class="slide-overlay"></div>
+        </div>
+
+        <div class="slide-content">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="slide-text">
+                            <div class="category-label">
+                                {{ $heroCount }} {{ \Illuminate\Support\Str::plural('Product', $heroCount) }} Available
                             </div>
+                            <h1 class="slide-title">{{ strtoupper($heroName) }}</h1>
+                            <p class="slide-description">
+                                Experience the finest quality {{ strtolower($heroName) }} from family-owned farms.
+                                Naturally and sustainably raised for exceptional flavor.
+                            </p>
+
+                            @if(isset($selectedCategory))
+                                <a href="{{ route('shop.index', ['category' => $selectedCategory->id] + request()->only('country','sort')) }}"
+                                   class="shop-category-btn">
+                                    SHOP {{ strtoupper($heroName) }}
+                                </a>
+                            @else
+                                <a href="#catalog" class="shop-category-btn">BROWSE COLLECTION</a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <div class="slide-image">
+                            <img src="{{ $heroImage }}" alt="{{ $heroName }}" class="category-product-image" loading="lazy">
                         </div>
                     </div>
                 </div>
-            @endforeach
+            </div>
         </div>
-        
-        <!-- Controles -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-
-        <!-- Indicadores -->
-        <div class="carousel-indicators">
-            @foreach($categories as $index => $category)
-                <button type="button" data-bs-target="#categoryCarousel" data-bs-slide-to="{{ $index }}" 
-                        class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}" 
-                        aria-label="Slide {{ $index + 1 }}"></button>
-            @endforeach
-        </div>
-    </div>
+    </div>    
 </div>
+
+
 
 <!-- Sección del Catálogo -->
 <div class="catalog-section">

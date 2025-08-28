@@ -28,51 +28,62 @@ public function index(Request $request)
 {
     $query = Product::query()->with(['images', 'category']);
 
-    // 🔹 Filtro por categoría (por ID para mantener consistencia con la vista)
+    $selectedCategory = null;
+    $countryFilter = $request->filled('country') ? trim($request->country) : null;
+
     if ($request->filled('category')) {
-        $query->where('category_id', $request->category);
+        $categoryId = $request->category;
+        $query->where('category_id', $categoryId);
+
+        $selectedCategory = \App\Models\Category::withCount([
+            'products as products_count' => function ($q) use ($countryFilter) {
+                if ($countryFilter) $q->where('pais', $countryFilter);
+            }
+        ])->find($categoryId);
     }
 
-    // 🔹 Filtro por país (DEL PRODUCTO)
-    if ($request->filled('country')) {
-        $country = trim($request->country);
-        $query->where('pais', $country);
+    if ($countryFilter) {
+        $query->where('pais', $countryFilter);
     }
 
-    // Sort
     switch ($request->get('sort')) {
-        case 'price_low':
-            $query->orderBy('price', 'asc');
-            break;
-        case 'price_high':
-            $query->orderBy('price', 'desc');
-            break;
-        case 'name':
-            $query->orderBy('name', 'asc');
-            break;
-        default:
-            $query->latest();
-            break;
+        case 'price_low':  $query->orderBy('price', 'asc'); break;
+        case 'price_high': $query->orderBy('price', 'desc'); break;
+        case 'name':       $query->orderBy('name', 'asc');   break;
+        default:           $query->latest();                 break;
     }
 
     $products = $query->paginate(9)->appends($request->query());
 
-    // 🔹 Obtener todas las categorías (para mostrar name + country)
+    // Cargar categorías (con conteo si quieres)
     $categories = \App\Models\Category::query()
+        ->withCount([
+            'products as products_count' => function ($q) use ($countryFilter) {
+                if ($countryFilter) $q->where('pais', $countryFilter);
+            }
+        ])
         ->orderBy('name')
         ->get();
 
-    // 🔹 Obtener países ÚNICOS de los PRODUCTOS
-    $countries = \App\Models\Product::query()
-        ->select('pais')
-        ->whereNotNull('pais')
-        ->where('pais', '!=', '')
-        ->distinct()
-        ->orderBy('pais')
-        ->pluck('pais');
+    // HERO: si NO hay categoría seleccionada, elige una al azar.
+    // Preferir una que tenga imagen; si no hay, cualquiera.
+    $heroCategory = $selectedCategory;
+    if (!$heroCategory) {
+        $withImage = $categories->filter(fn($c) => !empty($c->image));
+        $heroCategory = $withImage->isNotEmpty()
+            ? $withImage->random()
+            : ($categories->isNotEmpty() ? $categories->random() : null);
+    }
 
-    return view('shop.index', compact('products', 'categories', 'countries'));
+    $countries = \App\Models\Product::query()
+        ->select('pais')->whereNotNull('pais')->where('pais', '!=', '')
+        ->distinct()->orderBy('pais')->pluck('pais');
+
+    return view('shop.index', compact(
+        'products', 'categories', 'countries', 'selectedCategory', 'heroCategory'
+    ));
 }
+
 
 
 
