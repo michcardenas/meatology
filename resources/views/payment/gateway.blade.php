@@ -281,8 +281,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             style: {
                 '.input-container': {
                     borderRadius: '6px',
-                    borderColor: '#d1d5db',
-                    padding: '12px'
+                    borderColor: '#d1d5db'
                 },
                 '.input-container.is-focus': {
                     borderColor: '#011904'
