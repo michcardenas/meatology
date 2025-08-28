@@ -33,7 +33,8 @@ Route::delete('/admin/products/images/{id}', [App\Http\Controllers\Admin\Product
 Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout.index');
 Route::post('/checkout/calculate', [ShopController::class, 'calculateShippingAndTax'])->name('checkout.calculate');
 Route::post('/order/process', [ShopController::class, 'processOrder'])->name('order.process');
-
+Route::patch('/admin/orders/{order}/status', [DashboardController::class, 'updateOrderStatus'])
+     ->name('admin.orders.update-status');
 // Ruta para la pasarela de pago
 Route::get('/payment/gateway/{order}', [App\Http\Controllers\ShopController::class, 'paymentGateway'])->name('payment.gateway');
 Route::post('/payment/process/{order}', [App\Http\Controllers\ShopController::class, 'processPayment'])->name('payment.process');

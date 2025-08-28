@@ -26,4 +26,10 @@ class DashboardController extends Controller
     
     return view('dashboard.comprador', compact('user', 'orders'));
 }
+
+
+public function updateOrderStatus(Request $request, Order $order) {
+    $order->update(['status' => $request->status]);
+    return back()->with('success', 'Order status updated!');
+}
 }
