@@ -182,6 +182,7 @@
     </div>
 </section>
 <!-- Sección de Productos Destacados con Fondo Verde Oscuro -->
+
 <!-- Sección de Productos Destacados con Fondo Verde Oscuro -->
 <section class="py-5" style="background-color: #011904;">
     <div class="container">
@@ -204,12 +205,52 @@
                 <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: #fdfdfd;">
                     
                     <div class="position-relative">
-                        <!-- Imagen del producto -->
-                        <img src="{{ $product->images->first()?->image ? Storage::url($product->images->first()->image) : asset('images/placeholder.jpg') }}"
-                             class="card-img-top" alt="{{ $product->name }}"
-                             style="height: 320px; object-fit: fill; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+                        {{-- MEDIA CON CARRUSEL --}}
+                        @php $imgs = $product->images; @endphp
+                        @if($imgs->count() > 1)
+                            <a href="{{ route('product.show', $product) }}" class="text-decoration-none">
+                                <div id="featuredCarousel-{{ $product->id }}" class="carousel slide featured-product-carousel" data-bs-ride="false">
+                                    <div class="carousel-inner">
+                                        @foreach($imgs as $k => $img)
+                                            <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
+                                                <img src="{{ Storage::url($img->image) }}"
+                                                     class="card-img-top"
+                                                     alt="{{ $product->name }}"
+                                                     style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);"
+                                                     loading="lazy"
+                                                     onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    
+                                    <!-- Controles del carrusel (solo visibles en hover) -->
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel-{{ $product->id }}" data-bs-slide="prev" style="opacity: 0; transition: opacity 0.3s;">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel-{{ $product->id }}" data-bs-slide="next" style="opacity: 0; transition: opacity 0.3s;">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                    
+                                    <!-- Indicadores del carrusel -->
+                                    <div class="carousel-indicators" style="opacity: 0; transition: opacity 0.3s;">
+                                        @foreach($imgs as $k => $img)
+                                            <button type="button" data-bs-target="#featuredCarousel-{{ $product->id }}" data-bs-slide-to="{{ $k }}" {{ $k === 0 ? 'class=active aria-current=true' : '' }} aria-label="Slide {{ $k + 1 }}"></button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </a>
+                        @else
+                            <a href="{{ route('product.show', $product) }}" class="text-decoration-none">
+                                <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
+                                     class="card-img-top" alt="{{ $product->name }}"
+                                     style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);"
+                                     loading="lazy">
+                            </a>
+                        @endif
                         
-                        {{-- 🔥 Badge de Descuento --}}
+                        {{-- Badge de Descuento --}}
                         @if($product->descuento > 0)
                             <span class="position-absolute top-0 end-0 badge bg-danger m-2 fs-6">
                                 -{{ $product->descuento }}% OFF
@@ -281,7 +322,6 @@
         </div>
     </div>
 </section>
-
 <!-- Call to Action: View All Products -->
 <!-- Call to Action: View All Products -->
 <section class="py-5 text-white text-center" style="background: linear-gradient(135deg, #011904 40%, #a6ff8f 100%);">
@@ -328,5 +368,103 @@
         </div>
     </div>
 </section>
+<style>
+/* Estilos para el carrusel de productos destacados */
+.featured-product-carousel {
+    cursor: pointer;
+}
 
+.featured-product-carousel:hover .carousel-control-prev,
+.featured-product-carousel:hover .carousel-control-next,
+.featured-product-carousel:hover .carousel-indicators {
+    opacity: 0.8 !important;
+}
+
+.featured-product-carousel .carousel-control-prev,
+.featured-product-carousel .carousel-control-next {
+    width: 5%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.featured-product-carousel .carousel-control-prev:hover,
+.featured-product-carousel .carousel-control-next:hover {
+    opacity: 1 !important;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.featured-product-carousel .carousel-indicators {
+    bottom: 10px;
+}
+
+.featured-product-carousel .carousel-indicators [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 3px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar que Bootstrap esté disponible
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap no está cargado. Asegúrate de incluir Bootstrap JS en tu layout.');
+        return;
+    }
+
+    try {
+        // Inicializar carruseles de productos destacados
+        const featuredCarousels = document.querySelectorAll('.featured-product-carousel');
+        featuredCarousels.forEach(function(carouselElement) {
+            try {
+                const carousel = new bootstrap.Carousel(carouselElement, {
+                    interval: false, // No auto-slide
+                    ride: false,
+                    wrap: true,
+                    touch: true,
+                    pause: 'hover'
+                });
+                
+                // Prevenir navegación cuando se hace clic en controles
+                const controls = carouselElement.querySelectorAll('.carousel-control-prev, .carousel-control-next, .carousel-indicators button');
+                controls.forEach(function(control) {
+                    control.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                });
+                
+                // Activar el carrusel en hover
+                carouselElement.addEventListener('mouseenter', function() {
+                    const interval = setInterval(() => {
+                        carousel.next();
+                    }, 2000);
+                    
+                    carouselElement.addEventListener('mouseleave', function() {
+                        clearInterval(interval);
+                    }, { once: true });
+                });
+                
+            } catch (error) {
+                console.warn('Error inicializando carrusel de producto destacado:', error);
+            }
+        });
+
+        console.log(`${featuredCarousels.length} carruseles de productos destacados inicializados`);
+
+    } catch (error) {
+        console.error('Error general inicializando carruseles:', error);
+    }
+
+    // Manejo de errores de imágenes
+    const images = document.querySelectorAll('img');
+    images.forEach(function(img) {
+        img.addEventListener('error', function() {
+            console.warn('Error cargando imagen:', this.src);
+            // Placeholder SVG
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+        });
+    });
+});
+</script>
 @endsection
