@@ -216,7 +216,7 @@
                                                 <img src="{{ Storage::url($img->image) }}"
                                                      class="card-img-top"
                                                      alt="{{ $product->name }}"
-                                                     style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);"
+                                                     style="height: 320px; object-fit: fill; box-shadow: 0 4px 15px rgba(0,0,0,0.08);"
                                                      loading="lazy"
                                                      onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
                                             </div>
