@@ -315,34 +315,33 @@
     }
 }
 </style>
-
 <div class="register-page">
     <div class="register-container">
         <!-- Sección de Imagen/Marca -->
         <div class="register-image-section">
             <div class="register-brand">
                 {{-- <img src="{{ asset('images/logo.png') }}" alt="Logo" class="brand-logo"> --}}
-                <h1 class="brand-title">¡Únete a Nosotros!</h1>
+                <h1 class="brand-title">Join Us!</h1>
                 <p class="brand-subtitle">
-                    Crea tu cuenta y accede a todas las funcionalidades de nuestra plataforma. 
-                    Gestiona tus proyectos de manera eficiente y colabora con tu equipo.
+                    Create your account and access all the features of our platform. 
+                    Manage your projects efficiently and collaborate with your team.
                 </p>
                 <div class="brand-features">
                     <div class="feature-item">
                         <i class="fas fa-user-plus"></i>
-                        <span>Registro rápido y seguro</span>
+                        <span>Quick and secure registration</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-shield-alt"></i>
-                        <span>Protección de datos garantizada</span>
+                        <span>Guaranteed data protection</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-rocket"></i>
-                        <span>Acceso inmediato a la plataforma</span>
+                        <span>Immediate access to the platform</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-users"></i>
-                        <span>Colaboración en tiempo real</span>
+                        <span>Real-time collaboration</span>
                     </div>
                 </div>
             </div>
@@ -352,8 +351,8 @@
         <div class="register-form-section">
             <div class="register-form-container">
                 <div class="form-header">
-                    <h3>Crear Cuenta</h3>
-                    <p>Completa los siguientes datos para registrarte</p>
+                    <h3>Create Account</h3>
+                    <p>Complete the following information to register</p>
                 </div>
 
                 <form method="POST" action="{{ route('register') }}" class="register-form">
@@ -364,7 +363,7 @@
                         <div class="form-group">
                             <label for="name" class="form-label">
                                 <i class="fas fa-user" style="margin-right: 8px; color: #c41e3a;"></i>
-                                {{ __('Nombre Completo') }}
+                                {{ __('Full Name') }}
                             </label>
                             <input id="name" 
                                    class="form-control @error('name') is-invalid @enderror" 
@@ -374,7 +373,7 @@
                                    required 
                                    autofocus 
                                    autocomplete="name"
-                                   placeholder="Ingresa tu nombre completo" />
+                                   placeholder="Enter your full name" />
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -384,7 +383,7 @@
                         <div class="form-group">
                             <label for="email" class="form-label">
                                 <i class="fas fa-envelope" style="margin-right: 8px; color: #c41e3a;"></i>
-                                {{ __('Correo Electrónico') }}
+                                {{ __('Email Address') }}
                             </label>
                             <input id="email" 
                                    class="form-control @error('email') is-invalid @enderror" 
@@ -393,7 +392,7 @@
                                    value="{{ old('email') }}" 
                                    required 
                                    autocomplete="username"
-                                   placeholder="correo@ejemplo.com" />
+                                   placeholder="email@example.com" />
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -405,7 +404,7 @@
                         <div class="form-group">
                             <label for="password" class="form-label">
                                 <i class="fas fa-lock" style="margin-right: 8px; color: #c41e3a;"></i>
-                                {{ __('Contraseña') }}
+                                {{ __('Password') }}
                             </label>
                             <div class="password-input">
                                 <input id="password" 
@@ -414,7 +413,7 @@
                                        name="password"
                                        required 
                                        autocomplete="new-password"
-                                       placeholder="Mínimo 8 caracteres" />
+                                       placeholder="Minimum 8 characters" />
                                 <button type="button" class="password-toggle" onclick="togglePassword('password')">
                                     <i class="fas fa-eye" id="password-eye"></i>
                                 </button>
@@ -428,7 +427,7 @@
                         <div class="form-group">
                             <label for="password_confirmation" class="form-label">
                                 <i class="fas fa-lock" style="margin-right: 8px; color: #c41e3a;"></i>
-                                {{ __('Confirmar Contraseña') }}
+                                {{ __('Confirm Password') }}
                             </label>
                             <div class="password-input">
                                 <input id="password_confirmation" 
@@ -437,7 +436,7 @@
                                        name="password_confirmation" 
                                        required 
                                        autocomplete="new-password"
-                                       placeholder="Repite tu contraseña" />
+                                       placeholder="Repeat your password" />
                                 <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')">
                                     <i class="fas fa-eye" id="password_confirmation-eye"></i>
                                 </button>
@@ -450,13 +449,13 @@
 
                     <button type="submit" class="register-btn">
                         <i class="fas fa-user-plus" style="margin-right: 10px;"></i>
-                        {{ __('Crear Cuenta') }}
+                        {{ __('Create Account') }}
                     </button>
 
                     <div class="login-link">
                         <p>
-                            ¿Ya tienes una cuenta? 
-                            <a href="{{ route('login') }}">{{ __('Inicia sesión aquí') }}</a>
+                            Already have an account? 
+                            <a href="{{ route('login') }}">{{ __('Sign in here') }}</a>
                         </p>
                     </div>
                 </form>
