@@ -12,6 +12,7 @@ return new class extends Migration
             // Modificar la columna status para incluir todos los valores necesarios
             $table->enum('status', [
                 'pending',
+                'confirmed',
                 'processing', 
                 'shipped',
                 'delivered',
