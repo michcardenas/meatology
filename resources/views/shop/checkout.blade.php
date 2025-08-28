@@ -1,613 +1,334 @@
-{{-- Vista: resources/views/shop/checkout.blade.php --}}
-
-@extends('layouts.app')
+@extends('layouts.app_admin')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>🛒 Checkout</h2>
-                @if(isset($totalSavings) && $totalSavings > 0)
-                    <div class="badge bg-success fs-6 px-3 py-2">
-                        🏷️ You're saving ${{ number_format($totalSavings, 2, '.', ',') }}!
-                    </div>
-                @endif
-            </div>
-            
-            <div class="row">
-                <!-- Información del pedido -->
-                <div class="col-md-8">
-                    <div class="card mb-4 {{ isset($totalSavings) && $totalSavings > 0 ? 'border-success' : '' }}">
-                        <div class="card-header">
-                            <h5>📦 Order Details</h5>
-                            @if(isset($totalSavings) && $totalSavings > 0)
-                                <small class="text-success">🎉 Items with discounts applied</small>
-                            @endif
+<div class="container py-4" style="background-color: #011904; min-height: 100vh;">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header del Usuario -->
+            <div class="card border-0 mb-4" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center shadow" style="width: 60px; height: 60px;">
+                                <i class="fas fa-user text-white fa-2x"></i>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            @foreach($cartItems as $item)
-                                <div class="row align-items-center mb-3 pb-3 border-bottom {{ isset($item->options->descuento) && $item->options->descuento > 0 ? 'bg-success bg-opacity-10' : '' }}">
-                                    <div class="col-md-2">
-                                        <div class="position-relative">
-                                            <img src="{{ $item->options->image ? Storage::url($item->options->image) : asset('images/placeholder.jpg') }}" 
-                                                 class="img-fluid rounded" alt="{{ $item->name }}">
-                                            @if(isset($item->options->descuento) && $item->options->descuento > 0)
-                                                <span class="position-absolute top-0 start-0 badge bg-danger m-1 small">
-                                                    -{{ $item->options->descuento }}%
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <h6>{{ $item->name }}</h6>
-                                            @if(isset($item->options->descuento) && $item->options->descuento > 0)
-                                                <span class="badge bg-danger">-{{ $item->options->descuento }}% OFF</span>
-                                            @endif
-                                        </div>
-                                        <small class="text-muted">{{ $item->options->category_name }}</small>
-                                        <br>
-                                        
-                                        @if(isset($item->options->descuento) && $item->options->descuento > 0)
-                                            <small class="text-muted text-decoration-line-through">
-                                                Original: ${{ number_format($item->options->original_price, 2, '.', ',') }} × {{ $item->qty }}
-                                            </small>
-                                            <br>
-                                            <small class="text-success fw-bold">
-                                                Discounted: ${{ number_format($item->price, 2, '.', ',') }} × {{ $item->qty }}
-                                            </small>
-                                            <br>
-                                            <small class="text-success">
-                                                You save: ${{ number_format($item->options->discount_amount * $item->qty, 2, '.', ',') }}
-                                            </small>
-                                        @else
-                                            <small class="text-muted">Qty: {{ $item->qty }} × ${{ number_format($item->price, 2, '.', ',') }}</small>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        @if(isset($item->options->descuento) && $item->options->descuento > 0)
-                                            <div class="text-muted text-decoration-line-through small">
-                                                ${{ number_format($item->options->original_price * $item->qty, 2, '.', ',') }}
-                                            </div>
-                                            <strong class="text-danger">${{ number_format($item->total, 2, '.', ',') }}</strong>
-                                        @else
-                                            <strong>${{ number_format($item->total, 2, '.', ',') }}</strong>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                            
-                            {{-- Resumen de ahorros en productos --}}
-                          
+                        <div>
+                            <h2 class="text-white mb-1 fw-bold">🛒 Welcome {{ $user->name }}</h2>
+                            <p class="text-white-50 mb-0 fs-5">
+                                <i class="fas fa-envelope me-2"></i>{{ $user->email }}
+                            </p>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Sección de ubicación de envío -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>🚚 Shipping Location</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <label class="form-label fw-bold">State *</label>
-                <select id="shipping-country" name="shipping_country" class="form-select" required>
-                    <option value="">-- Select State --</option>
-                    @foreach($countries as $country)
-                        <option value="{{ $country->id }}" data-cities="{{ $country->cities->toJson() }}">
-                            {{ $country->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">City</label>
-                <select id="shipping-city" name="shipping_city" class="form-select">
-                    <option value="">-- Select Country First --</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Postal Code</label>
-                <input type="text" 
-                       id="codigo-postal" 
-                       name="codigo_postal" 
-                       class="form-control" 
-                       placeholder="Enter postal code"
-                       maxlength="20">
-                <small class="text-muted">Optional</small>
-            </div>
-        </div>
-        <div class="mt-3">
-            <small class="text-muted">
-                📍 Shipping costs and taxes will be calculated based on your location
-            </small>
-        </div>
-    </div>
-</div>
-
-                    <!-- Información de envío/contacto -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>📍 Contact Information</h5>
+            <!-- Estadísticas -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-shopping-bag fa-3x text-white mb-3"></i>
+                            <h3 class="text-white fw-bold mb-2">{{ $orders->count() }}</h3>
+                            <p class="text-white mb-0 fs-6 fw-semibold">Total Orders</p>
                         </div>
-                        <div class="card-body">
-                            @if($isAuthenticated)
-                                <!-- Usuario autenticado -->
-                                <div class="alert alert-info">
-                                    <h6>Welcome back, {{ $user->name }}!</h6>
-                                    <p class="mb-0">Email: {{ $user->email }}</p>
-                                </div>
-                                
-                                <form id="checkoutForm" action="{{ route('order.process') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" id="final-country" name="country_id">
-                                    <input type="hidden" id="final-city" name="city_id">
-                                    <input type="hidden" id="final-total" name="total">
-                                    <input type="hidden" id="final-tax" name="tax">
-                                    <input type="hidden" id="final-shipping" name="shipping">
-                                    <input type="hidden" id="applied-discount-code" name="discount_code">
-                                    <input type="hidden" id="applied-discount-amount" name="discount_amount">
-                                    {{-- Agregar información de descuentos de productos --}}
-                                    <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Address *</label>
-                                            <textarea name="address" class="form-control" rows="3" placeholder="Enter your complete address" required>{{ old('address', $user->address ?? '') }}</textarea>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Phone *</label>
-                                            <input type="tel" name="phone" class="form-control" value="{{ old('phone', $user->phone ?? '') }}" placeholder="Your phone number" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-md-12">
-                                            <label class="form-label">Special Instructions (Optional)</label>
-                                            <textarea name="notes" class="form-control" rows="2" placeholder="Any special instructions for your order">{{ old('notes') }}</textarea>
-                                        </div>
-                                    </div>
-                                </form>
-                            @else
-                                <!-- Usuario no autenticado -->
-                                <div class="alert alert-warning">
-                                    <h6>Guest Checkout</h6>
-                                    <p class="mb-0">Please provide your contact and shipping information</p>
-                                </div>
-                                
-                                <form id="checkoutForm" action="{{ route('order.process') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" id="final-country" name="country_id">
-                                    <input type="hidden" id="final-city" name="city_id">
-                                    <input type="hidden" id="final-total" name="total">
-                                    <input type="hidden" id="final-tax" name="tax">
-                                    <input type="hidden" id="final-shipping" name="shipping">
-                                    <input type="hidden" id="applied-discount-code" name="discount_code">
-                                    <input type="hidden" id="applied-discount-amount" name="discount_amount">
-                                    {{-- Agregar información de descuentos de productos --}}
-                                    <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Full Name *</label>
-                                            <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Your full name" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Email *</label>
-                                            <input type="email" name="email" class="form-control" value="{{ old('email') }}" placeholder="your.email@example.com" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Phone *</label>
-                                            <input type="tel" name="phone" class="form-control" value="{{ old('phone') }}" placeholder="Your phone number" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Address *</label>
-                                            <textarea name="address" class="form-control" rows="3" placeholder="Enter your complete address" required>{{ old('address') }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-md-12">
-                                            <label class="form-label">Special Instructions (Optional)</label>
-                                            <textarea name="notes" class="form-control" rows="2" placeholder="Any special instructions for your order">{{ old('notes') }}</textarea>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="mt-3">
-                                        <small class="text-muted">
-                                            <a href="{{ route('login') }}">Already have an account? Login here</a> | 
-                                            <a href="{{ route('register') }}">Create account for faster checkout</a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #198754, #157347);">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-white mb-3"></i>
+                            <h3 class="text-white fw-bold mb-2">{{ $orders->where('status', 'completed')->count() }}</h3>
+                            <p class="text-white mb-0 fs-6 fw-semibold">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #ffc107, #ffca2c);">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-clock fa-3x text-dark mb-3"></i>
+                            <h3 class="text-dark fw-bold mb-2">{{ $orders->where('status', 'pending')->count() }}</h3>
+                            <p class="text-dark mb-0 fs-6 fw-semibold">Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #0dcaf0, #31d2f2);">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-dollar-sign fa-3x text-dark mb-3"></i>
+                            <h3 class="text-dark fw-bold mb-2">${{ number_format($orders->sum('total_amount'), 0, ',', '.') }}</h3>
+                            <p class="text-dark mb-0 fs-6 fw-semibold">Total Spent</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-light border-3 my-5" style="opacity: 0.3;">
+
+            <h4 class="text-white mb-4 fw-bold fs-2">
+                📦 Your Orders
+                <span class="badge bg-success ms-3 fs-6">{{ $orders->count() }} orders</span>
+            </h4>
+
+            @if($orders->isEmpty())
+                <div class="card border-0 shadow-lg" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-shopping-cart fa-4x text-white mb-4" style="opacity: 0.7;"></i>
+                        <h5 class="text-white mb-3 fw-bold fs-4">No orders yet</h5>
+                        <p class="text-white-50 mb-4 fs-5">You haven't made any orders yet. Start shopping now!</p>
+                        <a href="{{ route('shop.index') }}" class="btn btn-success btn-lg px-4 py-3 shadow">
+                            <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+                        </a>
+                    </div>
+                </div>
+            @else
+                <div class="accordion" id="ordersAccordion">
+                    @foreach($orders as $index => $order)
+                    <div class="card border-0 shadow-lg mb-3" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                        <div class="card-header border-0" id="heading{{ $index }}" style="background: rgba(255,255,255,0.1);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-link text-white text-decoration-none p-0 me-3 fs-5" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#collapse{{ $index }}" 
+                                            aria-expanded="{{ $index === 0 ? 'true' : 'false' }}" 
+                                            aria-controls="collapse{{ $index }}">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <div>
+                                        <h6 class="mb-1 text-white fw-bold fs-5">
+                                            <i class="fas fa-receipt me-2 text-success"></i>
+                                            Order #{{ $order->order_number }}
+                                        </h6>
+                                        <small class="text-white-50 fs-6">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ $order->created_at->format('M d, Y - g:i A') }}
                                         </small>
                                     </div>
-                                </form>
-                            @endif
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge fs-6 mb-2 px-3 py-2 {{ $order->status === 'completed' ? 'bg-success' : ($order->status === 'pending' ? 'bg-warning text-dark' : 'bg-secondary') }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                    <div class="text-white fw-bold fs-4">
+                                        ${{ number_format($order->total_amount, 2, '.', ',') }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                        
+                        <div id="collapse{{ $index }}" 
+                             class="collapse {{ $index === 0 ? 'show' : '' }}" 
+                             aria-labelledby="heading{{ $index }}" 
+                             data-bs-parent="#ordersAccordion">
+                            <div class="card-body" style="background: rgba(255,255,255,0.05);">
+                                <!-- Información de la Orden -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h6 class="text-white mb-3 fw-bold fs-5">
+                                            <i class="fas fa-info-circle me-2 text-success"></i>Order Details
+                                        </h6>
+                                        <p class="text-white-50 mb-2 fs-6">
+                                            <strong class="text-white">Payment Status:</strong> 
+                                            <span class="badge ms-2 px-3 py-2 {{ $order->payment_status === 'paid' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                                {{ ucfirst($order->payment_status) }}
+                                            </span>
+                                        </p>
+                                        @if($order->payment_method)
+                                            <p class="text-white-50 mb-2 fs-6">
+                                                <strong class="text-white">Payment Method:</strong> {{ ucfirst($order->payment_method) }}
+                                            </p>
+                                        @endif
+                                        @if($order->customer_phone)
+                                            <p class="text-white-50 mb-2 fs-6">
+                                                <strong class="text-white">Phone:</strong> {{ $order->customer_phone }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-white mb-3 fw-bold fs-5">
+                                            <i class="fas fa-shipping-fast me-2 text-success"></i>Shipping Address
+                                        </h6>
+                                        <p class="text-white-50 mb-2 fs-6">{{ $order->customer_address }}</p>
+                                        @if($order->city || $order->country)
+                                            <p class="text-white-50 mb-2 fs-6">
+                                                @if($order->city) {{ $order->city->name }}, @endif
+                                                @if($order->country) {{ $order->country->name }} @endif
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
 
-                <!-- Resumen del pedido -->
-                <div class="col-md-4">
-                    <div class="card sticky-top {{ isset($totalSavings) && $totalSavings > 0 ? 'border-success' : '' }}">
-                        @if(isset($totalSavings) && $totalSavings > 0)
-                            <div class="card-header bg-success text-white text-center">
-                                <strong>💰 Order Summary - With Savings!</strong>
-                            </div>
-                        @else
-                            <div class="card-header">
-                                <h5>💰 Order Summary</h5>
-                            </div>
-                        @endif
-                        <div class="card-body">
-                            {{-- Mostrar ahorros de productos primero --}}
-                            @if(isset($totalSavings) && $totalSavings > 0)
-                             
-                                
-                                <div class="d-flex justify-content-between mb-2 text-muted text-decoration-line-through">
-                                    <span>Original subtotal:</span>
-                                    <span>${{ number_format($originalSubtotal ?? 0, 2, '.', ',') }}</span>
-                                </div>
-                                <div class="d-flex justify-content-between mb-2 text-success fw-bold">
-                                    <span>Product savings:</span>
-                                    <span>-${{ number_format($totalSavings, 2, '.', ',') }}</span>
-                                </div>
-                                <hr class="my-2">
-                            @endif
-                            
-                            <!-- Sección de descuento adicional -->
-                            <div class="mb-3 p-3 bg-light rounded">
-                                <h6 class="mb-2">🎫 Additional Discount Code</h6>
-                                <div class="input-group mb-2">
-                                    <input type="text" id="discount-code" class="form-control" 
-                                        placeholder="Enter discount code" style="text-transform: uppercase;">
-                                    <button type="button" id="apply-discount-btn" class="btn btn-outline-primary">
-                                        Apply
-                                    </button>
-                                </div>
-                                
-                                <!-- Estado del descuento -->
-                                <div id="discount-status" style="display: none;">
-                                    <!-- Se llena dinámicamente -->
-                                </div>
-                                
-                                <!-- Botón para remover descuento -->
-                                <button type="button" id="remove-discount-btn" class="btn btn-sm btn-outline-danger w-100" 
-                                        style="display: none;">
-                                    Remove Discount
-                                </button>
-                            </div>
-
-                            <!-- Resumen de costos -->
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal:</span>
-                                <span id="display-subtotal">${{ number_format($subtotal, 2, '.', ',') }}</span>
-                            </div>
-                            
-                            <!-- Línea de descuento adicional (oculta inicialmente) -->
-                            <div id="discount-line" class="d-flex justify-content-between mb-2 text-success" style="display: none;">
-                                <span id="discount-label">Additional Discount:</span>
-                                <span id="discount-amount">-$0.00</span>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Tax:</span>
-                                <span id="display-tax">$0.00</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Shipping:</span>
-                                <span id="display-shipping">Select location</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between mb-3">
-                                <strong>Total:</strong>
-                                <strong id="display-total">${{ number_format($subtotal, 2, '.', ',') }}</strong>
-                            </div>
-                            
-                            @if(isset($totalSavings) && $totalSavings > 0)
-                                <div class="alert alert-info py-2 text-center">
-                                    <small><strong>🎯 Total Savings: ${{ number_format($totalSavings, 2, '.', ',') }}</strong></small>
-                                </div>
-                            @endif
-                            
-                            <div id="location-warning" class="alert alert-warning" style="display: none;">
-                                📍 Please select shipping location to see final costs
-                            </div>
-                            
-                            <button type="submit" form="checkoutForm" class="btn btn-success w-100 mb-2" id="place-order-btn" disabled>
-                                💳 Place Order
-                                @if(isset($totalSavings) && $totalSavings > 0)
-                                    <br><small>With ${{ number_format($totalSavings, 2, '.', ',') }} in savings!</small>
+                                <!-- Items de la Orden -->
+                                @if($order->items->count() > 0)
+                                    <h6 class="text-white mb-3 fw-bold fs-5">
+                                        <i class="fas fa-list me-2 text-success"></i>Order Items ({{ $order->items->count() }})
+                                    </h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless">
+                                            <thead style="background: rgba(255,255,255,0.1);">
+                                                <tr>
+                                                    <th class="text-white fw-bold fs-6">Product</th>
+                                                    <th class="text-center text-white fw-bold fs-6">Quantity</th>
+                                                    <th class="text-end text-white fw-bold fs-6">Unit Price</th>
+                                                    <th class="text-end text-white fw-bold fs-6">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($order->items as $item)
+                                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                                    <td class="py-3">
+                                                        <div class="d-flex align-items-center">
+                                                            @if($item->product && $item->product->images->first())
+                                                                <img src="{{ Storage::url($item->product->images->first()->image) }}" 
+                                                                     alt="{{ $item->product_name }}" 
+                                                                     class="me-3 rounded shadow"
+                                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                            @else
+                                                                <div class="me-3 bg-secondary rounded d-flex align-items-center justify-content-center shadow" style="width: 50px; height: 50px;">
+                                                                    <i class="fas fa-image text-white"></i>
+                                                                </div>
+                                                            @endif
+                                                            <div>
+                                                                <div class="text-white fw-semibold fs-6">{{ $item->product_name }}</div>
+                                                                @if($item->product)
+                                                                    <small class="text-white-50">SKU: {{ $item->product->id }}</small>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center py-3">
+                                                        <span class="badge bg-success px-3 py-2 fs-6">{{ $item->quantity }}</span>
+                                                    </td>
+                                                    <td class="text-end text-white py-3 fs-6">${{ number_format($item->product_price, 2) }}</td>
+                                                    <td class="text-end text-white fw-bold py-3 fs-5">${{ number_format($item->total_price, 2) }}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 @endif
-                            </button>
-                            
-                            <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary w-100">
-                                ← Back to Cart
-                            </a>
-                            
-                            <div class="mt-3 text-center">
-                                <small class="text-muted">
-                                    🔒 Secure checkout <br>
-                                    💚 Fresh meat guarantee
-                                </small>
+
+                                <!-- Resumen de Totales -->
+                                <div class="row mt-4">
+                                    <div class="col-md-6 offset-md-6">
+                                        <div class="border-top border-light pt-4" style="border-opacity: 0.3 !important;">
+                                            <div class="d-flex justify-content-between text-white-50 mb-2 fs-6">
+                                                <span>Subtotal:</span>
+                                                <span class="text-white">${{ number_format($order->subtotal, 2) }}</span>
+                                            </div>
+                                            @if($order->tax_amount > 0)
+                                                <div class="d-flex justify-content-between text-white-50 mb-2 fs-6">
+                                                    <span>Tax:</span>
+                                                    <span class="text-white">${{ number_format($order->tax_amount, 2) }}</span>
+                                                </div>
+                                            @endif
+                                            @if($order->shipping_amount > 0)
+                                                <div class="d-flex justify-content-between text-white-50 mb-2 fs-6">
+                                                    <span>Shipping:</span>
+                                                    <span class="text-white">${{ number_format($order->shipping_amount, 2) }}</span>
+                                                </div>
+                                            @endif
+                                            <hr class="border-light" style="border-opacity: 0.5 !important;">
+                                            <div class="d-flex justify-content-between text-white fw-bold fs-4">
+                                                <span>Total:</span>
+                                                <span class="text-success">${{ number_format($order->total_amount, 2) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if($order->notes)
+                                    <div class="mt-4 p-3 rounded" style="background: rgba(255,255,255,0.1);">
+                                        <h6 class="text-white mb-2 fw-bold">
+                                            <i class="fas fa-sticky-note me-2 text-success"></i>Notes
+                                        </h6>
+                                        <p class="text-white-50 mb-0 fs-6">{{ $order->notes }}</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
+                    @endforeach
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </div>
 
-<script>
-// 🔥 Generar datos del carrito en PHP y asignarlos a variable global
-window.cartItemsData = {!! json_encode($cartItems->map(function($item) {
-    return [
-        'id' => $item->id,
-        'name' => $item->name,
-        'price' => $item->price,
-        'qty' => $item->qty,
-        'options' => $item->options
-    ];
-})) !!};
+<style>
+/* Estilos personalizados para el dashboard del comprador */
+body {
+    background-color: #011904 !important;
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Elementos del DOM
-    const countrySelect = document.getElementById('shipping-country');
-    const citySelect = document.getElementById('shipping-city');
-    const placeOrderBtn = document.getElementById('place-order-btn');
-    const locationWarning = document.getElementById('location-warning');
-    const discountCodeInput = document.getElementById('discount-code');
-    const applyDiscountBtn = document.getElementById('apply-discount-btn');
-    const removeDiscountBtn = document.getElementById('remove-discount-btn');
-    const discountStatus = document.getElementById('discount-status');
-    const discountLine = document.getElementById('discount-line');
-    const discountLabel = document.getElementById('discount-label');
-    const discountAmount = document.getElementById('discount-amount');
-    
-    // Variables globales
-    const originalSubtotal = parseFloat('{{ $subtotal }}');
-    let currentDiscount = 0;
-    let appliedDiscountData = null;
-    
-    console.log('Subtotal with product discounts:', originalSubtotal);
-    console.log('Product savings:', parseFloat('{{ $totalSavings ?? 0 }}'));
-    
-    // Mostrar advertencia inicialmente
-    locationWarning.style.display = 'block';
+.accordion .btn-link {
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+}
 
-    // 🎫 Manejar aplicación de descuento adicional
-    applyDiscountBtn.addEventListener('click', function() {
-        const codigo = discountCodeInput.value.trim().toUpperCase();
-        
-        if (!codigo) {
-            showDiscountMessage('❌ Please enter a discount code', 'error');
-            return;
-        }
-        
-        // Usar datos del carrito desde variable global
-        const cartItems = window.cartItemsData;
-        
-        // Mostrar loading
-        applyDiscountBtn.textContent = 'Validating...';
-        applyDiscountBtn.disabled = true;
-        
-        fetch('{{ route("checkout.validate-discount") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                codigo: codigo,
-                subtotal: originalSubtotal,
-                cart_items: cartItems
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Aplicar descuento
-                appliedDiscountData = data.descuento;
-                currentDiscount = appliedDiscountData.monto;
-                
-                // Actualizar UI
-                showDiscountMessage(data.message, 'success');
-                showDiscountLine();
-                updateTotals();
-                
-                // Mostrar botón de remover
-                removeDiscountBtn.style.display = 'block';
-                discountCodeInput.disabled = true;
-                applyDiscountBtn.style.display = 'none';
-                
-                // Actualizar campos ocultos
-                document.getElementById('applied-discount-code').value = appliedDiscountData.codigo;
-                document.getElementById('applied-discount-amount').value = currentDiscount.toFixed(2);
-                
-            } else {
-                showDiscountMessage(data.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showDiscountMessage('❌ Error validating discount code', 'error');
-        })
-        .finally(() => {
-            applyDiscountBtn.textContent = 'Apply';
-            applyDiscountBtn.disabled = false;
-        });
-    });
-    
-    // 🗑️ Manejar remoción de descuento
-    removeDiscountBtn.addEventListener('click', function() {
-        removeDiscount();
-    });
-    
-    // 📍 Manejar cambio de país
-    countrySelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const cities = selectedOption.dataset.cities ? JSON.parse(selectedOption.dataset.cities) : [];
-        
-        // Limpiar ciudades
-        citySelect.innerHTML = '<option value="">-- Select City --</option>';
-        
-        // Agregar ciudades
-        cities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city.id;
-            option.textContent = city.name;
-            citySelect.appendChild(option);
-        });
-        
-        // Calcular costos si hay país seleccionado
-        if (this.value) {
-            calculateCosts();
-        } else {
-            resetCosts();
-        }
-    });
-    
-    // Manejar cambio de ciudad
-    citySelect.addEventListener('change', function() {
-        if (countrySelect.value) {
-            calculateCosts();
-        }
-    });
-    
-    // 🧮 Funciones de cálculo
-    function calculateCosts() {
-        const countryId = countrySelect.value;
-        const cityId = citySelect.value;
-        
-        if (!countryId) return;
-        
-        // Mostrar loading
-        document.getElementById('display-tax').textContent = 'Calculating...';
-        document.getElementById('display-shipping').textContent = 'Calculating...';
-        document.getElementById('display-total').textContent = 'Calculating...';
-        
-        const subtotalConDescuento = originalSubtotal - currentDiscount;
-        
-        fetch('{{ route("checkout.calculate") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                country_id: countryId,
-                city_id: cityId,
-                subtotal: subtotalConDescuento
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const tax = parseFloat(data.tax_raw || 0);
-            const shipping = parseFloat(data.shipping_raw || 0);
-            const total = subtotalConDescuento + tax + shipping;
-            
-            // Actualizar display
-            document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
-            document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
-            document.getElementById('display-total').textContent = '$' + total.toFixed(2);
-            
-            // Actualizar campos ocultos
-            document.getElementById('final-country').value = countryId;
-            document.getElementById('final-city').value = cityId;
-            document.getElementById('final-total').value = total.toFixed(2);
-            document.getElementById('final-tax').value = tax.toFixed(2);
-            document.getElementById('final-shipping').value = shipping.toFixed(2);
-            
-            // Habilitar botón
-            placeOrderBtn.disabled = false;
-            locationWarning.style.display = 'none';
-            
-            console.log('Cálculo:', {
-                subtotal: subtotalConDescuento,
-                tax: tax,
-                shipping: shipping,
-                total: total
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error calculating shipping costs. Please try again.');
-            resetCosts();
-        });
-    }
-    
-    function updateTotals() {
-        // Solo actualizar el total si no hay país seleccionado
-        if (!countrySelect.value) {
-            const newSubtotal = originalSubtotal - currentDiscount;
-            document.getElementById('display-total').textContent = '$' + newSubtotal.toFixed(2);
-        } else {
-            // Recalcular con país seleccionado
-            calculateCosts();
-        }
-    }
-    
-    function showDiscountLine() {
-        if (appliedDiscountData) {
-            discountLabel.textContent = `Additional Discount (${appliedDiscountData.codigo} - ${appliedDiscountData.porcentaje}%):`;
-            discountAmount.textContent = '-$' + currentDiscount.toFixed(2);
-            discountLine.style.display = 'flex';
-        }
-    }
-    
-    function removeDiscount() {
-        currentDiscount = 0;
-        appliedDiscountData = null;
-        
-        // Limpiar UI
-        discountLine.style.display = 'none';
-        discountStatus.style.display = 'none';
-        removeDiscountBtn.style.display = 'none';
-        applyDiscountBtn.style.display = 'block';
-        discountCodeInput.disabled = false;
-        discountCodeInput.value = '';
-        
-        // Limpiar campos ocultos
-        document.getElementById('applied-discount-code').value = '';
-        document.getElementById('applied-discount-amount').value = '';
-        
-        updateTotals();
-    }
-    
-    function showDiscountMessage(message, type) {
-        discountStatus.innerHTML = `
-            <div class="alert alert-${type === 'success' ? 'success' : 'danger'} alert-sm mb-2">
-                ${message}
-                ${appliedDiscountData ? `<br><small>Applies to: ${appliedDiscountData.productos.join(', ')}</small>` : ''}
-            </div>
-        `;
-        discountStatus.style.display = 'block';
-    }
-    
-    function resetCosts() {
-        document.getElementById('display-tax').textContent = '$0.00';
-        document.getElementById('display-shipping').textContent = 'Select location';
-        
-        const subtotalConDescuento = originalSubtotal - currentDiscount;
-        document.getElementById('display-total').textContent = '$' + subtotalConDescuento.toFixed(2);
-        
-        // Limpiar campos ocultos
-        document.getElementById('final-country').value = '';
-        document.getElementById('final-city').value = '';
-        document.getElementById('final-total').value = '';
-        document.getElementById('final-tax').value = '';
-        document.getElementById('final-shipping').value = '';
-        
-        placeOrderBtn.disabled = true;
-        locationWarning.style.display = 'block';
-    }
-    
-    // Permitir aplicar descuento con Enter
-    discountCodeInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            applyDiscountBtn.click();
-        }
-    });
-});
-</script>
+.accordion .btn-link:focus {
+    box-shadow: none;
+}
+
+.accordion .btn-link:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+.accordion .card-header {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.accordion .collapse.show {
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.table th,
+.table td {
+    border: none !important;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+}
+
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Animaciones sutiles */
+.accordion .collapse {
+    transition: all 0.3s ease;
+}
+
+/* Glass effect mejorado */
+.card {
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Mejorar la visibilidad del texto */
+.text-white-50 {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+/* Hover effects para las estadísticas */
+.row .col-md-3 .card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3) !important;
+}
+
+/* Efectos de transición suaves */
+* {
+    transition: all 0.3s ease;
+}
+</style>
+
 @endsection
