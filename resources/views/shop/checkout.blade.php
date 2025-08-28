@@ -263,18 +263,84 @@ body {
     background-color: #011904 !important;
 }
 
+/* FORZAR TODOS LOS TEXTOS A SER VISIBLES */
+.container, 
+.container * {
+    color: white !important;
+}
+
+/* Excepciones para badges y botones específicos */
+.badge.bg-warning,
+.badge.text-dark,
+.btn.text-dark {
+    color: #000 !important;
+}
+
+/* Texto específico para cards y elementos */
+.card,
+.card *,
+.accordion,
+.accordion * {
+    color: white !important;
+}
+
+/* Forzar texto blanco en tablas */
+.table,
+.table *,
+.table th,
+.table td,
+.table thead,
+.table tbody {
+    color: white !important;
+    border-color: rgba(255,255,255,0.2) !important;
+}
+
+/* Texto muted debe ser visible */
+.text-muted,
+.text-secondary {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+/* Texto semi-transparente */
+.text-white-50 {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+/* Headers y títulos */
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
+}
+
+/* Párrafos y spans */
+p, span, div, small {
+    color: white !important;
+}
+
+/* Links que no sean botones */
+a:not(.btn) {
+    color: #28a745 !important;
+}
+
+a:not(.btn):hover {
+    color: #34ce57 !important;
+}
+
+/* Accordión específico */
 .accordion .btn-link {
     text-decoration: none !important;
     transition: all 0.3s ease;
+    color: white !important;
 }
 
 .accordion .btn-link:focus {
     box-shadow: none;
+    color: white !important;
 }
 
 .accordion .btn-link:hover {
     opacity: 0.8;
     transform: scale(1.1);
+    color: white !important;
 }
 
 .accordion .card-header {
@@ -285,13 +351,27 @@ body {
     border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-.table th,
-.table td {
-    border: none !important;
+/* Forzar visibilidad en elementos form */
+.form-control,
+.form-select,
+.form-label,
+input,
+select,
+textarea {
+    color: white !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.3) !important;
 }
 
+/* Placeholder también debe ser visible */
+::placeholder {
+    color: rgba(255,255,255,0.6) !important;
+}
+
+/* Cards específicas */
 .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .card:hover {
@@ -299,24 +379,40 @@ body {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
 }
 
+/* Badges con mejor contraste */
 .badge {
     font-weight: 600;
     letter-spacing: 0.5px;
 }
 
+.badge.bg-success {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.badge.bg-info {
+    background-color: #17a2b8 !important;
+    color: white !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
 /* Animaciones sutiles */
 .accordion .collapse {
     transition: all 0.3s ease;
-}
-
-/* Glass effect mejorado */
-.card {
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-/* Mejorar la visibilidad del texto */
-.text-white-50 {
-    color: rgba(255,255,255,0.8) !important;
 }
 
 /* Hover effects para las estadísticas */
@@ -328,6 +424,45 @@ body {
 /* Efectos de transición suaves */
 * {
     transition: all 0.3s ease;
+}
+
+/* ESPECÍFICO PARA ELEMENTOS QUE PODRÍAN TENER TEXTO NEGRO */
+.invalid-feedback,
+.text-danger,
+.alert,
+.alert * {
+    color: #ff6b6b !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-info {
+    color: #17a2b8 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+/* Asegurar que los elementos strong y bold se vean */
+strong, b, .fw-bold, .fw-semibold {
+    color: white !important;
+    font-weight: bold !important;
+}
+
+/* Elementos de lista */
+ul, ol, li {
+    color: white !important;
+}
+
+/* Asegurar visibilidad en elementos específicos del recibo */
+.order-details *,
+.order-summary *,
+.payment-info *,
+.shipping-info * {
+    color: white !important;
 }
 </style>
 
