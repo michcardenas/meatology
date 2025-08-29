@@ -148,6 +148,8 @@
                                     <input type="hidden" id="final-shipping" name="shipping">
                                     <input type="hidden" id="applied-discount-code" name="discount_code">
                                     <input type="hidden" id="applied-discount-amount" name="discount_amount">
+                                    <input type="hidden" id="final-tip-amount" name="tip_amount" value="0">
+                                    <input type="hidden" id="final-tip-percentage" name="tip_percentage">
                                     {{-- Agregar información de descuentos de productos --}}
                                     <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
                                     
@@ -184,6 +186,8 @@
                                     <input type="hidden" id="final-shipping" name="shipping">
                                     <input type="hidden" id="applied-discount-code" name="discount_code">
                                     <input type="hidden" id="applied-discount-amount" name="discount_amount">
+                                    <input type="hidden" id="final-tip-amount" name="tip_amount" value="0">
+                                    <input type="hidden" id="final-tip-percentage" name="tip_percentage">
                                     {{-- Agregar información de descuentos de productos --}}
                                     <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
                                     
@@ -277,6 +281,56 @@
                                 </button>
                             </div>
 
+                            <!-- Sección de propinas -->
+                            <div class="mb-3 p-3 bg-light rounded">
+                                <h6 class="mb-3">💝 Add Tip for Our Team</h6>
+                                
+                                <!-- Botones de porcentajes predefinidos -->
+                                <div class="row mb-3">
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-success w-100 tip-btn" data-percentage="15">
+                                            15%
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-success w-100 tip-btn" data-percentage="18">
+                                            18%
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-success w-100 tip-btn" data-percentage="20">
+                                            20%
+                                        </button>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="button" class="btn btn-outline-success w-100 tip-btn" data-percentage="25">
+                                            25%
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Monto personalizado -->
+                                <div class="mb-2">
+                                    <label class="form-label small">Custom Amount:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" id="custom-tip" class="form-control" 
+                                               placeholder="0.00" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                
+                                <!-- Estado del tip -->
+                                <div id="tip-display" class="text-center text-success fw-bold" style="display: none;">
+                                    Tip: $<span id="tip-amount-display">0.00</span>
+                                </div>
+                                
+                                <!-- Botón para remover tip -->
+                                <button type="button" id="remove-tip-btn" class="btn btn-sm btn-outline-danger w-100 mt-2" 
+                                        style="display: none;">
+                                    Remove Tip
+                                </button>
+                            </div>
+
                             <!-- Resumen de costos -->
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
@@ -297,6 +351,13 @@
                                 <span>Shipping:</span>
                                 <span id="display-shipping">Select location</span>
                             </div>
+                            
+                            <!-- Línea de propina -->
+                            <div id="tip-line" class="d-flex justify-content-between mb-2" style="display: none;">
+                                <span>Tip:</span>
+                                <span id="display-tip">$0.00</span>
+                            </div>
+                            
                             <hr>
                             <div class="d-flex justify-content-between mb-3">
                                 <strong>Total:</strong>
@@ -368,6 +429,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const originalSubtotal = parseFloat('{{ $subtotal }}');
     let currentDiscount = 0;
     let appliedDiscountData = null;
+    
+    // Variables para propinas
+    let currentTip = 0;
+    let currentTipPercentage = null;
+
+    // Elementos del DOM para propinas
+    const tipButtons = document.querySelectorAll('.tip-btn');
+    const customTipInput = document.getElementById('custom-tip');
+    const removeTipBtn = document.getElementById('remove-tip-btn');
+    const tipDisplay = document.getElementById('tip-display');
+    const tipLine = document.getElementById('tip-line');
+    const displayTip = document.getElementById('display-tip');
+    const tipAmountDisplay = document.getElementById('tip-amount-display');
     
     console.log('Subtotal with product discounts:', originalSubtotal);
     console.log('Product savings:', parseFloat('{{ $totalSavings ?? 0 }}'));
@@ -442,6 +516,38 @@ document.addEventListener('DOMContentLoaded', function() {
     removeDiscountBtn.addEventListener('click', function() {
         removeDiscount();
     });
+
+    // 💝 Manejar botones de porcentaje de propina
+    tipButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const percentage = parseFloat(this.dataset.percentage);
+            applyTipPercentage(percentage);
+            
+            // Activar botón seleccionado
+            tipButtons.forEach(btn => btn.classList.remove('btn-success'));
+            tipButtons.forEach(btn => btn.classList.add('btn-outline-success'));
+            this.classList.remove('btn-outline-success');
+            this.classList.add('btn-success');
+            
+            // Limpiar input custom
+            customTipInput.value = '';
+        });
+    });
+
+    // Manejar monto personalizado
+    customTipInput.addEventListener('input', function() {
+        const customAmount = parseFloat(this.value) || 0;
+        applyCustomTip(customAmount);
+        
+        // Desactivar botones de porcentaje
+        tipButtons.forEach(btn => btn.classList.remove('btn-success'));
+        tipButtons.forEach(btn => btn.classList.add('btn-outline-success'));
+    });
+
+    // Remover propina
+    removeTipBtn.addEventListener('click', function() {
+        removeTip();
+    });
     
     // 📍 Manejar cambio de país
     countrySelect.addEventListener('change', function() {
@@ -504,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             const tax = parseFloat(data.tax_raw || 0);
             const shipping = parseFloat(data.shipping_raw || 0);
-            const total = subtotalConDescuento + tax + shipping;
+            const total = subtotalConDescuento + tax + shipping + currentTip;
             
             // Actualizar display
             document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
@@ -526,6 +632,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 subtotal: subtotalConDescuento,
                 tax: tax,
                 shipping: shipping,
+                tip: currentTip,
                 total: total
             });
         })
@@ -539,11 +646,64 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTotals() {
         // Solo actualizar el total si no hay país seleccionado
         if (!countrySelect.value) {
-            const newSubtotal = originalSubtotal - currentDiscount;
+            const newSubtotal = originalSubtotal - currentDiscount + currentTip;
             document.getElementById('display-total').textContent = '$' + newSubtotal.toFixed(2);
         } else {
             // Recalcular con país seleccionado
             calculateCosts();
+        }
+    }
+
+    // Funciones de propinas
+    function applyTipPercentage(percentage) {
+        const subtotalConDescuento = originalSubtotal - currentDiscount;
+        currentTip = subtotalConDescuento * (percentage / 100);
+        currentTipPercentage = percentage;
+        
+        updateTipDisplay();
+        updateTotals();
+    }
+
+    function applyCustomTip(amount) {
+        currentTip = amount;
+        currentTipPercentage = null;
+        
+        updateTipDisplay();
+        updateTotals();
+    }
+
+    function removeTip() {
+        currentTip = 0;
+        currentTipPercentage = null;
+        customTipInput.value = '';
+        
+        // Desactivar botones
+        tipButtons.forEach(btn => btn.classList.remove('btn-success'));
+        tipButtons.forEach(btn => btn.classList.add('btn-outline-success'));
+        
+        updateTipDisplay();
+        updateTotals();
+    }
+
+    function updateTipDisplay() {
+        if (currentTip > 0) {
+            tipAmountDisplay.textContent = currentTip.toFixed(2);
+            displayTip.textContent = '$' + currentTip.toFixed(2);
+            tipDisplay.style.display = 'block';
+            tipLine.style.display = 'flex';
+            removeTipBtn.style.display = 'block';
+            
+            // Actualizar campos ocultos
+            document.getElementById('final-tip-amount').value = currentTip.toFixed(2);
+            document.getElementById('final-tip-percentage').value = currentTipPercentage || '';
+        } else {
+            tipDisplay.style.display = 'none';
+            tipLine.style.display = 'none';
+            removeTipBtn.style.display = 'none';
+            
+            // Limpiar campos ocultos
+            document.getElementById('final-tip-amount').value = '0';
+            document.getElementById('final-tip-percentage').value = '';
         }
     }
     
@@ -588,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('display-tax').textContent = '$0.00';
         document.getElementById('display-shipping').textContent = 'Select location';
         
-        const subtotalConDescuento = originalSubtotal - currentDiscount;
+        const subtotalConDescuento = originalSubtotal - currentDiscount + currentTip;
         document.getElementById('display-total').textContent = '$' + subtotalConDescuento.toFixed(2);
         
         // Limpiar campos ocultos
