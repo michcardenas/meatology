@@ -4,23 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meatology</title>
-{{-- Favicon y meta para iconos con soporte para tema claro/oscuro --}}
-
-{{-- Favicon para tema claro (logo oscuro) --}}
-<link rel="icon" type="image/png" href="{{ asset('images/logo_oscuro.png') }}" sizes="96x96" media="(prefers-color-scheme: light)">
-<link rel="icon" type="image/svg+xml" href="{{ asset('images/logo_oscuro.png') }}" media="(prefers-color-scheme: light)">
-<link rel="shortcut icon" href="{{ asset('images/logo_oscuro.png') }}" media="(prefers-color-scheme: light)">
-
-{{-- Favicon para tema oscuro (logo claro) --}}
-<link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}" sizes="96x96" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/svg+xml" href="{{ asset('images/logo.png') }}" media="(prefers-color-scheme: dark)">
-<link rel="shortcut icon" href="{{ asset('images/logo.png') }}" media="(prefers-color-scheme: dark)">
-
-{{-- Fallback sin preferencia (usa logo oscuro por defecto) --}}
-<link rel="icon" type="image/png" href="{{ asset('images/logo_oscuro.png') }}" sizes="96x96" media="(prefers-color-scheme: no-preference)">
-
-{{-- Apple Touch Icon (generalmente se queda con un solo logo) --}}
-<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
+{{-- Favicon y meta para iconos --}}
+<link rel="icon" type="image/png" href="{{ asset('images/logo_oscuro.png') }}" sizes="96x96">
+<link rel="icon" type="image/svg+xml" href="{{ asset('images/logo_oscuro.png') }}">
+<link rel="shortcut icon" href="{{ asset('images/logo_oscuro.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/logo_oscuro.png') }}">
 <link rel="manifest" href="{{ asset('images/site.webmanifest') }}">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
