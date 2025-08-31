@@ -9,6 +9,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SubscriptionController;
+
 
 
 /* ---------- Landing y páginas públicas ---------- */
@@ -35,10 +37,14 @@ Route::post('/checkout/calculate', [ShopController::class, 'calculateShippingAnd
 Route::post('/order/process', [ShopController::class, 'processOrder'])->name('order.process');
 Route::patch('/admin/orders/{order}/status', [DashboardController::class, 'updateOrderStatus'])
      ->name('admin.orders.update-status');
+     
 // Ruta para la pasarela de pago
 Route::get('/payment/gateway/{order}', [App\Http\Controllers\ShopController::class, 'paymentGateway'])->name('payment.gateway');
 Route::post('/payment/process/{order}', [App\Http\Controllers\ShopController::class, 'processPayment'])->name('payment.process');
 Route::get('/payment/success/{order}', [App\Http\Controllers\ShopController::class, 'paymentSuccess'])->name('payment.success');
+Route::post('/subscribe', [SubscriptionController::class, 'store'])->name('subscribe.store');
+Route::get('/subscribe/confirm/{token}', [SubscriptionController::class, 'confirm'])->name('subscribe.confirm');
+Route::get('/unsubscribe/{token}', [SubscriptionController::class, 'unsubscribe'])->name('subscribe.unsubscribe');
 
 Route::post('/cart',           [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart',            [CartController::class, 'index'])->name('cart.index');
@@ -77,6 +83,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 Route::resource('categories', CategoryController::class);
    
+    Route::get('/admin/subscriptions', [SubscriptionController::class, 'showSubscribers'])->name('admin.subscriptions');
+    Route::get('/admin/users', [SubscriptionController::class, 'showAllUsers'])->name('admin.users');
+    Route::post('/admin/subscription/toggle/{user}', [SubscriptionController::class, 'toggleSubscription'])->name('admin.subscription.toggle');
+    Route::delete('/admin/user/{user}', [SubscriptionController::class, 'deleteUser'])->name('admin.user.delete');
 
 
 Route::prefix('admin')->group(function () {

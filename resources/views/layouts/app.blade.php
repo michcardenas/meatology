@@ -886,28 +886,58 @@ footer {
             </div>
 
             <!-- Contact & Newsletter -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
-                <p class="text-white small mb-3">
-                    Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
-                </p>
-       
-                <!-- Contact Info -->
-                <div class="contact-info mt-4">
-                    <p class="text-white small mb-2">
-                        <i class="fas fa-envelope me-2"></i>
-                        <a href="mailto:sales@meatology.us" class="footer-link">sales@meatology.us</a>
+            <!-- Stay Updated -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
+                    <p class="text-white small mb-3">
+                        Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
                     </p>
-                    <p class="text-white small mb-2">
-                        <i class="fas fa-phone me-2"></i>
-                        <a href="tel:+13058420234" class="footer-link">+1 (305) 842-0234</a>
-                    </p>
-                    <p class="text-white small mb-0">
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        <span class="text-white">Based in Florida</span>
-                    </p>
+
+                    <!-- Newsletter subscription form -->
+                    <form action="{{ route('subscribe.store') }}" method="POST" class="d-flex">
+                        @csrf
+                        <input 
+                            type="email" 
+                            name="email" 
+                            class="form-control me-2" 
+                            placeholder="Enter your email" 
+                            required
+                        >
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+
+                    <!-- Mensajes de éxito o error -->
+                    @if(session('status'))
+                        <div class="alert alert-success mt-2 p-2 small">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    @error('email')
+                        <div class="alert alert-danger mt-2 p-2 small">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                    <!-- Contact Info -->
+                    <div class="contact-info mt-4">
+                        <p class="text-white small mb-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            <a href="mailto:sales@meatology.us" class="footer-link">sales@meatology.us</a>
+                        </p>
+                        <p class="text-white small mb-2">
+                            <i class="fas fa-phone me-2"></i>
+                            <a href="tel:+13058420234" class="footer-link">+1 (305) 842-0234</a>
+                        </p>
+                        <p class="text-white small mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <span class="text-white">Based in Florida</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
+
 
             <!-- NUEVA SECCIÓN: Delivery Areas -->
             <div class="col-lg-2 col-md-6 mb-4">

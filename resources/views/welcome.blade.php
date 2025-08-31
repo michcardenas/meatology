@@ -116,7 +116,22 @@
         .position-relative {
     overflow: hidden;
 }
+.product-card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
+.product-card-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+}
 /* Efecto de zoom en las imágenes */
 .card-img-top {
     transition: transform 0.4s ease-in-out;
