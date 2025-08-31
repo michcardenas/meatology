@@ -56,12 +56,7 @@
                 </button>
               </form>
 
-              <form action="{{ route('admin.user.delete', $u) }}" method="POST" class="d-inline"
-                    onsubmit="return confirm('Delete user {{ $u->email }}? This cannot be undone.');">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-sm btn-outline-danger">Delete</button>
-              </form>
+         
             </td>
           </tr>
           @empty
