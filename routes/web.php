@@ -10,6 +10,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\SeoController;
 
 
 
@@ -45,6 +46,8 @@ Route::get('/payment/success/{order}', [App\Http\Controllers\ShopController::cla
 Route::post('/subscribe', [SubscriptionController::class, 'store'])->name('subscribe.store');
 Route::get('/subscribe/confirm/{token}', [SubscriptionController::class, 'confirm'])->name('subscribe.confirm');
 Route::get('/unsubscribe/{token}', [SubscriptionController::class, 'unsubscribe'])->name('subscribe.unsubscribe');
+  Route::put('/admin/seo/pages/{pagina}', [\App\Http\Controllers\SeoController::class, 'update'])
+        ->name('admin.seo.update');
 
 Route::post('/cart',           [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart',            [CartController::class, 'index'])->name('cart.index');
@@ -87,7 +90,8 @@ Route::resource('categories', CategoryController::class);
     Route::get('/admin/users', [SubscriptionController::class, 'showAllUsers'])->name('admin.users');
     Route::post('/admin/subscription/toggle/{user}', [SubscriptionController::class, 'toggleSubscription'])->name('admin.subscription.toggle');
     Route::delete('/admin/user/{user}', [SubscriptionController::class, 'deleteUser'])->name('admin.user.delete');
-
+       Route::get('/admin/seo/pages', [SeoController::class, 'index'])->name('admin.seo.pages');
+    Route::get('/admin/seo/pages/{pagina}', [SeoController::class, 'edit'])->name('admin.seo.edit');
 
 Route::prefix('admin')->group(function () {
     // Countries

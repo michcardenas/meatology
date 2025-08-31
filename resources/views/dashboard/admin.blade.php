@@ -39,6 +39,21 @@
             </div>
         </div>
     </div>
+    <!-- NUEVA SECCIÓN: Botón de SEO -->
+<div class="col-md-6 mb-3">
+  <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #fd7e14, #e83e8c); border-radius: 15px;">
+    <div class="card-body text-center py-4">
+      <i class="fas fa-search fa-3x text-white mb-3"></i>
+      <h5 class="text-white fw-bold mb-2">Pages SEO</h5>
+      <p class="text-white mb-3" style="opacity: 0.9;">Manage SEO settings per page</p>
+      <a href="{{ route('admin.seo.pages') }}" class="btn  btn-lg px-4">
+        <i class="fas fa-wrench me-2"></i>
+        Open SEO
+      </a>
+    </div>
+  </div>
+</div>
+
 
     <div class="row"> 
         <div class="col-12"> 
