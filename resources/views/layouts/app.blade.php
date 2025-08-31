@@ -890,7 +890,7 @@ footer {
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="text-uppercase fw-semibold mb-3">Stay Updated</h5>
                     <p class="text-white small mb-3">
-                        Subscribe to our newsletter for exclusive offers, recipes, and updates from our farms.
+                        Enter your email address to receive special shipping rates, promotions, discount coupons, new product announcements, recipes, and much more
                     </p>
 
                     <!-- Newsletter subscription form -->
