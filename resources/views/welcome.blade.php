@@ -274,7 +274,11 @@
                     </div>
 
                     <!-- Contenido -->
-                    <div class="card-body p-4">
+                    <div class="card-body p-4" style="
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+">
                         <h4 class="card-title fw-bold text-dark mb-2" style="font-family: 'Georgia', serif;">
                             {{ $product->name }}
                         </h4>
