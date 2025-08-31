@@ -245,7 +245,7 @@
                             <a href="{{ route('product.show', $product) }}" class="text-decoration-none">
                                 <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
                                      class="card-img-top" alt="{{ $product->name }}"
-                                     style="height: 320px; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.08);"
+                                     style="height: 320px; object-fit: fill; box-shadow: 0 4px 15px rgba(0,0,0,0.08);"
                                      loading="lazy">
                             </a>
                         @endif
@@ -353,7 +353,7 @@
                 <div class="card h-100 shadow border-0">
                     <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
                          alt="{{ $category->name }}"
-                         class="card-img-top" style="height: 220px; object-fit: cover;">
+                         class="card-img-top" style="height: 220px; object-fit: fill;">
 
                     <div class="card-body bg-white rounded-bottom">
                         <h5 class="card-title fw-bold text-dark">{{ $category->name }}</h5>
