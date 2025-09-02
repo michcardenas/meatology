@@ -376,17 +376,27 @@
 
                     <div class="card-body bg-white rounded-bottom">
                         <h5 class="card-title fw-bold text-dark">{{ $category->name }}</h5>
-{{-- Descripción limpia: sin etiquetas, entidades decodificadas y espacios normalizados --}}
 @php
     $desc = $product->description ?? '';
-    // 1) Decodifica entidades (&nbsp;, &amp;, &quot;, etc.)
-    $desc = html_entity_decode($desc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    // 2) Quita etiquetas por si vienen
+
+    // 1) Decodifica entidades HTML repetidamente (por si viene &amp;nbsp;)
+    for ($i = 0; $i < 3; $i++) {
+        $decoded = html_entity_decode($desc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if ($decoded === $desc) break;
+        $desc = $decoded;
+    }
+
+    // 2) Quita etiquetas HTML si quedaran
     $desc = strip_tags($desc);
-    // 3) Reemplaza NBSP (U+00A0) por espacio normal y colapsa espacios múltiples
-    $desc = preg_replace('/\x{00A0}/u', ' ', $desc);     // NBSP -> espacio
-    $desc = preg_replace('/\s+/u', ' ', trim($desc));    // colapsa espacios
+
+    // 3) Normaliza NBSP: entidad, numérica y el carácter real U+00A0
+    $desc = preg_replace('/(&nbsp;|&#160;)/i', ' ', $desc);      // entidades -> espacio
+    $desc = str_replace("\xC2\xA0", ' ', $desc);                 // byte UTF-8 NBSP -> espacio
+
+    // 4) Colapsa espacios múltiples y recorta
+    $desc = preg_replace('/\s+/u', ' ', trim($desc));
 @endphp
+
 <p class="card-text text-muted">
     {{ \Illuminate\Support\Str::limit($desc, 120) }}
 </p>
