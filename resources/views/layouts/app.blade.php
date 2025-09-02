@@ -382,7 +382,6 @@ footer {
 }
 
 .certification-badge {
-    background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     padding: 5px 12px;
     font-size: 0.8rem;

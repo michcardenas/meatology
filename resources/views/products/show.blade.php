@@ -78,7 +78,7 @@
                                  class="certification-badge"
                                  data-bs-toggle="modal" 
                                  data-bs-target="#certificationModal{{ $certification->id }}"
-                                 title="Click to view certification">
+                                >
                         </div>
 
                         <!-- Modal para ver certificación en grande -->
@@ -86,7 +86,7 @@
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content bg-dark">
                                     <div class="modal-header border-secondary">
-                                        <h5 class="modal-title text-light">Product Certification</h5>
+                                        <h5 class="modal-title text-light"></h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body text-center">
@@ -107,7 +107,6 @@
                     @endforeach
                 </div>
                 <small class="text-light d-block text-center mt-2">
-                    <i class="fas fa-certificate text-warning"></i> Product Certifications - Click to view
                 </small>
             </div>
         @endif
@@ -332,30 +331,22 @@
 }
 
 /* 🔥 ESTILOS PARA LAS CERTIFICACIONES */
-.certifications-section {
+/* .certifications-section {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     padding: 15px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-}
+} */
 
 .certification-badge {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    background: white;
-    border-radius: 8px;
-    padding: 5px;
-    border: 2px solid #e0e0e0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 200px;
+ 
+  
 }
 
 .certification-badge:hover {
     transform: scale(1.1);
-    border-color: #007bff;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+
 }
 
 .certification-item {
