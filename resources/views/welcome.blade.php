@@ -376,7 +376,20 @@
 
                     <div class="card-body bg-white rounded-bottom">
                         <h5 class="card-title fw-bold text-dark">{{ $category->name }}</h5>
-                        <p class="card-text text-muted">{{ Str::limit($category->description, 100) }}</p>
+{{-- Descripción limpia: sin etiquetas, entidades decodificadas y espacios normalizados --}}
+@php
+    $desc = $product->description ?? '';
+    // 1) Decodifica entidades (&nbsp;, &amp;, &quot;, etc.)
+    $desc = html_entity_decode($desc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    // 2) Quita etiquetas por si vienen
+    $desc = strip_tags($desc);
+    // 3) Reemplaza NBSP (U+00A0) por espacio normal y colapsa espacios múltiples
+    $desc = preg_replace('/\x{00A0}/u', ' ', $desc);     // NBSP -> espacio
+    $desc = preg_replace('/\s+/u', ' ', trim($desc));    // colapsa espacios
+@endphp
+<p class="card-text text-muted">
+    {{ \Illuminate\Support\Str::limit($desc, 120) }}
+</p>
                         <a href="{{ route('shop.index') }}" class="btn btn-outline-dark mt-2">
                             Explore Category
                         </a>
