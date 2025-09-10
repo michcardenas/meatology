@@ -180,14 +180,14 @@
                                placeholder="15.5">
                     </div>
 
-                    <div class="col-md-2 mb-2">
+                    <!-- <div class="col-md-2 mb-2">
                         <label class="form-label text-light">Costo Envío</label>
                         <input type="number" 
                                name="prices[{{ $i }}][shipping]" 
                                class="form-control bg-dark text-light" 
                                value="{{ $price->shipping }}"
                                step="0.01">
-                    </div>
+                    </div> -->
 
                     <div class="col-md-2 mb-2 d-flex align-items-end">
                         <button type="button" class="btn btn-danger btn-sm w-100" onclick="removePriceBlock(this)">
@@ -367,14 +367,7 @@
                            placeholder="15.5">
                 </div>
 
-                <div class="col-md-2 mb-2">
-                    <label class="form-label text-light">Costo Envío</label>
-                    <input type="number" 
-                           name="prices[\${priceIndex}][shipping]" 
-                           class="form-control bg-dark text-light" 
-                           value="0"
-                           step="0.01">
-                </div>
+             
 
                 <div class="col-md-2 mb-2 d-flex align-items-end">
                     <button type="button" class="btn btn-danger btn-sm w-100" onclick="removePriceBlock(this)">
