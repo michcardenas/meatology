@@ -171,7 +171,7 @@
                     </div>
 
                     <div class="col-md-2 mb-2">
-                        <label class="form-label text-light">Impuesto</label>
+                        <label class="form-label text-light">Tax</label>
                         <input type="number" 
                                name="prices[{{ $i }}][interest]" 
                                class="form-control bg-dark text-light" 
@@ -358,7 +358,7 @@
                 </div>
 
                 <div class="col-md-2 mb-2">
-                    <label class="form-label text-light">Impuesto (%)</label>
+                    <label class="form-label text-light">Tax (%)</label>
                     <input type="number" 
                            name="prices[\${priceIndex}][interest]" 
                            class="form-control bg-dark text-light" 
