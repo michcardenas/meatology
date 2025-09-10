@@ -13,7 +13,7 @@ use App\Models\OrderItem;
 use App\Models\Price;
 
 use Illuminate\Support\Facades\Log;
-
+use App\Models\City; 
 use Square\SquareClient;
 use Square\Payments\Requests\CreatePaymentRequest;
 use Square\Types\Money;
