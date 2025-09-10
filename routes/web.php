@@ -83,6 +83,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
     Route::get('/categorias/crear', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('/categorias', [CategoryController::class, 'store'])->name('categories.store');
 });
+// Agregar estas rutas a tu archivo de rutas
+Route::get('/admin/cities/{city}/edit', [LocationController::class, 'citiesEdit'])->name('admin.cities.edit');
+Route::put('/admin/cities/{city}', [LocationController::class, 'citiesUpdate'])->name('admin.cities.update');
 
 Route::resource('categories', CategoryController::class);
    

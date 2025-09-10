@@ -134,7 +134,7 @@
                     </td>
                     <td>
                         {{-- Future edit button --}}
-                        <button class="btn btn-sm btn-secondary" disabled>Edit</button>
+                        <a href="{{ route('admin.cities.edit', $city->id) }}" class="btn btn-sm btn-warning">Edit</a>
                         
                         <!-- Delete -->
                         <form action="{{ route('admin.cities.destroy', $city->id) }}" method="POST" class="d-inline">

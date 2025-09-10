@@ -54,4 +54,22 @@ class LocationController extends Controller
         City::findOrFail($id)->delete();
         return back()->with('success', 'City deleted.');
     }
+
+    public function citiesEdit(City $city)
+{
+    $countries = Country::all();
+    return view('admin.cities.edit', compact('city', 'countries'));
+}
+
+public function citiesUpdate(Request $request, City $city)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'country_id' => 'required|exists:countries,id',
+        'tax' => 'nullable|numeric|min:0|max:999.99',
+    ]);
+
+    $city->update($request->only('name', 'country_id', 'tax'));
+    return redirect()->route('admin.cities.index')->with('success', 'City updated successfully.');
+}
 }
