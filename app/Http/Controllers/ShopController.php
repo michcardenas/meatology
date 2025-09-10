@@ -89,7 +89,7 @@ public function index(Request $request)
 
 
 
-public function checkout()
+public function checkout() 
 {
     // Verificar que el carrito no esté vacío
     if (Cart::count() == 0) {
@@ -98,41 +98,41 @@ public function checkout()
 
     // Obtener información del carrito
     $cartItems = Cart::content();
-    
+         
     // Enriquecer items del carrito con información de descuento desde la BD (igual que en CartController)
     foreach ($cartItems as $item) {
         $product = Product::find($item->id);
-        
+                 
         if ($product && $product->descuento > 0) {
-            // Calcular información de descuento
+            // Calcular información de descuento del producto
             $originalPrice = ($product->price ?? 0) + ($product->interest ?? 0);
             $discountAmount = ($originalPrice * $product->descuento) / 100;
-            
+                         
             // Agregar información de descuento a las opciones del item
             $newOptions = $item->options->merge([
                 'descuento' => $product->descuento,
                 'original_price' => $originalPrice,
                 'discount_amount' => $discountAmount,
             ]);
-            
+                         
             // Actualizar las opciones del item en el carrito
             Cart::update($item->rowId, [
                 'options' => $newOptions->toArray()
             ]);
         }
     }
-    
+         
     // Obtener items actualizados
     $cartItems = Cart::content();
-    
-    // Calcular subtotal y ahorros
+         
+    // Calcular subtotal y ahorros de productos (NO tax)
     $subtotal = 0;
     $totalSavings = 0;
     $originalSubtotal = 0;
-    
+         
     foreach ($cartItems as $item) {
         $subtotal += floatval($item->total);
-        
+                 
         // Si tiene descuento, calcular ahorros
         if (isset($item->options['descuento']) && $item->options['descuento'] > 0) {
             $originalItemTotal = $item->options['original_price'] * $item->qty;
@@ -144,11 +144,11 @@ public function checkout()
     }
 
     // 🚨 DEBUG: Para verificar los valores con descuentos
-    \Log::info('Checkout Debug with Discounts:', [
+    \Log::info('Checkout Debug with Product Discounts:', [
         'cart_subtotal_method' => Cart::subtotal(),
         'manual_subtotal' => $subtotal,
         'original_subtotal' => $originalSubtotal,
-        'total_savings' => $totalSavings,
+        'total_product_savings' => $totalSavings,
         'cart_count' => Cart::count(),
     ]);
 
@@ -158,12 +158,12 @@ public function checkout()
     // Obtener países y ciudades para el envío
     $countries = Country::with('cities')->orderBy('name')->get();
 
-    // Datos para la vista (incluyendo información de descuentos)
+    // Datos para la vista (SIN tax aquí, se calculará por ciudad)
     $checkoutData = [
         'cartItems' => $cartItems,
         'subtotal' => $subtotal,
-        'originalSubtotal' => $originalSubtotal,  // Nuevo
-        'totalSavings' => $totalSavings,          // Nuevo
+        'originalSubtotal' => $originalSubtotal,
+        'totalSavings' => $totalSavings,
         'countries' => $countries,
         'isAuthenticated' => $user ? true : false,
         'user' => $user
@@ -171,7 +171,79 @@ public function checkout()
 
     return view('shop.checkout', $checkoutData);
 }
+public function calculateCosts(Request $request)
+{
+    $request->validate([
+        'country_id' => 'required|exists:countries,id',
+        'city_id' => 'nullable|exists:cities,id',
+        'subtotal' => 'required|numeric|min:0'
+    ]);
 
+    $countryId = $request->country_id;
+    $cityId = $request->city_id;
+    $subtotal = floatval($request->subtotal);
+
+    // Costos base
+    $tax = 0;
+    $shipping = 0;
+
+    try {
+        // Calcular tax basado en la ciudad (si se seleccionó)
+        if ($cityId) {
+            $city = City::find($cityId);
+            if ($city && $city->tax > 0) {
+                $tax = ($subtotal * $city->tax) / 100;
+            }
+        }
+
+        // Calcular shipping basado en el país (puedes ajustar esta lógica)
+        $country = Country::find($countryId);
+        if ($country) {
+            // Ejemplo de lógica de shipping (ajusta según tus necesidades)
+            switch ($country->name) {
+                case 'Colombia':
+                case 'Bogotá D.C.':
+                    $shipping = $subtotal > 100 ? 0 : 15; // Envío gratis sobre $100
+                    break;
+                case 'United States':
+                    $shipping = $subtotal > 150 ? 0 : 25;
+                    break;
+                default:
+                    $shipping = $subtotal > 200 ? 10 : 35; // Shipping internacional
+                    break;
+            }
+        }
+
+        // Log para debugging
+        \Log::info('Cost Calculation:', [
+            'country_id' => $countryId,
+            'city_id' => $cityId,
+            'subtotal' => $subtotal,
+            'tax_percentage' => $cityId ? ($city->tax ?? 0) : 0,
+            'tax_amount' => $tax,
+            'shipping' => $shipping
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'tax_raw' => $tax,
+            'tax_formatted' => number_format($tax, 2),
+            'shipping_raw' => $shipping,
+            'shipping_formatted' => number_format($shipping, 2),
+            'total_raw' => $subtotal + $tax + $shipping,
+            'total_formatted' => number_format($subtotal + $tax + $shipping, 2),
+            'city_tax_percentage' => $cityId ? ($city->tax ?? 0) : 0
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('Error calculating costs: ' . $e->getMessage());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error calculating shipping costs'
+        ], 500);
+    }
+}
         // 🔴 Nuevo método para calcular costos dinámicamente
         public function calculateShippingAndTax(Request $request)
         {
