@@ -86,7 +86,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 // Agregar estas rutas a tu archivo de rutas
 Route::get('/admin/cities/{city}/edit', [LocationController::class, 'citiesEdit'])->name('admin.cities.edit');
 Route::put('/admin/cities/{city}', [LocationController::class, 'citiesUpdate'])->name('admin.cities.update');
-Route::post('/checkout/calculate', [CheckoutController::class, 'calculateCosts'])->name('checkout.calculate');
+Route::post('/checkout/calculate', [ShopController::class, 'calculateCosts'])->name('checkout.calculate');
 
 Route::resource('categories', CategoryController::class);
    
