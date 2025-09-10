@@ -85,16 +85,20 @@
     <form action="{{ route('admin.cities.store') }}" method="POST" class="mb-4">
         @csrf
         <div class="row g-2">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <input type="text" name="name" class="form-control" placeholder="City name..." required>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <select name="country_id" class="form-select" required>
                     <option value="">Select country</option>
                     @foreach($countries as $country)
                         <option value="{{ $country->id }}">{{ $country->name }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="tax" class="form-control" placeholder="Tax (%)" step="0.01" min="0" max="999.99">
+                <small class="text-muted">Optional tax percentage</small>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">Add City</button>
@@ -112,6 +116,7 @@
             <tr>
                 <th>Name</th>
                 <th>Country</th>
+                <th>Tax (%)</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -121,9 +126,16 @@
                     <td>{{ $city->name }}</td>
                     <td>{{ $city->country->name }}</td>
                     <td>
+                        @if($city->tax)
+                            {{ number_format($city->tax, 2) }}%
+                        @else
+                            <span class="text-muted">N/A</span>
+                        @endif
+                    </td>
+                    <td>
                         {{-- Future edit button --}}
                         <button class="btn btn-sm btn-secondary" disabled>Edit</button>
-
+                        
                         <!-- Delete -->
                         <form action="{{ route('admin.cities.destroy', $city->id) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
@@ -135,7 +147,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="3">No cities found.</td></tr>
+                <tr><td colspan="4">No cities found.</td></tr>
             @endforelse
         </tbody>
     </table>

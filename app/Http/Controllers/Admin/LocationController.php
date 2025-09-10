@@ -38,15 +38,16 @@ class LocationController extends Controller
     }
 
     public function citiesStore(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'country_id' => 'required|exists:countries,id',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'country_id' => 'required|exists:countries,id',
+        'tax' => 'nullable|numeric|min:0|max:999.99',
+    ]);
 
-        City::create($request->only('name', 'country_id'));
-        return back()->with('success', 'City created successfully.');
-    }
+    City::create($request->only('name', 'country_id', 'tax'));
+    return back()->with('success', 'City created successfully.');
+}
 
     public function citiesDestroy($id)
     {
