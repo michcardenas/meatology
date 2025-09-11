@@ -70,7 +70,7 @@
 
                         @if($displaySrc && $isImage)
                             <img src="{{ $displaySrc }}"
-                                 class="card-img-top object-fit-cover"
+                                 class="card-img-top object-fit-contain"
                                  style="height:180px"
                                  alt="Testimonio de {{ $t->nombre_usuario }}">
                         @elseif($displaySrc && $isVideo)
