@@ -242,36 +242,51 @@ th, td {
 // Variables globales para los editores Quill
 let createQuill;
 let editQuill;
+let createQuillInitialized = false;
+let editQuillInitialized = false;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar Quill para crear testimonio
-    createQuill = new Quill('#create_testimonios_editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['blockquote'],
-                ['clean']
-            ]
-        },
-        placeholder: 'Write the testimonial here...'
+    
+    // Inicializar Quill cuando se abra el modal de crear
+    const createModal = document.getElementById('createTestimonialModal');
+    createModal.addEventListener('shown.bs.modal', function () {
+        if (!createQuillInitialized) {
+            createQuill = new Quill('#create_testimonios_editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['blockquote'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Write the testimonial here...'
+            });
+            createQuillInitialized = true;
+        }
     });
 
-    // Inicializar Quill para editar testimonio
-    editQuill = new Quill('#edit_testimonios_editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['blockquote'],
-                ['clean']
-            ]
-        },
-        placeholder: 'Edit the testimonial here...'
+    // Inicializar Quill cuando se abra el modal de editar
+    const editModal = document.getElementById('editTestimonialModal');
+    editModal.addEventListener('shown.bs.modal', function () {
+        if (!editQuillInitialized) {
+            editQuill = new Quill('#edit_testimonios_editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['blockquote'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Edit the testimonial here...'
+            });
+            editQuillInitialized = true;
+        }
     });
 
     // Función para editar testimonio
@@ -281,11 +296,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 document.getElementById('edit_nombre_usuario').value = data.nombre_usuario;
                 document.getElementById('edit_correo').value = data.correo;
-                
-                // Setear contenido en Quill editor
-                editQuill.root.innerHTML = data.testimonios;
-                
                 document.getElementById('editTestimonialForm').action = `/admin/testimonials/${id}`;
+                
+                // Esperar un poco para que Quill se inicialice si es necesario
+                setTimeout(() => {
+                    if (editQuill) {
+                        editQuill.root.innerHTML = data.testimonios || '';
+                    }
+                }, 100);
             })
             .catch(error => console.error('Error:', error));
     };
@@ -305,19 +323,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Sincronizar contenido de Quill con campos hidden antes de enviar formularios
-    document.getElementById('createTestimonialModal').querySelector('form').addEventListener('submit', function() {
-        document.getElementById('create_testimonios_hidden').value = createQuill.root.innerHTML;
+    // Sincronizar contenido antes de enviar formulario de crear
+    createModal.querySelector('form').addEventListener('submit', function(e) {
+        if (createQuill) {
+            document.getElementById('create_testimonios_hidden').value = createQuill.root.innerHTML;
+        }
     });
 
-    document.getElementById('editTestimonialForm').addEventListener('submit', function() {
-        document.getElementById('edit_testimonios_hidden').value = editQuill.root.innerHTML;
+    // Sincronizar contenido antes de enviar formulario de editar
+    document.getElementById('editTestimonialForm').addEventListener('submit', function(e) {
+        if (editQuill) {
+            document.getElementById('edit_testimonios_hidden').value = editQuill.root.innerHTML;
+        }
     });
 
     // Limpiar editor al cerrar modal de crear
-    const createModal = document.getElementById('createTestimonialModal');
     createModal.addEventListener('hidden.bs.modal', function () {
-        createQuill.setContents([]);
+        if (createQuill) {
+            createQuill.setContents([]);
+        }
     });
 });
 </script>
