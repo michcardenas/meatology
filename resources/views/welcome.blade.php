@@ -353,7 +353,6 @@
     </div>
 </section>
 
-
 <!-- Category Showcase (with background that matches #011904) -->
 <section class="py-5" style="background: linear-gradient(135deg, #011904 50%, #e4f6e9 100%);">
     <div class="container">
@@ -370,38 +369,45 @@
             @foreach($categories as $index => $category)
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 shadow border-0">
-                    <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
-                         alt="{{ $category->name }}"
-                         class="card-img-top" style="height: 220px; object-fit: contain;">
-
+                    <!-- IMAGEN CLICKEABLE: Envuelta en enlace -->
+                    <a href="{{ route('shop.index', ['category' => $category->id]) }}" class="text-decoration-none">
+                        <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
+                             alt="{{ $category->name }}"
+                             class="card-img-top" 
+                             style="height: 220px; object-fit: contain; transition: transform 0.3s ease;"
+                             onmouseover="this.style.transform='scale(1.05)'"
+                             onmouseout="this.style.transform='scale(1)'">
+                    </a>
+                    
                     <div class="card-body bg-white rounded-bottom">
                         <h5 class="card-title fw-bold text-dark">{{ $category->name }}</h5>
-@php
-    $desc = $product->description ?? '';
-
-    // 1) Decodifica entidades HTML repetidamente (por si viene &amp;nbsp;)
-    for ($i = 0; $i < 3; $i++) {
-        $decoded = html_entity_decode($desc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        if ($decoded === $desc) break;
-        $desc = $decoded;
-    }
-
-    // 2) Quita etiquetas HTML si quedaran
-    $desc = strip_tags($desc);
-
-    // 3) Normaliza NBSP: entidad, numérica y el carácter real U+00A0
-    $desc = preg_replace('/(&nbsp;|&#160;)/i', ' ', $desc);      // entidades -> espacio
-    $desc = str_replace("\xC2\xA0", ' ', $desc);                 // byte UTF-8 NBSP -> espacio
-
-    // 4) Colapsa espacios múltiples y recorta
-    $desc = preg_replace('/\s+/u', ' ', trim($desc));
-@endphp
-
-<p class="card-text text-muted">
-    {{ \Illuminate\Support\Str::limit($desc, 120) }}
-</p>
+                        @php
+                            // CORREGIDO: Usar $category->description en lugar de $product->description
+                            $desc = $category->description ?? '';
+                            
+                            // 1) Decodifica entidades HTML repetidamente (por si viene &amp;nbsp;)
+                            for ($i = 0; $i < 3; $i++) {
+                                $decoded = html_entity_decode($desc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                if ($decoded === $desc) break;
+                                $desc = $decoded;
+                            }
+                            
+                            // 2) Quita etiquetas HTML si quedaran
+                            $desc = strip_tags($desc);
+                            
+                            // 3) Normaliza NBSP: entidad, numérica y el carácter real U+00A0
+                            $desc = preg_replace('/(&nbsp;|&#160;)/i', ' ', $desc);
+                            $desc = str_replace("\xC2\xA0", ' ', $desc);
+                            
+                            // 4) Colapsa espacios múltiples y recorta
+                            $desc = preg_replace('/\s+/u', ' ', trim($desc));
+                        @endphp
+                        
+                        <p class="card-text text-muted">
+                            {{ \Illuminate\Support\Str::limit($desc, 120) }}
+                        </p>
+                        
                         <a href="{{ route('shop.index', ['category' => $category->id]) }}" class="btn btn-outline-dark mt-2">
-
                             Explore Category
                         </a>
                     </div>
