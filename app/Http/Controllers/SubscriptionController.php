@@ -203,4 +203,16 @@ class SubscriptionController extends Controller
         return back()->with('status', "Usuario {$user->email} eliminado.");
     }
     
+
+
+
+    //testimonios
+
+    public function testimonials()
+{
+    $testimonials = \App\Models\Testimonio::orderBy('created_at', 'desc')->paginate(10);
+    
+    return view('admin.testimonials.index', compact('testimonials'));
+}
+
 }
