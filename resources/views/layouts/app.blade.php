@@ -684,149 +684,149 @@ footer {
     @vite(['resources/js/app.js'])
 </head>
 <body>
-    <nav>
-        <div class="navbar-container">
-          <div class="logo">
+  <nav>
+    <div class="navbar-container">
+        <div class="logo">
             <a href="{{ route('home') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo">
             </a>
         </div>
 
-            <!-- Desktop Navigation -->
-            <div class="nav-links">
-  <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+        <!-- Desktop Navigation -->
+        <div class="nav-links">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
 
-  {{-- NAV ITEM CON SUBMENU --}}
-  <div class="nav-item">
-    <a href="#" class="has-submenu">
-      Products <i class="fas fa-chevron-down" style="font-size: .75rem;"></i>
-    </a>
+            {{-- NAV ITEM CON SUBMENU --}}
+            <div class="nav-item">
+                <a href="#" class="has-submenu">
+                    Products <i class="fas fa-chevron-down" style="font-size: .75rem;"></i>
+                </a>
 
-   <div class="submenu">
-  @forelse(($categories ?? collect())->unique(fn($c) => mb_strtolower(trim($c->name))) as $category)
-    <div class="category-item">
-      <a href="{{ route('shop.index', ['category' => $category->id]) }}">
-        {{ $category->name }}
-      </a>
-    </div>
-  @empty
-    <div class="category-item">
-      <a href="{{ route('shop.index') }}">All products</a>
-    </div>
-  @endforelse
-</div>
-
-  </div>
-
-  <a href="{{ route('about') }}">About Us</a>
-  <a href="{{ route('login') }}">Insiders</a>
-  <a href="{{ route('recipes') }}">Recipes</a>
-  <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
-</div>
-
-
-            <!-- Desktop Icons -->
-            <div class="nav-icons">
-                @auth
-                <div class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
-                        <i class="fas fa-user-circle"></i>
-                    </a>
-                    <ul style="background: #013105;" class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                <i class="fas fa-user me-2"></i>My Account
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('cart.index') }}">
-                                <i class="fas fa-shopping-cart me-2"></i>My Cart
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('logout') }}" 
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt me-2"></i>Log Out
-                            </a>
-                        </li>
-                    </ul>
-                    
-                    <!-- Formulario oculto para logout -->
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
+                <div class="submenu">
+                    @forelse(($categories ?? collect())->unique(fn($c) => mb_strtolower(trim($c->name))) as $category)
+                    <div class="category-item">
+                        <a href="{{ route('shop.index', ['category' => $category->id]) }}">
+                            {{ $category->name }}
+                        </a>
+                    </div>
+                    @empty
+                    <div class="category-item">
+                        <a href="{{ route('shop.index') }}">All products</a>
+                    </div>
+                    @endforelse
                 </div>
-                @else
-                <a href="{{ route('login') }}" title="Iniciar sesión">
-                    <i class="fas fa-user-circle"></i>
-                </a>
-                @endauth
-                
-                <a class="nav-link" href="{{ route('cart.index') }}">
-                    🛒 <span class="badge bg-secondary">{{ Cart::count() }}</span>
-                </a>
             </div>
 
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars" id="menuIcon"></i>
-            </button>
+            <a href="{{ route('about') }}">About Us</a>
+            <a href="{{ route('login') }}">Insiders</a>
+            <a href="{{ route('recipes') }}">Recipes</a>
+            <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
+            <a href="{{ route('testimonials') }}" class="{{ request()->routeIs('testimonials') ? 'active' : '' }}">Testimonials</a>
         </div>
 
-        <!-- Mobile Navigation -->
-        <div class="mobile-nav" id="mobileNav">
-            <div class="mobile-nav-links">
-                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-                <a href="{{ route('shop.index') }}">Products</a>
-                <a href="{{ route('about') }}">About Us</a>
-                <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
-            </div>
-
-            <div class="mobile-nav-icons">
-                @auth
-                <div class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
-                        <i class="fas fa-user-circle"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                <i class="fas fa-user me-2"></i>Mi Cuenta
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('cart.index') }}">
-                                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('logout') }}" 
-                               onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                    
-                    <!-- Formulario oculto para logout móvil -->
-                    <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
-                </div>
-                @else
-                <a href="{{ route('login') }}" title="Iniciar sesión">
+        <!-- Desktop Icons -->
+        <div class="nav-icons">
+            @auth
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
                     <i class="fas fa-user-circle"></i>
                 </a>
-                @endauth
+                <ul style="background: #013105;" class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('dashboard') }}">
+                            <i class="fas fa-user me-2"></i>My Account
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('cart.index') }}">
+                            <i class="fas fa-shopping-cart me-2"></i>My Cart
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('logout') }}" 
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fas fa-sign-out-alt me-2"></i>Log Out
+                        </a>
+                    </li>
+                </ul>
                 
-                <a href="{{ route('cart.index') }}">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="badge bg-secondary ms-1">{{ Cart::count() }}</span>
-                </a>
+                <!-- Formulario oculto para logout -->
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
             </div>
+            @else
+            <a href="{{ route('login') }}" title="Iniciar sesión">
+                <i class="fas fa-user-circle"></i>
+            </a>
+            @endauth
+            
+            <a class="nav-link" href="{{ route('cart.index') }}">
+                🛒 <span class="badge bg-secondary">{{ Cart::count() }}</span>
+            </a>
         </div>
-    </nav>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars" id="menuIcon"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-links">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+            <a href="{{ route('shop.index') }}">Products</a>
+            <a href="{{ route('about') }}">About Us</a>
+            <a href="{{ route('partner.chefs') }}" class="{{ request()->routeIs('partner.chefs') ? 'active' : '' }}">Partner Chefs</a>
+            <a href="{{ route('testimonials') }}" class="{{ request()->routeIs('testimonials') ? 'active' : '' }}">Testimonials</a>
+        </div>
+
+        <div class="mobile-nav-icons">
+            @auth
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" title="Mi cuenta">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('dashboard') }}">
+                            <i class="fas fa-user me-2"></i>Mi Cuenta
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('cart.index') }}">
+                            <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('logout') }}" 
+                           onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Formulario oculto para logout móvil -->
+                <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            </div>
+            @else
+            <a href="{{ route('login') }}" title="Iniciar sesión">
+                <i class="fas fa-user-circle"></i>
+            </a>
+            @endauth
+            
+            <a href="{{ route('cart.index') }}">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="badge bg-secondary ms-1">{{ Cart::count() }}</span>
+            </a>
+        </div>
+    </div>
+</nav>
 
     <main class="py-1">
         @yield('content')

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SeoController;
+use App\Http\Controllers\TestimonialsController;
 
 
 
@@ -92,7 +93,7 @@ Route::post('/admin/testimonials', [SubscriptionController::class, 'testimonials
 Route::get('/admin/testimonials/{id}/edit', [SubscriptionController::class, 'testimonialsEdit'])->name('admin.testimonials.edit');
 Route::put('/admin/testimonials/{id}', [SubscriptionController::class, 'testimonialsUpdate'])->name('admin.testimonials.update');
 Route::delete('/admin/testimonials/{id}', [SubscriptionController::class, 'testimonialsDestroy'])->name('admin.testimonials.destroy');Route::resource('categories', CategoryController::class);
-   
+ Route::get('/testimonials', [TestimonialsController::class, 'index'])->name('testimonials');  
     Route::get('/admin/subscriptions', [SubscriptionController::class, 'showSubscribers'])->name('admin.subscriptions');
     Route::get('/admin/users', [SubscriptionController::class, 'showAllUsers'])->name('admin.users');
     Route::post('/admin/subscription/toggle/{user}', [SubscriptionController::class, 'toggleSubscription'])->name('admin.subscription.toggle');
