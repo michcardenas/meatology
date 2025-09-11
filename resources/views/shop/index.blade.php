@@ -570,6 +570,43 @@
             max-height: 200px;
         }
     }
+.products-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Responsive para diferentes tamaños de pantalla */
+@media (max-width: 992px) {
+    .products-grid-3col {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .products-grid-3col {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Asegurar que las cards tengan la misma altura */
+.products-grid-3col .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.products-grid-3col .pc-body {
+    flex-grow: 1;
+}
+
+.products-grid-3col .pc-actions {
+    margin-top: auto;
+}
+
 </style>
 
 <!-- Hero de Categoría (fijo) -->
@@ -632,154 +669,157 @@
         <h1 class="catalog-title">Our Products</h1>
 
         <!-- Filtro Simple -->
-<div class="filter-bar">
-    <form method="GET" action="{{ route('shop.index') }}" class="d-flex gap-3 align-items-center flex-wrap justify-content-center">
-        
-        <!-- Filtro por Categoría -->
-        <div class="filter-group">
-            <label class="filter-label">Category:</label>
-            <select name="category" class="filter-select" onchange="this.form.submit()">
-                <option value="">All Categories</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                        {{ $cat->name }}{{ $cat->country ? ' - ' . $cat->country : '' }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        
-        <!-- Filtro por País (del Producto) -->
-        <div class="filter-group">
-            <label class="filter-label">Country:</label>
-            <select name="country" class="filter-select" onchange="this.form.submit()">
-                <option value="">All Countries</option>
-                @foreach($countries as $country)
-                    <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
-                        {{ $country }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <!-- Ordenamiento -->
-        <div class="filter-group">
-            <label class="filter-label">Sort by:</label>
-            <select name="sort" class="filter-select" onchange="this.form.submit()">
-                <option value="">Featured</option>
-                <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-                <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-                <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name A-Z</option>
-            </select>
-        </div>
-
-        <!-- Contador de productos -->
-        <div class="filter-group">
-            <span class="filter-label">{{ $products->total() }} products</span>
-        </div>
-    </form>
-</div>
-<!-- Grid de Productos -->
-<div class="products-grid">
-    @forelse ($products as $product)
-        <div class="product-card">
-            {{-- MEDIA --}}
-            <div class="pc-media">
-                @php $imgs = $product->images; @endphp
-                @if($imgs->count() > 1)
-                    <a href="{{ route('product.show', $product) }}" class="pc-media-link">
-                        <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="false">
-                            <div class="carousel-inner">
-                                @foreach($imgs as $k => $img)
-                                    <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
-                                        <img src="{{ Storage::url($img->image) }}"
-                                             class="pc-img"
-                                             alt="{{ $product->name }}"
-                                             loading="lazy"
-                                             onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </a>
-                @else
-                    <a href="{{ route('product.show', $product) }}" class="pc-media-link">
-                        <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
-                             class="pc-img"
-                             alt="{{ $product->name }}"
-                             loading="lazy">
-                    </a>
-                @endif
-
-                {{-- Badge de Descuento --}}
-                @if($product->descuento > 0)
-                    <span class="position-absolute top-0 end-0 badge bg-danger m-2 fs-6">
-                        -{{ $product->descuento }}% OFF
-                    </span>
-                @endif
-            </div>
-
-            {{-- BODY --}}
-            <div class="pc-body">
-                <div class="pc-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
-
-                <h3 class="pc-title">
-                    <a href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
-                </h3>
-
-                @php
-                    $basePrice = (float)($product->price ?? 0) + (float)($product->interest ?? 0);
-                    $discountAmount = ($basePrice * ($product->descuento ?? 0)) / 100;
-                    $finalPrice = $basePrice - $discountAmount;
-                    $avg = $product->avg_weight;
-                    if ($avg && !str_ends_with(strtolower($avg), 'lb') && !str_ends_with(strtolower($avg), 'kg')) {
-                        $avg .= ' lb';
-                    }
-                @endphp
+        <div class="filter-bar">
+            <form method="GET" action="{{ route('shop.index') }}" class="d-flex gap-3 align-items-center flex-wrap justify-content-center">
                 
-                <div class="pc-price-row">
-                    @if($product->descuento > 0)
-                        {{-- Precio original tachado --}}
-                        <div class="pc-price-original text-muted text-decoration-line-through small">
-                            ${{ number_format($basePrice, 2, '.', ',') }}
-                        </div>
-                        {{-- Precio con descuento --}}
-                        <div class="pc-price text-danger fw-bold">${{ number_format($finalPrice, 2, '.', ',') }}</div>
-                    @else
-                        {{-- Precio normal --}}
-                        <div class="pc-price">${{ number_format($basePrice, 2, '.', ',') }}</div>
-                    @endif
-                    <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
+                <!-- Filtro por Categoría -->
+                <div class="filter-group">
+                    <label class="filter-label">Category:</label>
+                    <select name="category" class="filter-select" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                {{ $cat->name }}{{ $cat->country ? ' - ' . $cat->country : '' }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>
+                
+                <!-- Filtro por País (del Producto) -->
+                <div class="filter-group">
+                    <label class="filter-label">Country:</label>
+                    <select name="country" class="filter-select" onchange="this.form.submit()">
+                        <option value="">All Countries</option>
+                        @foreach($countries as $country)
+                            <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
+                                {{ $country }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-            {{-- ACTIONS --}}
-            <div class="pc-actions">
-                <a href="{{ route('product.show', $product) }}" class="btn-ghost">
-                    <i class="fas fa-eye"></i> <span>View Details</span>
-                </a>
-                <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <button type="submit" class="btn-solid">
-                        <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-    @empty
-        <div class="col-12">
-            <div class="no-products">
-                <p>No products found with the selected filters.</p>
-            </div>
-        </div>
-    @endforelse
-</div>
+                <!-- Ordenamiento -->
+                <div class="filter-group">
+                    <label class="filter-label">Sort by:</label>
+                    <select name="sort" class="filter-select" onchange="this.form.submit()">
+                        <option value="">Featured</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name A-Z</option>
+                    </select>
+                </div>
 
-@if(isset($products) && $products->hasPages())
-    <div class="pagination-wrapper">
-        {{ $products->appends(request()->query())->links() }}
+                <!-- Contador de productos -->
+                <div class="filter-group">
+                    <span class="filter-label">{{ $products->total() }} products</span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Grid de Productos MODIFICADO para 3 columnas -->
+        <div class="products-grid-3col">
+            @forelse ($products as $product)
+                <div class="product-card">
+                    {{-- MEDIA --}}
+                    <div class="pc-media">
+                        @php $imgs = $product->images; @endphp
+                        @if($imgs->count() > 1)
+                            <a href="{{ route('product.show', $product) }}" class="pc-media-link">
+                                <div id="productCarousel-{{ $product->id }}" class="carousel slide product-carousel" data-bs-ride="false">
+                                    <div class="carousel-inner">
+                                        @foreach($imgs as $k => $img)
+                                            <div class="carousel-item {{ $k === 0 ? 'active' : '' }}">
+                                                <img src="{{ Storage::url($img->image) }}"
+                                                     class="pc-img"
+                                                     alt="{{ $product->name }}"
+                                                     loading="lazy"
+                                                     onerror="this.src='{{ asset('images/placeholder.jpg') }}'">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </a>
+                        @else
+                            <a href="{{ route('product.show', $product) }}" class="pc-media-link">
+                                <img src="{{ $imgs->first()?->image ? Storage::url($imgs->first()->image) : asset('images/placeholder.jpg') }}"
+                                     class="pc-img"
+                                     alt="{{ $product->name }}"
+                                     loading="lazy">
+                            </a>
+                        @endif
+
+                        {{-- Badge de Descuento --}}
+                        @if($product->descuento > 0)
+                            <span class="position-absolute top-0 end-0 badge bg-danger m-2 fs-6">
+                                -{{ $product->descuento }}% OFF
+                            </span>
+                        @endif
+                    </div>
+
+                    {{-- BODY --}}
+                    <div class="pc-body">
+                        <div class="pc-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
+
+                        <h3 class="pc-title">
+                            <a href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
+                        </h3>
+
+                        @php
+                            $basePrice = (float)($product->price ?? 0) + (float)($product->interest ?? 0);
+                            $discountAmount = ($basePrice * ($product->descuento ?? 0)) / 100;
+                            $finalPrice = $basePrice - $discountAmount;
+                            $avg = $product->avg_weight;
+                            if ($avg && !str_ends_with(strtolower($avg), 'lb') && !str_ends_with(strtolower($avg), 'kg')) {
+                                $avg .= ' lb';
+                            }
+                        @endphp
+                        
+                        <div class="pc-price-row">
+                            @if($product->descuento > 0)
+                                {{-- Precio original tachado --}}
+                                <div class="pc-price-original text-muted text-decoration-line-through small">
+                                    ${{ number_format($basePrice, 2, '.', ',') }}
+                                </div>
+                                {{-- Precio con descuento --}}
+                                <div class="pc-price text-danger fw-bold">${{ number_format($finalPrice, 2, '.', ',') }}</div>
+                            @else
+                                {{-- Precio normal --}}
+                                <div class="pc-price">${{ number_format($basePrice, 2, '.', ',') }}</div>
+                            @endif
+                            <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
+                        </div>
+                    </div>
+
+                    {{-- ACTIONS --}}
+                    <div class="pc-actions">
+                        <a href="{{ route('product.show', $product) }}" class="btn-ghost">
+                            <i class="fas fa-eye"></i> <span>View Details</span>
+                        </a>
+                        <form action="{{ route('cart.add') }}" method="POST" class="d-inline-block">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <button type="submit" class="btn-solid">
+                                <i class="fas fa-shopping-cart"></i> <span>Add to Cart</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="col-12">
+                    <div class="no-products">
+                        <p>No products found with the selected filters.</p>
+                    </div>
+                </div>
+            @endforelse
+        </div>
+
+        @if(isset($products) && $products->hasPages())
+            <div class="pagination-wrapper">
+                {{ $products->appends(request()->query())->links() }}
+            </div>
+        @endif
     </div>
-@endif
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
