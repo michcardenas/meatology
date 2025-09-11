@@ -88,11 +88,10 @@ Route::get('/admin/cities/{city}/edit', [LocationController::class, 'citiesEdit'
 Route::put('/admin/cities/{city}', [LocationController::class, 'citiesUpdate'])->name('admin.cities.update');
 Route::post('/checkout/calculate', [ShopController::class, 'calculateCosts'])->name('checkout.calculate');
 Route::get('/admin/testimonials', [SubscriptionController::class, 'testimonials'])->name('admin.testimonials');
-Route::post('/admin/testimonials', [SubscriptionController::class, 'store'])->name('admin.testimonials.store');
-Route::get('/admin/testimonials/{id}/edit', [SubscriptionController::class, 'edit'])->name('admin.testimonials.edit');
-Route::put('/admin/testimonials/{id}', [SubscriptionController::class, 'update'])->name('admin.testimonials.update');
-Route::delete('/admin/testimonials/{id}', [SubscriptionController::class, 'destroy'])->name('admin.testimonials.destroy');
-Route::resource('categories', CategoryController::class);
+Route::post('/admin/testimonials', [SubscriptionController::class, 'testimonialsStore'])->name('admin.testimonials.store');
+Route::get('/admin/testimonials/{id}/edit', [SubscriptionController::class, 'testimonialsEdit'])->name('admin.testimonials.edit');
+Route::put('/admin/testimonials/{id}', [SubscriptionController::class, 'testimonialsUpdate'])->name('admin.testimonials.update');
+Route::delete('/admin/testimonials/{id}', [SubscriptionController::class, 'testimonialsDestroy'])->name('admin.testimonials.destroy');Route::resource('categories', CategoryController::class);
    
     Route::get('/admin/subscriptions', [SubscriptionController::class, 'showSubscribers'])->name('admin.subscriptions');
     Route::get('/admin/users', [SubscriptionController::class, 'showAllUsers'])->name('admin.users');

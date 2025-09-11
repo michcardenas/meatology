@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\User;
 
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 class SubscriptionController extends Controller
 {
     /**
@@ -207,12 +208,115 @@ class SubscriptionController extends Controller
 
 
     //testimonios
+// Agregar estos métodos personalizados al SubscriptionController
 
-    public function testimonials()
+public function testimonials()
 {
     $testimonials = \App\Models\Testimonio::orderBy('created_at', 'desc')->paginate(10);
     
     return view('admin.testimonials.index', compact('testimonials'));
 }
+
+public function testimonialsStore(Request $request)
+{
+    $request->validate([
+        'nombre_usuario' => 'required|string|max:255',
+        'correo' => 'required|email|max:255',
+        'testimonios' => 'required|string',
+        'imagen_video' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240' // 10MB max
+    ]);
+
+    $data = $request->only(['nombre_usuario', 'correo', 'testimonios']);
+
+    // Manejar subida de archivo si existe
+    if ($request->hasFile('imagen_video')) {
+        $file = $request->file('imagen_video');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('testimonials', $filename, 'public');
+        $data['imagen_video'] = $path;
+    }
+
+    try {
+        \App\Models\Testimonio::create($data);
+        return redirect()->route('admin.testimonials')->with('success', 'Testimonial created successfully.');
+    } catch (\Exception $e) {
+        \Log::error('Error creating testimonial: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Error creating testimonial. Please try again.');
+    }
+}
+
+public function testimonialsEdit($id)
+{
+    try {
+        $testimonial = \App\Models\Testimonio::findOrFail($id);
+        
+        // Retornar datos como JSON para el modal
+        return response()->json([
+            'id' => $testimonial->id,
+            'nombre_usuario' => $testimonial->nombre_usuario,
+            'correo' => $testimonial->correo,
+            'testimonios' => $testimonial->testimonios,
+            'imagen_video' => $testimonial->imagen_video
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Testimonial not found'], 404);
+    }
+}
+
+public function testimonialsUpdate(Request $request, $id)
+{
+    $request->validate([
+        'nombre_usuario' => 'required|string|max:255',
+        'correo' => 'required|email|max:255',
+        'testimonios' => 'required|string',
+        'imagen_video' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240' // 10MB max
+    ]);
+
+    try {
+        $testimonial = \App\Models\Testimonio::findOrFail($id);
+        
+        $data = $request->only(['nombre_usuario', 'correo', 'testimonios']);
+
+        // Manejar subida de archivo si existe
+        if ($request->hasFile('imagen_video')) {
+            // Eliminar archivo anterior si existe
+            if ($testimonial->imagen_video && \Storage::disk('public')->exists($testimonial->imagen_video)) {
+                \Storage::disk('public')->delete($testimonial->imagen_video);
+            }
+
+            $file = $request->file('imagen_video');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('testimonials', $filename, 'public');
+            $data['imagen_video'] = $path;
+        }
+
+        $testimonial->update($data);
+        
+        return redirect()->route('admin.testimonials')->with('success', 'Testimonial updated successfully.');
+    } catch (\Exception $e) {
+        \Log::error('Error updating testimonial: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Error updating testimonial. Please try again.');
+    }
+}
+
+public function testimonialsDestroy($id)
+{
+    try {
+        $testimonial = \App\Models\Testimonio::findOrFail($id);
+        
+        // Eliminar archivo asociado si existe
+        if ($testimonial->imagen_video && \Storage::disk('public')->exists($testimonial->imagen_video)) {
+            \Storage::disk('public')->delete($testimonial->imagen_video);
+        }
+        
+        $testimonial->delete();
+        
+        return redirect()->route('admin.testimonials')->with('success', 'Testimonial deleted successfully.');
+    } catch (\Exception $e) {
+        \Log::error('Error deleting testimonial: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Error deleting testimonial. Please try again.');
+    }
+}
+        
 
 }
