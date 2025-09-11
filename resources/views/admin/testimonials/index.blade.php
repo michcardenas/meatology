@@ -234,21 +234,56 @@ th, td {
 }
 </style>
 
+<!-- Quill.js CSS y JS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
 <script>
+// Variables globales para los editores Quill
+let createQuill;
+let editQuill;
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar Quill para crear testimonio
+    createQuill = new Quill('#create_testimonios_editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['blockquote'],
+                ['clean']
+            ]
+        },
+        placeholder: 'Write the testimonial here...'
+    });
+
+    // Inicializar Quill para editar testimonio
+    editQuill = new Quill('#edit_testimonios_editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['blockquote'],
+                ['clean']
+            ]
+        },
+        placeholder: 'Edit the testimonial here...'
+    });
+
     // Función para editar testimonio
     window.editTestimonial = function(id) {
-        // Obtener datos del testimonio (esto necesitará una llamada AJAX o datos en JS)
         fetch(`/admin/testimonials/${id}/edit`)
             .then(response => response.json())
             .then(data => {
                 document.getElementById('edit_nombre_usuario').value = data.nombre_usuario;
                 document.getElementById('edit_correo').value = data.correo;
                 
-                // Setear contenido en CKEditor
-                if (window.editTestimoniosEditor) {
-                    window.editTestimoniosEditor.setData(data.testimonios);
-                }
+                // Setear contenido en Quill editor
+                editQuill.root.innerHTML = data.testimonios;
                 
                 document.getElementById('editTestimonialForm').action = `/admin/testimonials/${id}`;
             })
@@ -269,82 +304,23 @@ document.addEventListener('DOMContentLoaded', function() {
             form.submit();
         }
     };
+
+    // Sincronizar contenido de Quill con campos hidden antes de enviar formularios
+    document.getElementById('createTestimonialModal').querySelector('form').addEventListener('submit', function() {
+        document.getElementById('create_testimonios_hidden').value = createQuill.root.innerHTML;
+    });
+
+    document.getElementById('editTestimonialForm').addEventListener('submit', function() {
+        document.getElementById('edit_testimonios_hidden').value = editQuill.root.innerHTML;
+    });
+
+    // Limpiar editor al cerrar modal de crear
+    const createModal = document.getElementById('createTestimonialModal');
+    createModal.addEventListener('hidden.bs.modal', function () {
+        createQuill.setContents([]);
+    });
 });
 </script>
-
-<!-- CKEditor 5 Script -->
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-
-<script>
-// Variables globales para los editores
-let createTestimoniosEditor;
-let editTestimoniosEditor;
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar CKEditor para el modal de crear
-    ClassicEditor
-        .create(document.querySelector('#create_testimonios'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'outdent', 'indent', '|',
-                    'blockQuote', 'insertTable', '|',
-                    'undo', 'redo'
-                ]
-            },
-            heading: {
-                options: [
-                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
-                ]
-            }
-        })
-        .then(editor => {
-            window.createTestimoniosEditor = editor;
-            
-            // Limpiar editor cuando se cierre el modal
-            const createModal = document.getElementById('createTestimonialModal');
-            createModal.addEventListener('hidden.bs.modal', function () {
-                editor.setData('');
-            });
-        })
-        .catch(error => {
-            console.error('Error initializing create editor:', error);
-        });
-
-    // Inicializar CKEditor para el modal de editar
-    ClassicEditor
-        .create(document.querySelector('#edit_testimonios'), {
-            toolbar: {
-                items: [
-                    'heading', '|',
-                    'bold', 'italic', 'underline', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'outdent', 'indent', '|',
-                    'blockQuote', 'insertTable', '|',
-                    'undo', 'redo'
-                ]
-            },
-            heading: {
-                options: [
-                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
-                    { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
-                ]
-            }
-        })
-        .then(editor => {
-            window.editTestimoniosEditor = editor;
-        })
-        .catch(error => {
-            console.error('Error initializing edit editor:', error);
-        });
-});
 </script>
 
 @endsection
