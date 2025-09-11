@@ -234,61 +234,12 @@ th, td {
 }
 </style>
 
-<!-- Quill.js CSS y JS -->
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<!-- TinyMCE Script -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 
 <script>
-// Variables globales para los editores Quill
-let createQuill;
-let editQuill;
-let createQuillInitialized = false;
-let editQuillInitialized = false;
-
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Inicializar Quill cuando se abra el modal de crear
-    const createModal = document.getElementById('createTestimonialModal');
-    createModal.addEventListener('shown.bs.modal', function () {
-        if (!createQuillInitialized) {
-            createQuill = new Quill('#create_testimonios_editor', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['blockquote'],
-                        ['clean']
-                    ]
-                },
-                placeholder: 'Write the testimonial here...'
-            });
-            createQuillInitialized = true;
-        }
-    });
-
-    // Inicializar Quill cuando se abra el modal de editar
-    const editModal = document.getElementById('editTestimonialModal');
-    editModal.addEventListener('shown.bs.modal', function () {
-        if (!editQuillInitialized) {
-            editQuill = new Quill('#edit_testimonios_editor', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['blockquote'],
-                        ['clean']
-                    ]
-                },
-                placeholder: 'Edit the testimonial here...'
-            });
-            editQuillInitialized = true;
-        }
-    });
-
     // Función para editar testimonio
     window.editTestimonial = function(id) {
         fetch(`/admin/testimonials/${id}/edit`)
@@ -296,14 +247,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 document.getElementById('edit_nombre_usuario').value = data.nombre_usuario;
                 document.getElementById('edit_correo').value = data.correo;
-                document.getElementById('editTestimonialForm').action = `/admin/testimonials/${id}`;
                 
-                // Esperar un poco para que Quill se inicialice si es necesario
+                // Esperar a que TinyMCE esté listo
                 setTimeout(() => {
-                    if (editQuill) {
-                        editQuill.root.innerHTML = data.testimonios || '';
+                    if (tinymce.get('edit_testimonios')) {
+                        tinymce.get('edit_testimonios').setContent(data.testimonios || '');
                     }
-                }, 100);
+                }, 200);
+                
+                document.getElementById('editTestimonialForm').action = `/admin/testimonials/${id}`;
             })
             .catch(error => console.error('Error:', error));
     };
@@ -323,24 +275,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Sincronizar contenido antes de enviar formulario de crear
-    createModal.querySelector('form').addEventListener('submit', function(e) {
-        if (createQuill) {
-            document.getElementById('create_testimonios_hidden').value = createQuill.root.innerHTML;
+    // Inicializar TinyMCE cuando se abra el modal de crear
+    const createModal = document.getElementById('createTestimonialModal');
+    createModal.addEventListener('shown.bs.modal', function () {
+        if (!tinymce.get('create_testimonios')) {
+            tinymce.init({
+                selector: '#create_testimonios',
+                height: 200,
+                menubar: false,
+                plugins: 'lists link',
+                toolbar: 'bold italic underline | bullist numlist | undo redo',
+                setup: function(editor) {
+                    editor.on('init', function() {
+                        editor.getContainer().style.border = '1px solid rgba(255,255,255,0.3)';
+                    });
+                }
+            });
         }
     });
 
-    // Sincronizar contenido antes de enviar formulario de editar
-    document.getElementById('editTestimonialForm').addEventListener('submit', function(e) {
-        if (editQuill) {
-            document.getElementById('edit_testimonios_hidden').value = editQuill.root.innerHTML;
+    // Inicializar TinyMCE cuando se abra el modal de editar  
+    const editModal = document.getElementById('editTestimonialModal');
+    editModal.addEventListener('shown.bs.modal', function () {
+        if (!tinymce.get('edit_testimonios')) {
+            tinymce.init({
+                selector: '#edit_testimonios',
+                height: 200,
+                menubar: false,
+                plugins: 'lists link',
+                toolbar: 'bold italic underline | bullist numlist | undo redo',
+                setup: function(editor) {
+                    editor.on('init', function() {
+                        editor.getContainer().style.border = '1px solid rgba(255,255,255,0.3)';
+                    });
+                }
+            });
         }
     });
 
-    // Limpiar editor al cerrar modal de crear
+    // Limpiar TinyMCE al cerrar modal de crear
     createModal.addEventListener('hidden.bs.modal', function () {
-        if (createQuill) {
-            createQuill.setContents([]);
+        if (tinymce.get('create_testimonios')) {
+            tinymce.get('create_testimonios').setContent('');
         }
     });
 });
