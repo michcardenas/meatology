@@ -400,7 +400,8 @@
 <p class="card-text text-muted">
     {{ \Illuminate\Support\Str::limit($desc, 120) }}
 </p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-outline-dark mt-2">
+                        <a href="{{ route('shop.index', ['category' => $category->id]) }}" class="btn btn-outline-dark mt-2">
+
                             Explore Category
                         </a>
                     </div>
