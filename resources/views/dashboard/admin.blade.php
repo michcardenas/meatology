@@ -9,52 +9,67 @@
         </p> 
     </div> 
 
-    <!-- NUEVA SECCIÓN: Botones de Usuarios y Suscripciones -->
-    <div class="row mb-4">
-        <div class="col-md-6 mb-3">
-            <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #28a745, #20c997); border-radius: 15px;">
-                <div class="card-body text-center py-4">
-                    <i class="fas fa-envelope fa-3x text-white mb-3"></i>
-                    <h5 class="text-white fw-bold mb-2">Newsletter Subscribers</h5>
-                    <p class="text-white mb-3" style="opacity: 0.9;">View and manage all newsletter subscriptions</p>
-                    <a href="{{ route('admin.subscriptions') }}" class="btn  btn-lg px-4">
-                        <i class="fas fa-users me-2"></i>
-                        View Subscribers
-                    </a>
-                </div>
+   <!-- NUEVA SECCIÓN: Botones de Administración -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #28a745, #20c997); border-radius: 15px;">
+            <div class="card-body text-center py-4">
+                <i class="fas fa-envelope fa-3x text-white mb-3"></i>
+                <h5 class="text-white fw-bold mb-2">Newsletter Subscribers</h5>
+                <p class="text-white mb-3" style="opacity: 0.9;">View and manage all newsletter subscriptions</p>
+                <a href="{{ route('admin.subscriptions') }}" class="btn btn-lg px-4">
+                    <i class="fas fa-users me-2"></i>
+                    View Subscribers
+                </a>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-6 mb-3">
-            <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #007bff, #6610f2); border-radius: 15px;">
-                <div class="card-body text-center py-4">
-                    <i class="fas fa-user-cog fa-3x text-white mb-3"></i>
-                    <h5 class="text-white fw-bold mb-2">All Users</h5>
-                    <p class="text-white mb-3" style="opacity: 0.9;">Manage all registered users and accounts</p>
-                    <a href="{{ route('admin.users') }}" class="btn  btn-lg px-4">
-                        <i class="fas fa-list me-2"></i>
-                        Manage Users
-                    </a>
-                </div>
+    <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #007bff, #6610f2); border-radius: 15px;">
+            <div class="card-body text-center py-4">
+                <i class="fas fa-user-cog fa-3x text-white mb-3"></i>
+                <h5 class="text-white fw-bold mb-2">All Users</h5>
+                <p class="text-white mb-3" style="opacity: 0.9;">Manage all registered users and accounts</p>
+                <a href="{{ route('admin.users') }}" class="btn btn-lg px-4">
+                    <i class="fas fa-list me-2"></i>
+                    Manage Users
+                </a>
             </div>
         </div>
     </div>
-    <!-- NUEVA SECCIÓN: Botón de SEO -->
-<div class="col-md-6 mb-3">
-  <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #fd7e14, #e83e8c); border-radius: 15px;">
-    <div class="card-body text-center py-4">
-      <i class="fas fa-search fa-3x text-white mb-3"></i>
-      <h5 class="text-white fw-bold mb-2">Pages SEO</h5>
-      <p class="text-white mb-3" style="opacity: 0.9;">Manage SEO settings per page</p>
-      <a href="{{ route('admin.seo.pages') }}" class="btn  btn-lg px-4">
-        <i class="fas fa-wrench me-2"></i>
-        Open SEO
-      </a>
-    </div>
-  </div>
 </div>
 
+<!-- SEGUNDA FILA DE BOTONES -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #fd7e14, #e83e8c); border-radius: 15px;">
+            <div class="card-body text-center py-4">
+                <i class="fas fa-search fa-3x text-white mb-3"></i>
+                <h5 class="text-white fw-bold mb-2">Pages SEO</h5>
+                <p class="text-white mb-3" style="opacity: 0.9;">Manage SEO settings per page</p>
+                <a href="{{ route('admin.seo.pages') }}" class="btn btn-lg px-4">
+                    <i class="fas fa-wrench me-2"></i>
+                    Open SEO
+                </a>
+            </div>
+        </div>
+    </div>
 
+    <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-lg h-100" style="background: linear-gradient(135deg, #17a2b8, #6f42c1); border-radius: 15px;">
+            <div class="card-body text-center py-4">
+                <i class="fas fa-quote-left fa-3x text-white mb-3"></i>
+                <h5 class="text-white fw-bold mb-2">Testimonials</h5>
+                <p class="text-white mb-3" style="opacity: 0.9;">View and manage customer testimonials</p>
+                <a href="{{ route('admin.testimonials') }}" class="btn btn-lg px-4">
+                    <i class="fas fa-comments me-2"></i>
+                    Manage Testimonials
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="row"> 
         <div class="col-12"> 
             <div class="card border-0 shadow" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);"> 

@@ -87,7 +87,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/admin/cities/{city}/edit', [LocationController::class, 'citiesEdit'])->name('admin.cities.edit');
 Route::put('/admin/cities/{city}', [LocationController::class, 'citiesUpdate'])->name('admin.cities.update');
 Route::post('/checkout/calculate', [ShopController::class, 'calculateCosts'])->name('checkout.calculate');
-
+Route::get('/admin/testimonials', [AdminController::class, 'testimonials'])->name('admin.testimonials');
 Route::resource('categories', CategoryController::class);
    
     Route::get('/admin/subscriptions', [SubscriptionController::class, 'showSubscribers'])->name('admin.subscriptions');
