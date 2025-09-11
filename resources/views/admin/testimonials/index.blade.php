@@ -56,7 +56,7 @@
                                             </td>
                                             <td class="text-white py-3" style="color: white !important;">
                                                 <div style="max-width: 300px;">
-                                                    {{ \Illuminate\Support\Str::limit($testimonial->testimonios, 100) }}
+                                                    {!! \Illuminate\Support\Str::limit(strip_tags($testimonial->testimonios), 100) !!}
                                                 </div>
                                             </td>
                                             <td class="text-white py-3" style="color: white !important;">
@@ -145,7 +145,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-white">Testimonial</label>
-                        <textarea name="testimonios" class="form-control" rows="4" required
+                        <textarea name="testimonios" id="create_testimonios" class="form-control" rows="4" required
                                   style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);"></textarea>
                     </div>
                     <div class="mb-3">
@@ -232,27 +232,54 @@ th, td {
 .btn:hover {
     transform: translateY(-1px);
 }
+
+/* Estilos para Summernote con tema oscuro */
+.note-editor {
+    background: rgba(255,255,255,0.1) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+.note-editor .note-toolbar {
+    background: rgba(255,255,255,0.05) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+.note-editor .note-editable {
+    background: rgba(255,255,255,0.1) !important;
+    color: white !important;
+}
+
+.note-editor .note-btn {
+    color: white !important;
+}
+
+.note-editor .note-btn:hover {
+    background: rgba(255,255,255,0.2) !important;
+}
 </style>
+
+<!-- jQuery (DEBE ir antes de Summernote) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- Summernote CSS y JS -->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
     
     // Función para editar testimonio
     window.editTestimonial = function(id) {
         fetch(`/admin/testimonials/${id}/edit`)
             .then(response => response.json())
             .then(data => {
-                document.getElementById('edit_nombre_usuario').value = data.nombre_usuario;
-                document.getElementById('edit_correo').value = data.correo;
+                $('#edit_nombre_usuario').val(data.nombre_usuario);
+                $('#edit_correo').val(data.correo);
                 
                 // Cargar contenido en Summernote
                 $('#edit_testimonios').summernote('code', data.testimonios || '');
                 
-                document.getElementById('editTestimonialForm').action = `/admin/testimonials/${id}`;
+                $('#editTestimonialForm').attr('action', `/admin/testimonials/${id}`);
             })
             .catch(error => console.error('Error:', error));
     };
@@ -260,14 +287,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para eliminar testimonio
     window.deleteTestimonial = function(id) {
         if (confirm('Are you sure you want to delete this testimonial?')) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/admin/testimonials/${id}`;
-            form.innerHTML = `
-                @csrf
-                @method('DELETE')
-            `;
-            document.body.appendChild(form);
+            const form = $('<form>', {
+                method: 'POST',
+                action: `/admin/testimonials/${id}`
+            }).append(
+                '@csrf',
+                '<input type="hidden" name="_method" value="DELETE">'
+            );
+            $('body').append(form);
             form.submit();
         }
     };
@@ -276,11 +303,25 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#createTestimonialModal').on('shown.bs.modal', function () {
         $('#create_testimonios').summernote({
             height: 150,
+            placeholder: 'Write the testimonial here...',
             toolbar: [
-                ['style', ['bold', 'italic', 'underline']],
-                ['para', ['ul', 'ol']],
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['view', ['fullscreen', 'codeview']],
                 ['misc', ['undo', 'redo']]
-            ]
+            ],
+            callbacks: {
+                onInit: function() {
+                    // Aplicar tema oscuro después de inicializar
+                    $('.note-editor').css({
+                        'background': 'rgba(255,255,255,0.1)',
+                        'border': '1px solid rgba(255,255,255,0.3)'
+                    });
+                }
+            }
         });
     });
 
@@ -288,17 +329,30 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#editTestimonialModal').on('shown.bs.modal', function () {
         $('#edit_testimonios').summernote({
             height: 150,
+            placeholder: 'Write the testimonial here...',
             toolbar: [
-                ['style', ['bold', 'italic', 'underline']],
-                ['para', ['ul', 'ol']],
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['view', ['fullscreen', 'codeview']],
                 ['misc', ['undo', 'redo']]
-            ]
+            ],
+            callbacks: {
+                onInit: function() {
+                    // Aplicar tema oscuro después de inicializar
+                    $('.note-editor').css({
+                        'background': 'rgba(255,255,255,0.1)',
+                        'border': '1px solid rgba(255,255,255,0.3)'
+                    });
+                }
+            }
         });
     });
 
     // Limpiar Summernote al cerrar modal de crear
     $('#createTestimonialModal').on('hidden.bs.modal', function () {
-        $('#create_testimonios').summernote('code', '');
         $('#create_testimonios').summernote('destroy');
     });
 
@@ -307,7 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#edit_testimonios').summernote('destroy');
     });
 });
-</script>
 </script>
 
 @endsection
