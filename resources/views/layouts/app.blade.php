@@ -849,7 +849,7 @@ footer {
                 </p>
                 <div class="social-links mt-3">
                     
-                    <a href="#" class="social-link me-3" title="Instagram">
+                    <a href="https://www.instagram.com/meatology.us?igsh=MXFpN3J3cTg5azM5Yw==" class="social-link me-3" title="Instagram">
                         <i class="fab fa-instagram fa-lg"></i>
                     </a>
                   
