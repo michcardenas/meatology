@@ -372,7 +372,7 @@
                 <div class="card h-100 shadow border-0">
                     <img src="{{ $category->image ? Storage::url($category->image) : asset('images/category-placeholder.jpg') }}"
                          alt="{{ $category->name }}"
-                         class="card-img-top" style="height: 220px; object-fit: fill;">
+                         class="card-img-top" style="height: 220px; object-fit: contain;">
 
                     <div class="card-body bg-white rounded-bottom">
                         <h5 class="card-title fw-bold text-dark">{{ $category->name }}</h5>
