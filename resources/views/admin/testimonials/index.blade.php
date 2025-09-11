@@ -234,8 +234,9 @@ th, td {
 }
 </style>
 
-<!-- TinyMCE Script -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- Summernote CSS y JS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -248,12 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('edit_nombre_usuario').value = data.nombre_usuario;
                 document.getElementById('edit_correo').value = data.correo;
                 
-                // Esperar a que TinyMCE esté listo
-                setTimeout(() => {
-                    if (tinymce.get('edit_testimonios')) {
-                        tinymce.get('edit_testimonios').setContent(data.testimonios || '');
-                    }
-                }, 200);
+                // Cargar contenido en Summernote
+                $('#edit_testimonios').summernote('code', data.testimonios || '');
                 
                 document.getElementById('editTestimonialForm').action = `/admin/testimonials/${id}`;
             })
@@ -275,49 +272,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Inicializar TinyMCE cuando se abra el modal de crear
-    const createModal = document.getElementById('createTestimonialModal');
-    createModal.addEventListener('shown.bs.modal', function () {
-        if (!tinymce.get('create_testimonios')) {
-            tinymce.init({
-                selector: '#create_testimonios',
-                height: 200,
-                menubar: false,
-                plugins: 'lists link',
-                toolbar: 'bold italic underline | bullist numlist | undo redo',
-                setup: function(editor) {
-                    editor.on('init', function() {
-                        editor.getContainer().style.border = '1px solid rgba(255,255,255,0.3)';
-                    });
-                }
-            });
-        }
+    // Inicializar Summernote cuando se abra el modal de crear
+    $('#createTestimonialModal').on('shown.bs.modal', function () {
+        $('#create_testimonios').summernote({
+            height: 150,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline']],
+                ['para', ['ul', 'ol']],
+                ['misc', ['undo', 'redo']]
+            ]
+        });
     });
 
-    // Inicializar TinyMCE cuando se abra el modal de editar  
-    const editModal = document.getElementById('editTestimonialModal');
-    editModal.addEventListener('shown.bs.modal', function () {
-        if (!tinymce.get('edit_testimonios')) {
-            tinymce.init({
-                selector: '#edit_testimonios',
-                height: 200,
-                menubar: false,
-                plugins: 'lists link',
-                toolbar: 'bold italic underline | bullist numlist | undo redo',
-                setup: function(editor) {
-                    editor.on('init', function() {
-                        editor.getContainer().style.border = '1px solid rgba(255,255,255,0.3)';
-                    });
-                }
-            });
-        }
+    // Inicializar Summernote cuando se abra el modal de editar
+    $('#editTestimonialModal').on('shown.bs.modal', function () {
+        $('#edit_testimonios').summernote({
+            height: 150,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline']],
+                ['para', ['ul', 'ol']],
+                ['misc', ['undo', 'redo']]
+            ]
+        });
     });
 
-    // Limpiar TinyMCE al cerrar modal de crear
-    createModal.addEventListener('hidden.bs.modal', function () {
-        if (tinymce.get('create_testimonios')) {
-            tinymce.get('create_testimonios').setContent('');
-        }
+    // Limpiar Summernote al cerrar modal de crear
+    $('#createTestimonialModal').on('hidden.bs.modal', function () {
+        $('#create_testimonios').summernote('code', '');
+        $('#create_testimonios').summernote('destroy');
+    });
+
+    // Destruir Summernote al cerrar modal de editar
+    $('#editTestimonialModal').on('hidden.bs.modal', function () {
+        $('#edit_testimonios').summernote('destroy');
     });
 });
 </script>
