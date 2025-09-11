@@ -110,7 +110,7 @@
                                 “{{ Str::limit(strip_tags((string) $t->testimonios), 180) }}”
                             </p>
 
-                            <a href="{{ route('testimonials.show', $t) }}"
+                            <a href="#"
                                class="stretched-link btn btn-sm btn-outline-primary align-self-start">
                                 Leer completo
                             </a>
