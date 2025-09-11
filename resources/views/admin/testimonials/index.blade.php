@@ -240,21 +240,63 @@ th, td {
 }
 
 .note-editor .note-toolbar {
-    background: rgba(255,255,255,0.05) !important;
+    background: rgba(0,0,0,0.3) !important;
     border-bottom: 1px solid rgba(255,255,255,0.2) !important;
 }
 
 .note-editor .note-editable {
     background: rgba(255,255,255,0.1) !important;
     color: white !important;
+    min-height: 150px !important;
 }
 
 .note-editor .note-btn {
-    color: white !important;
+    color: #ffffff !important;
+    background: transparent !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    margin: 2px !important;
 }
 
 .note-editor .note-btn:hover {
     background: rgba(255,255,255,0.2) !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.4) !important;
+}
+
+.note-editor .note-btn.active,
+.note-editor .note-btn:active {
+    background: rgba(255,255,255,0.3) !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.5) !important;
+}
+
+.note-editor .dropdown-menu {
+    background: rgba(0,0,0,0.8) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+.note-editor .dropdown-menu .dropdown-item {
+    color: white !important;
+}
+
+.note-editor .dropdown-menu .dropdown-item:hover {
+    background: rgba(255,255,255,0.2) !important;
+    color: white !important;
+}
+
+.note-editor .note-statusbar {
+    background: rgba(0,0,0,0.2) !important;
+    border-top: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+/* Mejorar contraste de iconos */
+.note-editor .note-btn i {
+    color: #ffffff !important;
+}
+
+/* Placeholders */
+.note-editor .note-editable::before {
+    color: rgba(255,255,255,0.6) !important;
 }
 </style>
 
