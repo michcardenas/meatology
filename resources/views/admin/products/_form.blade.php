@@ -135,16 +135,15 @@
 </div>
 
 <div class="mb-4">
-    <label class="form-label fw-bold text-light">Taxes and Shipping by State/City</label>
+    <label class="form-label fw-bold text-light">Taxes by State</label>
 
     <div id="price-location-container">
         @if(isset($product) && $product->prices->count() > 0)
-            {{-- Si hay configuraciones existentes, mostrarlas --}}
             @foreach($product->prices as $i => $price)
                 <div class="row border rounded p-3 mb-3 bg-dark">
-                    <div class="col-md-3 mb-2">
+                    <div class="col-md-6 mb-2">
                         <label class="form-label text-light">State</label>
-                        <select name="prices[{{ $i }}][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
+                        <select name="prices[{{ $i }}][country_id]" class="form-select bg-dark text-light">
                             @foreach($countries as $country)
                                 <option value="{{ $country->id }}" {{ $price->country_id == $country->id ? 'selected' : '' }}>
                                     {{ $country->name }}
@@ -153,41 +152,16 @@
                         </select>
                     </div>
 
-                    <div class="col-md-3 mb-2">
-                        <label class="form-label text-light">Cities</label>
-                        <select name="prices[{{ $i }}][city_id]" class="form-select bg-dark text-light">
-                            @php
-                                $countryWithCities = $countries->firstWhere('id', $price->country_id);
-                            @endphp
-
-                            @if($countryWithCities && $countryWithCities->cities)
-                                @foreach($countryWithCities->cities as $city)
-                                    <option value="{{ $city->id }}" {{ $price->city_id == $city->id ? 'selected' : '' }}>
-                                        {{ $city->name }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-
-                    <div class="col-md-2 mb-2">
-                        <label class="form-label text-light">Tax</label>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label text-light">Tax (%)</label>
                         <input type="number" 
                                name="prices[{{ $i }}][interest]" 
                                class="form-control bg-dark text-light" 
-                               value="{{ $price->interest }}"
+                               value="{{ $price->interest ?? 0 }}"
                                step="0.01"
+                               min="0" max="100"
                                placeholder="15.5">
                     </div>
-
-                    <!-- <div class="col-md-2 mb-2">
-                        <label class="form-label text-light">Costo Envío</label>
-                        <input type="number" 
-                               name="prices[{{ $i }}][shipping]" 
-                               class="form-control bg-dark text-light" 
-                               value="{{ $price->shipping }}"
-                               step="0.01">
-                    </div> -->
 
                     <div class="col-md-2 mb-2 d-flex align-items-end">
                         <button type="button" class="btn btn-danger btn-sm w-100" onclick="removePriceBlock(this)">
@@ -197,42 +171,26 @@
                 </div>
             @endforeach
         @else
-            {{-- Si no hay configuraciones, mostrar un bloque vacío --}}
             <div class="row border rounded p-3 mb-3 bg-dark">
-                <div class="col-md-3 mb-2">
+                <div class="col-md-6 mb-2">
                     <label class="form-label text-light">State</label>
-                    <select name="prices[0][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
-                        <option value="">-- State --</option>
+                    <select name="prices[0][country_id]" class="form-select bg-dark text-light">
+                        <option value="">-- Select a state --</option>
                         @foreach($countries as $country)
                             <option value="{{ $country->id }}">{{ $country->name }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-md-3 mb-2">
-                    <label class="form-label text-light">City</label>
-                    <select name="prices[0][city_id]" class="form-select bg-dark text-light">
-                        <option value="">-- Select State first --</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2 mb-2">
+                <div class="col-md-4 mb-2">
                     <label class="form-label text-light">Tax (%)</label>
                     <input type="number" 
                            name="prices[0][interest]" 
                            class="form-control bg-dark text-light" 
                            value="0"
                            step="0.01"
+                           min="0" max="100"
                            placeholder="15.5">
-                </div>
-
-                <div class="col-md-2 mb-2">
-                    <label class="form-label text-light">Shipping Cost</label>
-                    <input type="number" 
-                           name="prices[0][shipping]" 
-                           class="form-control bg-dark text-light" 
-                           value="0"
-                           step="0.01">
                 </div>
 
                 <div class="col-md-2 mb-2 d-flex align-items-end">
@@ -245,9 +203,10 @@
     </div>
 
     <button type="button" class="btn btn-outline-light btn-sm" onclick="addPriceBlock()">
-        ➕ Add settings by location
+        ➕ Add tax by state
     </button>
 </div>
+
 
 {{-- Sección de Precio y Descuento --}}
 <div class="row">
@@ -339,35 +298,27 @@
         btn.disabled = true;
     });
 
-    function addPriceBlock() {
+function addPriceBlock() {
         let block = `
             <div class="row border rounded p-3 mb-3 bg-dark">
-                <div class="col-md-3 mb-2">
-                    <label class="form-label text-light">País</label>
-                    <select name="prices[\${priceIndex}][country_id]" class="form-select bg-dark text-light" onchange="loadCities(this)">
-                        <option value="">-- Selecciona país --</option>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label text-light">State</label>
+                    <select name="prices[\${priceIndex}][country_id]" class="form-select bg-dark text-light">
+                        <option value="">-- Select a state --</option>
                         ${countries.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
                     </select>
                 </div>
 
-                <div class="col-md-3 mb-2">
-                    <label class="form-label text-light">Ciudad</label>
-                    <select name="prices[\${priceIndex}][city_id]" class="form-select bg-dark text-light">
-                        <option value="">-- Selecciona país primero --</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2 mb-2">
+                <div class="col-md-4 mb-2">
                     <label class="form-label text-light">Tax (%)</label>
                     <input type="number" 
                            name="prices[\${priceIndex}][interest]" 
                            class="form-control bg-dark text-light" 
                            value="0"
                            step="0.01"
+                           min="0" max="100"
                            placeholder="15.5">
                 </div>
-
-             
 
                 <div class="col-md-2 mb-2 d-flex align-items-end">
                     <button type="button" class="btn btn-danger btn-sm w-100" onclick="removePriceBlock(this)">
@@ -380,6 +331,10 @@
         priceIndex++;
     }
 
+    function removePriceBlock(button) {
+        button.closest('.row').remove();
+    }
+    
     function loadCities(select) {
         const countryId = parseInt(select.value);
         const cities = countries.find(c => c.id === countryId)?.cities || [];
