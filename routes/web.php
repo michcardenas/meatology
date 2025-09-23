@@ -21,6 +21,7 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
 Route::view('/about',   'about')->name('about');
 Route::view('/insiders','insiders')->name('insiders');//
+Route::post('/checkout/calculate', [ShopController::class, 'calculateCosts'])->name('checkout.calculate');
 
 
 Route::view('/recipes', 'recipes')->name('recipes');
@@ -86,7 +87,6 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 // Agregar estas rutas a tu archivo de rutas
 Route::get('/admin/cities/{city}/edit', [LocationController::class, 'citiesEdit'])->name('admin.cities.edit');
 Route::put('/admin/cities/{city}', [LocationController::class, 'citiesUpdate'])->name('admin.cities.update');
-Route::post('/checkout/calculate', [ShopController::class, 'calculateCosts'])->name('checkout.calculate');
 Route::get('/test-calculate', function() {
     return response()->json(['test' => 'working', 'time' => now()]);
 })->name('test.calculate');
