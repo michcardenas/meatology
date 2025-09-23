@@ -84,14 +84,36 @@
                     <h6 class="order-header">Order #{{ $order->order_number }}</h6>
                     <hr>
                     
-                    @if(isset($totalSavings) && $totalSavings > 0)
+                    @php
+                        // Calcular ahorros de productos basado en los items de la orden
+                        $totalSavings = 0;
+                        $originalSubtotal = 0;
+
+                        foreach($order->items as $item) {
+                            if(isset($item->original_price) && $item->original_price > $item->product_price) {
+                                $itemSavings = ($item->original_price - $item->product_price) * $item->quantity;
+                                $totalSavings += $itemSavings;
+                                $originalSubtotal += $item->original_price * $item->quantity;
+                            } else {
+                                $originalSubtotal += $item->product_price * $item->quantity;
+                            }
+                        }
+
+                        // Si no hay datos en los items, usar datos de la orden
+                        if($totalSavings == 0) {
+                            $totalSavings = $order->product_savings ?? 0;
+                            $originalSubtotal = $order->original_subtotal ?? ($order->subtotal + $totalSavings);
+                        }
+                    @endphp
+
+                    @if($totalSavings > 0)
                         <div class="alert alert-success py-2 mb-3">
                             <small><i class="fas fa-tag"></i> <strong>You saved: ${{ number_format($totalSavings, 2) }}</strong></small>
                         </div>
-                        
+
                         <div class="d-flex justify-content-between mb-2 text-muted text-decoration-line-through">
                             <span>Original subtotal:</span>
-                            <span>${{ number_format($originalSubtotal ?? 0, 2) }}</span>
+                            <span>${{ number_format($originalSubtotal, 2) }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2 text-success">
                             <span>Product savings:</span>
@@ -119,13 +141,39 @@
                         <span>Shipping:</span>
                         <span>${{ number_format($order->shipping_amount, 2) }}</span>
                     </div>
-                    
+
+                    {{-- Mostrar descuento adicional si existe --}}
+                    @if($order->discount_amount && $order->discount_amount > 0)
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Additional Discount @if($order->discount_code)({{ $order->discount_code }})@endif:</span>
+                            <span>-${{ number_format($order->discount_amount, 2) }}</span>
+                        </div>
+                    @endif
+
+                    {{-- Mostrar propina si existe --}}
+                    @if($order->tip_amount && $order->tip_amount > 0)
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tip @if($order->tip_percentage)({{ $order->tip_percentage }}%)@endif:</span>
+                            <span>${{ number_format($order->tip_amount, 2) }}</span>
+                        </div>
+                    @endif
+
                     <hr>
                     <div class="d-flex justify-content-between mb-3">
                         <span class="fw-bold">Total to Pay:</span>
                         <span class="total-amount">${{ number_format($order->total_amount, 2) }}</span>
                     </div>
-                    
+
+                    {{-- Mostrar resumen de ahorros totales --}}
+                    @php
+                        $totalAllSavings = $totalSavings + ($order->discount_amount ?? 0);
+                    @endphp
+                    @if($totalAllSavings > 0)
+                        <div class="alert alert-info py-2 text-center">
+                            <small><strong>🎯 Total Savings: ${{ number_format($totalAllSavings, 2) }}</strong></small>
+                        </div>
+                    @endif
+
                     <hr>
                     <h6 class="text-info">
                         <i class="fas fa-shipping-fast me-2"></i>Shipping Address:

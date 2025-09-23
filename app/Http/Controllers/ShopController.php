@@ -298,6 +298,11 @@ public function calculateCosts(Request $request)
                 'phone' => 'required|string',
                 'address' => 'required|string',
                 'notes' => 'nullable|string',
+                'discount_amount' => 'nullable|numeric|min:0',
+                'discount_code' => 'nullable|string|max:50',
+                'tip_amount' => 'nullable|numeric|min:0',
+                'tip_percentage' => 'nullable|numeric|min:0|max:100',
+                'product_savings' => 'nullable|numeric|min:0',
             ];
 
             // Validación adicional para guests
@@ -325,6 +330,11 @@ public function calculateCosts(Request $request)
                     'customer_address' => $validatedData['address'],
                 ];
 
+                // Calcular subtotal original (antes de descuentos de productos)
+                $currentSubtotal = floatval(str_replace(',', '', Cart::subtotal(2, '', '')));
+                $productSavings = $validatedData['product_savings'] ?? 0;
+                $originalSubtotalCalc = $currentSubtotal + $productSavings;
+
                 // Crear la orden
                 $order = Order::create([
                     'order_number' => Order::generateOrderNumber(),
@@ -332,10 +342,16 @@ public function calculateCosts(Request $request)
                     ...$customerData,
                     'country_id' => $validatedData['country_id'],
                     'city_id' => $validatedData['city_id'],
-                    'subtotal' => floatval(str_replace(',', '', Cart::subtotal(2, '', ''))),
+                    'subtotal' => $currentSubtotal,
                     'tax_amount' => $validatedData['tax'],
                     'shipping_amount' => $validatedData['shipping'],
                     'total_amount' => $validatedData['total'],
+                    'discount_amount' => $validatedData['discount_amount'] ?? null,
+                    'discount_code' => $validatedData['discount_code'] ?? null,
+                    'tip_amount' => $validatedData['tip_amount'] ?? null,
+                    'tip_percentage' => $validatedData['tip_percentage'] ?? null,
+                    'product_savings' => $productSavings,
+                    'original_subtotal' => $originalSubtotalCalc,
                     'notes' => $validatedData['notes'],
                     'status' => 'pending',
                     'payment_status' => 'pending',
