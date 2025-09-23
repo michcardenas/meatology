@@ -15,14 +15,19 @@ class Product extends Model
         'description',
         'price',
         'avg_weight',
-        'stock',        // ← AGREGAR ESTE CAMPO
+        'stock',
         'image',
         'category_id',
         'interest',
-        'pais', // ← NUEVO CAMPO AGREGADO
-        'descuento', 
+        'pais',
+        'descuento',
+        'certification', // Nueva columna para certificaciones
     ];
 
+    // Cast para manejar JSON automáticamente
+    protected $casts = [
+        'certification' => 'array',
+    ];
 
 public function category()
 {
