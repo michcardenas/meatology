@@ -139,7 +139,7 @@
                                     <h6>Welcome back, {{ $user->name }}!</h6>
                                     <p class="mb-0">Email: {{ $user->email }}</p>
                                 </div>
-                                
+
                                 <form id="checkoutForm" action="{{ route('order.process') }}" method="POST">
                                     @csrf
                                     <input type="hidden" id="final-country" name="country_id">
@@ -177,18 +177,18 @@
                                     <h6>Guest Checkout</h6>
                                     <p class="mb-0">Please provide your contact and shipping information</p>
                                 </div>
-                                
-                                <form id="checkoutForm" action="{{ route('order.process') }}" method="POST">
+
+                                <form id="checkoutFormGuest" action="{{ route('order.process') }}" method="POST">
                                     @csrf
-                                    <input type="hidden" id="final-country" name="country_id">
-                                    <input type="hidden" id="final-city" name="city_id">
-                                    <input type="hidden" id="final-total" name="total">
-                                    <input type="hidden" id="final-tax" name="tax">
-                                    <input type="hidden" id="final-shipping" name="shipping">
-                                    <input type="hidden" id="applied-discount-code" name="discount_code">
-                                    <input type="hidden" id="applied-discount-amount" name="discount_amount">
-                                    <input type="hidden" id="final-tip-amount" name="tip_amount" value="0">
-                                    <input type="hidden" id="final-tip-percentage" name="tip_percentage">
+                                    <input type="hidden" id="final-country-guest" name="country_id">
+                                    <input type="hidden" id="final-city-guest" name="city_id">
+                                    <input type="hidden" id="final-total-guest" name="total">
+                                    <input type="hidden" id="final-tax-guest" name="tax">
+                                    <input type="hidden" id="final-shipping-guest" name="shipping">
+                                    <input type="hidden" id="applied-discount-code-guest" name="discount_code">
+                                    <input type="hidden" id="applied-discount-amount-guest" name="discount_amount">
+                                    <input type="hidden" id="final-tip-amount-guest" name="tip_amount" value="0">
+                                    <input type="hidden" id="final-tip-percentage-guest" name="tip_percentage">
                                     {{-- Agregar información de descuentos de productos --}}
                                     <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
                                     
@@ -375,7 +375,7 @@
                                 📍 Please select a state to see shipping costs and complete your order
                             </div>
                             
-                            <button type="submit" form="checkoutForm" class="btn btn-success w-100 mb-2" id="place-order-btn" disabled>
+                            <button type="submit" class="btn btn-success w-100 mb-2" id="place-order-btn" disabled>
                                 💳 Place Order
                                 @if(isset($totalSavings) && $totalSavings > 0)
                                     <br><small>With ${{ number_format($totalSavings, 2, '.', ',') }} in savings!</small>
@@ -413,6 +413,20 @@ window.cartItemsData = {!! json_encode($cartItems->map(function($item) {
 })) !!};
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 🔥 Detectar cuál formulario usar basado en si el usuario está autenticado
+    const isAuthenticated = {{ $isAuthenticated ? 'true' : 'false' }};
+    const formSuffix = isAuthenticated ? '' : '-guest';
+
+    // Función auxiliar para obtener elementos con sufijo correcto
+    function getElementWithSuffix(baseId) {
+        return document.getElementById(baseId + formSuffix);
+    }
+
+    // Función para obtener el formulario correcto
+    function getCorrectForm() {
+        return document.getElementById(isAuthenticated ? 'checkoutForm' : 'checkoutFormGuest');
+    }
+
     // Elementos del DOM
     const countrySelect = document.getElementById('shipping-country');
     const citySelect = document.getElementById('shipping-city');
@@ -450,9 +464,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // 🔥 CAMBIO IMPORTANTE: NO mostrar advertencia y HABILITAR el botón desde el inicio
     locationWarning.style.display = 'none';
     placeOrderBtn.disabled = false;
-    
+
     // Establecer valores por defecto al cargar
     setDefaultValues();
+
+    // 🔥 Event listener para el botón de envío
+    placeOrderBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = getCorrectForm();
+        if (form) {
+            console.log('Submitting form:', form.id);
+            form.submit();
+        } else {
+            console.error('No se pudo encontrar el formulario correcto');
+        }
+    });
 
     // 🎫 Manejar aplicación de descuento adicional
     applyDiscountBtn.addEventListener('click', function() {
@@ -500,8 +526,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 applyDiscountBtn.style.display = 'none';
                 
                 // Actualizar campos ocultos
-                document.getElementById('applied-discount-code').value = appliedDiscountData.codigo;
-                document.getElementById('applied-discount-amount').value = currentDiscount.toFixed(2);
+                getElementWithSuffix('applied-discount-code').value = appliedDiscountData.codigo;
+                getElementWithSuffix('applied-discount-amount').value = currentDiscount.toFixed(2);
                 
             } else {
                 showDiscountMessage(data.message, 'error');
@@ -598,11 +624,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('display-total').textContent = '$' + total.toFixed(2);
         
         // Actualizar campos ocultos con valores por defecto
-        document.getElementById('final-country').value = '';
-        document.getElementById('final-city').value = '';
-        document.getElementById('final-total').value = total.toFixed(2);
-        document.getElementById('final-tax').value = defaultTax.toFixed(2);
-        document.getElementById('final-shipping').value = defaultShipping.toFixed(2);
+        getElementWithSuffix('final-country').value = '';
+        getElementWithSuffix('final-city').value = '';
+        getElementWithSuffix('final-total').value = total.toFixed(2);
+        getElementWithSuffix('final-tax').value = defaultTax.toFixed(2);
+        getElementWithSuffix('final-shipping').value = defaultShipping.toFixed(2);
         
         // Mantener el botón habilitado
         placeOrderBtn.disabled = false;
@@ -711,11 +737,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('display-total').textContent = '$' + total.toFixed(2);
             
             // Actualizar campos ocultos
-            document.getElementById('final-country').value = countryId;
-            document.getElementById('final-city').value = cityId;
-            document.getElementById('final-total').value = total.toFixed(2);
-            document.getElementById('final-tax').value = tax.toFixed(2);
-            document.getElementById('final-shipping').value = shipping.toFixed(2);
+            getElementWithSuffix('final-country').value = countryId;
+            getElementWithSuffix('final-city').value = cityId;
+            getElementWithSuffix('final-total').value = total.toFixed(2);
+            getElementWithSuffix('final-tax').value = tax.toFixed(2);
+            getElementWithSuffix('final-shipping').value = shipping.toFixed(2);
             
             // Mantener el botón habilitado
             placeOrderBtn.disabled = false;
@@ -798,16 +824,16 @@ document.addEventListener('DOMContentLoaded', function() {
             removeTipBtn.style.display = 'block';
             
             // Actualizar campos ocultos
-            document.getElementById('final-tip-amount').value = currentTip.toFixed(2);
-            document.getElementById('final-tip-percentage').value = currentTipPercentage || '';
+            getElementWithSuffix('final-tip-amount').value = currentTip.toFixed(2);
+            getElementWithSuffix('final-tip-percentage').value = currentTipPercentage || '';
         } else {
             tipDisplay.style.display = 'none';
             tipLine.style.display = 'none';
             removeTipBtn.style.display = 'none';
             
             // Limpiar campos ocultos
-            document.getElementById('final-tip-amount').value = '0';
-            document.getElementById('final-tip-percentage').value = '';
+            getElementWithSuffix('final-tip-amount').value = '0';
+            getElementWithSuffix('final-tip-percentage').value = '';
         }
     }
     
@@ -832,8 +858,8 @@ document.addEventListener('DOMContentLoaded', function() {
         discountCodeInput.value = '';
         
         // Limpiar campos ocultos
-        document.getElementById('applied-discount-code').value = '';
-        document.getElementById('applied-discount-amount').value = '';
+        getElementWithSuffix('applied-discount-code').value = '';
+        getElementWithSuffix('applied-discount-amount').value = '';
         
         updateTotals();
     }
