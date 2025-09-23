@@ -25,8 +25,8 @@ Route::view('/insiders','insiders')->name('insiders');//
 
 Route::view('/recipes', 'recipes')->name('recipes');
 //los de dentro de recipes
-Route::get('/wholesale', [WholesaleController::class, 'index'])->name('wholesale.form');
-Route::post('/wholesale', [WholesaleController::class, 'submit'])->name('wholesale.submit');
+// Route::get('/wholesale', [WholesaleController::class, 'index'])->name('wholesale.form');
+// Route::post('/wholesale', [WholesaleController::class, 'submit'])->name('wholesale.submit');
 
 Route::view('/chefs',   'chefs')->name('chefs');
 Route::view('/wholesale','wholesale')->name('wholesale');
@@ -87,6 +87,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/admin/cities/{city}/edit', [LocationController::class, 'citiesEdit'])->name('admin.cities.edit');
 Route::put('/admin/cities/{city}', [LocationController::class, 'citiesUpdate'])->name('admin.cities.update');
 Route::post('/checkout/calculate', [ShopController::class, 'calculateCosts'])->name('checkout.calculate');
+Route::get('/test-calculate', function() {
+    return response()->json(['test' => 'working', 'time' => now()]);
+})->name('test.calculate');
 Route::get('/admin/testimonials', [SubscriptionController::class, 'testimonials'])->name('admin.testimonials');
 Route::post('/admin/testimonials', [SubscriptionController::class, 'testimonialsStore'])->name('admin.testimonials.store');
 Route::get('/admin/testimonials/{id}/edit', [SubscriptionController::class, 'testimonialsEdit'])->name('admin.testimonials.edit');
