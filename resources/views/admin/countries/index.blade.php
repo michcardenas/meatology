@@ -78,7 +78,7 @@
 </style>
 
 <div class="container py-4">
-    <h2 class="mb-4">🌍 Manage Countries</h2>
+    <h2 class="mb-4">🌍 Manage State</h2>
 
     <!-- Create Country -->
     <form action="{{ route('admin.countries.store') }}" method="POST" class="mb-4">

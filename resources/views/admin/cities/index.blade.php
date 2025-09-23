@@ -96,9 +96,13 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <input type="number" name="tax" class="form-control" placeholder="Tax (%)" step="0.01" min="0" max="999.99">
-                <small class="text-muted">Optional tax percentage</small>
+                <small class="text-muted">Optional tax %</small>
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="shipping" class="form-control" placeholder="Shipping Cost (USD)" step="0.01" min="0">
+                <small class="text-muted">Shipping cost in USD</small>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">Add City</button>
@@ -117,6 +121,7 @@
                 <th>Name</th>
                 <th>Country</th>
                 <th>Tax (%)</th>
+                <th>Shipping (USD)</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -128,6 +133,13 @@
                     <td>
                         @if($city->tax)
                             {{ number_format($city->tax, 2) }}%
+                        @else
+                            <span class="text-muted">N/A</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($city->shipping)
+                            ${{ number_format($city->shipping, 2) }}
                         @else
                             <span class="text-muted">N/A</span>
                         @endif
@@ -147,7 +159,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="4">No cities found.</td></tr>
+                <tr><td colspan="5">No cities found.</td></tr>
             @endforelse
         </tbody>
     </table>
