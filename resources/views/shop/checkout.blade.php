@@ -447,8 +447,12 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Subtotal with product discounts:', originalSubtotal);
     console.log('Product savings:', parseFloat('{{ $totalSavings ?? 0 }}'));
     
-    // Mostrar advertencia inicialmente
-    locationWarning.style.display = 'block';
+    // 🔥 CAMBIO IMPORTANTE: NO mostrar advertencia y HABILITAR el botón desde el inicio
+    locationWarning.style.display = 'none';
+    placeOrderBtn.disabled = false;
+    
+    // Establecer valores por defecto al cargar
+    setDefaultValues();
 
     // 🎫 Manejar aplicación de descuento adicional
     applyDiscountBtn.addEventListener('click', function() {
@@ -550,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
         removeTip();
     });
     
-    // 📍 Manejar cambio de país
+    // 📍 Manejar cambio de país - OPCIONAL ahora
     countrySelect.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const cities = selectedOption.dataset.cities ? JSON.parse(selectedOption.dataset.cities) : [];
@@ -566,11 +570,11 @@ document.addEventListener('DOMContentLoaded', function() {
             citySelect.appendChild(option);
         });
         
-        // Calcular costos si hay país seleccionado
+        // Calcular costos si hay país seleccionado, si no usar valores por defecto
         if (this.value) {
             calculateCosts();
         } else {
-            resetCosts();
+            setDefaultValues(); // Cambio de resetCosts() a setDefaultValues()
         }
     });
     
@@ -581,157 +585,176 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 🧮 Funciones de cálculo
-   // Reemplaza tu función calculateCosts con esta versión mejorada:
-
-function calculateCosts() {
-    const countryId = countrySelect.value;
-    const cityId = citySelect.value;
-    
-    if (!countryId) return;
-    
-    // Mostrar loading
-    document.getElementById('display-tax').textContent = 'Calculating...';
-    document.getElementById('display-shipping').textContent = 'Calculating...';
-    document.getElementById('display-total').textContent = 'Calculating...';
-    
-    const subtotalConDescuento = originalSubtotal - currentDiscount;
-    
-    // Verificar CSRF token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]');
-    if (!csrfToken) {
-        console.error('CSRF token not found! Add <meta name="csrf-token" content="{{ csrf_token() }}"> to your layout');
-        alert('Security token missing. Please refresh the page.');
-        return;
-    }
-    
-    console.log('Sending request with:', {
-        country_id: countryId,
-        city_id: cityId,
-        subtotal: subtotalConDescuento,
-        url: '{{ route("checkout.calculate") }}'
-    });
-    
-    fetch('{{ route("checkout.calculate") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json', // Importante: especificar que esperamos JSON
-            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
-            'X-Requested-With': 'XMLHttpRequest' // Indica que es una petición AJAX
-        },
-        body: JSON.stringify({
-            country_id: countryId,
-            city_id: cityId,
-            subtotal: subtotalConDescuento
-        })
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-        
-        // Clonar la respuesta para poder leerla dos veces si es necesario
-        const clonedResponse = response.clone();
-        
-        // Primero intentar leer como texto para debug
-        return response.text().then(text => {
-            console.log('Raw response:', text.substring(0, 500)); // Primeros 500 caracteres
-            
-            // Si la respuesta comienza con HTML, mostrar el error
-            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-                // Intentar extraer el mensaje de error del HTML
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const errorTitle = doc.querySelector('title')?.textContent || 'Server Error';
-                const errorMessage = doc.querySelector('.exception-message')?.textContent || 
-                                   doc.querySelector('.alert-danger')?.textContent ||
-                                   'Server returned an error page instead of JSON';
-                
-                throw new Error(`Laravel Error: ${errorTitle} - ${errorMessage}`);
-            }
-            
-            // Si no es HTML, intentar parsear como JSON
-            try {
-                const data = JSON.parse(text);
-                
-                if (!data.success) {
-                    throw new Error(data.message || 'Unknown error from server');
-                }
-                
-                return data;
-            } catch (e) {
-                console.error('JSON Parse Error:', e);
-                throw new Error(`Invalid JSON response: ${e.message}`);
-            }
-        });
-    })
-    .then(data => {
-        console.log('Parsed data:', data);
-        
-        const tax = parseFloat(data.tax_raw || 0);
-        const shipping = parseFloat(data.shipping_raw || 0);
-        const total = subtotalConDescuento + tax + shipping + currentTip;
+    // 🆕 Función para establecer valores por defecto (sin estado seleccionado)
+    function setDefaultValues() {
+        const subtotalConDescuento = originalSubtotal - currentDiscount;
+        const defaultTax = 0; // Sin impuestos si no hay ubicación
+        const defaultShipping = 0; // O puedes poner un valor fijo como 15.00
+        const total = subtotalConDescuento + defaultTax + defaultShipping + currentTip;
         
         // Actualizar display
-        document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
-        document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
+        document.getElementById('display-tax').textContent = '$' + defaultTax.toFixed(2);
+        document.getElementById('display-shipping').textContent = 'Free'; // O '$15.00' para precio fijo
         document.getElementById('display-total').textContent = '$' + total.toFixed(2);
         
-        // Actualizar campos ocultos
-        document.getElementById('final-country').value = countryId;
-        document.getElementById('final-city').value = cityId;
+        // Actualizar campos ocultos con valores por defecto
+        document.getElementById('final-country').value = '';
+        document.getElementById('final-city').value = '';
         document.getElementById('final-total').value = total.toFixed(2);
-        document.getElementById('final-tax').value = tax.toFixed(2);
-        document.getElementById('final-shipping').value = shipping.toFixed(2);
+        document.getElementById('final-tax').value = defaultTax.toFixed(2);
+        document.getElementById('final-shipping').value = defaultShipping.toFixed(2);
         
-        // Habilitar botón
+        // Mantener el botón habilitado
         placeOrderBtn.disabled = false;
         locationWarning.style.display = 'none';
         
-        console.log('Calculation successful:', {
+        console.log('Default values set:', {
             subtotal: subtotalConDescuento,
-            tax: tax,
-            shipping: shipping,
+            tax: defaultTax,
+            shipping: defaultShipping,
             tip: currentTip,
             total: total
         });
-    })
-    .catch(error => {
-        console.error('Error in calculateCosts:', error);
+    }
+    
+    // 🧮 Funciones de cálculo
+    function calculateCosts() {
+        const countryId = countrySelect.value;
+        const cityId = citySelect.value;
         
-        // Mostrar error más descriptivo al usuario
-        let userMessage = 'Error calculating shipping costs. ';
-        
-        if (error.message.includes('Laravel Error')) {
-            userMessage += 'Server error detected. Check browser console for details.';
-            
-            // Abrir la consola automáticamente en desarrollo
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.error('%c⚠️ Laravel Error Detected!', 'color: red; font-size: 16px; font-weight: bold;');
-                console.error('The server returned an HTML error page instead of JSON.');
-                console.error('Common causes:');
-                console.error('1. Route not found (404)');
-                console.error('2. Method not allowed (405)');
-                console.error('3. Controller method missing');
-                console.error('4. Database query error');
-                console.error('5. Validation error');
-                console.error('Check your Laravel logs: storage/logs/laravel.log');
-            }
+        if (!countryId) {
+            setDefaultValues(); // Usar valores por defecto si no hay país
+            return;
         }
         
-        alert(userMessage + '\n\nDetails: ' + error.message);
-        resetCosts();
-    });
-}
+        // Mostrar loading
+        document.getElementById('display-tax').textContent = 'Calculating...';
+        document.getElementById('display-shipping').textContent = 'Calculating...';
+        document.getElementById('display-total').textContent = 'Calculating...';
+        
+        const subtotalConDescuento = originalSubtotal - currentDiscount;
+        
+        // Verificar CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            console.error('CSRF token not found! Add <meta name="csrf-token" content="{{ csrf_token() }}"> to your layout');
+            alert('Security token missing. Please refresh the page.');
+            return;
+        }
+        
+        console.log('Sending request with:', {
+            country_id: countryId,
+            city_id: cityId,
+            subtotal: subtotalConDescuento,
+            url: '{{ route("checkout.calculate") }}'
+        });
+        
+        fetch('{{ route("checkout.calculate") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                country_id: countryId,
+                city_id: cityId,
+                subtotal: subtotalConDescuento
+            })
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            // Primero intentar leer como texto para debug
+            return response.text().then(text => {
+                console.log('Raw response:', text.substring(0, 500));
+                
+                // Si la respuesta comienza con HTML, mostrar el error
+                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const errorTitle = doc.querySelector('title')?.textContent || 'Server Error';
+                    const errorMessage = doc.querySelector('.exception-message')?.textContent || 
+                                       doc.querySelector('.alert-danger')?.textContent ||
+                                       'Server returned an error page instead of JSON';
+                    
+                    throw new Error(`Laravel Error: ${errorTitle} - ${errorMessage}`);
+                }
+                
+                // Si no es HTML, intentar parsear como JSON
+                try {
+                    const data = JSON.parse(text);
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Unknown error from server');
+                    }
+                    
+                    return data;
+                } catch (e) {
+                    console.error('JSON Parse Error:', e);
+                    throw new Error(`Invalid JSON response: ${e.message}`);
+                }
+            });
+        })
+        .then(data => {
+            console.log('Parsed data:', data);
+            
+            const tax = parseFloat(data.tax_raw || 0);
+            const shipping = parseFloat(data.shipping_raw || 0);
+            const total = subtotalConDescuento + tax + shipping + currentTip;
+            
+            // Actualizar display
+            document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
+            document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
+            document.getElementById('display-total').textContent = '$' + total.toFixed(2);
+            
+            // Actualizar campos ocultos
+            document.getElementById('final-country').value = countryId;
+            document.getElementById('final-city').value = cityId;
+            document.getElementById('final-total').value = total.toFixed(2);
+            document.getElementById('final-tax').value = tax.toFixed(2);
+            document.getElementById('final-shipping').value = shipping.toFixed(2);
+            
+            // Mantener el botón habilitado
+            placeOrderBtn.disabled = false;
+            locationWarning.style.display = 'none';
+            
+            console.log('Calculation successful:', {
+                subtotal: subtotalConDescuento,
+                tax: tax,
+                shipping: shipping,
+                tip: currentTip,
+                total: total
+            });
+        })
+        .catch(error => {
+            console.error('Error in calculateCosts:', error);
+            
+            // En caso de error, usar valores por defecto pero NO deshabilitar el botón
+            setDefaultValues();
+            
+            // Mostrar mensaje de error no intrusivo
+            console.log('Using default shipping values due to calculation error');
+            
+            // Opcional: mostrar un mensaje suave al usuario
+            const tempMessage = document.createElement('div');
+            tempMessage.className = 'alert alert-info small mt-2';
+            tempMessage.textContent = 'Using standard shipping rates';
+            document.getElementById('display-shipping').parentElement.appendChild(tempMessage);
+            setTimeout(() => tempMessage.remove(), 3000);
+        });
+    }
     
     function updateTotals() {
-        // Solo actualizar el total si no hay país seleccionado
-        if (!countrySelect.value) {
-            const newSubtotal = originalSubtotal - currentDiscount + currentTip;
-            document.getElementById('display-total').textContent = '$' + newSubtotal.toFixed(2);
-        } else {
-            // Recalcular con país seleccionado
+        // Actualizar totales basándose en si hay o no estado seleccionado
+        if (countrySelect.value) {
+            // Recalcular con ubicación
             calculateCosts();
+        } else {
+            // Usar valores por defecto
+            setDefaultValues();
         }
     }
 
@@ -825,23 +848,8 @@ function calculateCosts() {
         discountStatus.style.display = 'block';
     }
     
-    function resetCosts() {
-        document.getElementById('display-tax').textContent = '$0.00';
-        document.getElementById('display-shipping').textContent = 'Select state';
-
-        const subtotalConDescuento = originalSubtotal - currentDiscount + currentTip;
-        document.getElementById('display-total').textContent = '$' + subtotalConDescuento.toFixed(2);
-
-        // Limpiar campos ocultos
-        document.getElementById('final-country').value = '';
-        document.getElementById('final-city').value = '';
-        document.getElementById('final-total').value = '';
-        document.getElementById('final-tax').value = '';
-        document.getElementById('final-shipping').value = '';
-
-        placeOrderBtn.disabled = true;
-        locationWarning.style.display = 'block';
-    }
+    // 🔥 ELIMINADA la función resetCosts() - ya no es necesaria
+    // Ahora usamos setDefaultValues() en su lugar
     
     // Permitir aplicar descuento con Enter
     discountCodeInput.addEventListener('keypress', function(e) {
