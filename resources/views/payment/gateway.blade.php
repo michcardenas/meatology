@@ -240,8 +240,7 @@
 </div>
 
 <!-- Square.js Script -->
-<script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
-
+<script src="https://web.squarecdn.com/v1/square.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     console.log('Initializing Square payment form...');
