@@ -123,6 +123,55 @@
     </select>
 </div>
 
+{{-- SECCIÓN DE CERTIFICACIONES --}}
+<div class="mb-4">
+    <label class="form-label fw-bold text-light">Product Certifications</label>
+    <div class="row mt-3">
+        @for($i = 1; $i <= 3; $i++)
+            <div class="col-md-4 mb-3">
+                <div class="card bg-dark border-secondary h-100">
+                    <div class="card-body text-center p-3">
+                        <!-- Imagen de certificación -->
+                        <div class="mb-3">
+                            <img src="{{ asset('images/' . $i . '.webp') }}"
+                                 alt="Certification {{ $i }}"
+                                 class="img-fluid rounded"
+                                 style="height: 80px; width: auto; max-width: 100%; object-fit: contain;">
+                        </div>
+
+                        <!-- Checkbox -->
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="certification[]"
+                                   value="{{ $i }}"
+                                   id="certification_{{ $i }}"
+                                   {{ isset($product) && $product->certification && in_array($i, $product->certification) ? 'checked' : '' }}>
+                            <label class="form-check-label text-light" for="certification_{{ $i }}">
+                                Certification {{ $i }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endfor
+    </div>
+
+    <!-- Botón para seleccionar/deseleccionar todas -->
+    <div class="mt-3">
+        <button type="button" class="btn btn-outline-light btn-sm" id="select-all-certifications">
+            ✅ Select All
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="deselect-all-certifications">
+            ❌ Deselect All
+        </button>
+    </div>
+
+    <small class="text-muted d-block mt-2">
+        Select the certifications that apply to this product
+    </small>
+</div>
+
 {{-- NUEVO CAMPO: País de Origen del Producto --}}
 <div class="mb-4">
     <label class="form-label fw-bold text-light">Country of Origin *</label>
@@ -355,6 +404,42 @@ function addPriceBlock() {
             console.log('Deleting certification:', certificationId);
         }
     }
+
+    // 📋 FUNCIONES PARA MANEJAR CERTIFICACIONES
+    document.getElementById('select-all-certifications').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('input[name="certification[]"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        updateCertificationStatus();
+    });
+
+    document.getElementById('deselect-all-certifications').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('input[name="certification[]"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        updateCertificationStatus();
+    });
+
+    // Función para actualizar el estado visual
+    function updateCertificationStatus() {
+        const checkboxes = document.querySelectorAll('input[name="certification[]"]');
+        const checkedCount = document.querySelectorAll('input[name="certification[]"]:checked').length;
+
+        if (checkedCount === checkboxes.length) {
+            console.log('All certifications selected');
+        } else if (checkedCount === 0) {
+            console.log('No certifications selected');
+        } else {
+            console.log(`${checkedCount} of ${checkboxes.length} certifications selected`);
+        }
+    }
+
+    // Agregar event listeners a los checkboxes individuales
+    document.querySelectorAll('input[name="certification[]"]').forEach(checkbox => {
+        checkbox.addEventListener('change', updateCertificationStatus);
+    });
 </script>
 
 <style>

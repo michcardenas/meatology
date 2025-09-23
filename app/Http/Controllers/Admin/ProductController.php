@@ -46,7 +46,9 @@ public function store(Request $request)
         'category_id' => 'required|exists:categories,id',
         'pais' => 'required|string|max:100',
         'descuento' => 'nullable|numeric|min:0|max:100',
-        
+        'certification' => 'nullable|array',
+        'certification.*' => 'integer|in:1,2,3',
+
         'images' => 'nullable|array|max:5',
         'images.*' => 'image|max:2048',
         'certifications' => 'nullable|array|max:5',
@@ -64,6 +66,7 @@ public function store(Request $request)
             'category_id' => $request->category_id,
             'pais' => $request->pais,
             'descuento' => $request->descuento ?? 0,
+            'certification' => $request->certification ? array_map('intval', $request->certification) : null,
         ]);
 
         // 🔥 PROCESAR IMÁGENES - USANDO STORAGE CORRECTO
@@ -168,7 +171,9 @@ public function update(Request $request, Product $product)
         'category_id' => 'required|exists:categories,id',
         'pais' => 'string|max:255',
         'descuento' => 'nullable|numeric|min:0|max:100',
-        
+        'certification' => 'nullable|array',
+        'certification.*' => 'integer|in:1,2,3',
+
         'images' => 'nullable|array|max:5',
         'images.*' => 'nullable|image|max:2048',
         'certifications' => 'nullable|array|max:5',
@@ -184,6 +189,10 @@ public function update(Request $request, Product $product)
     try {
         // Actualizar producto base
         $productData = collect($validatedData)->except(['images', 'prices', 'certifications'])->toArray();
+
+        // Manejar certificaciones
+        $productData['certification'] = $request->certification ? array_map('intval', $request->certification) : null;
+
         $product->update($productData);
 
         // Manejar precios
