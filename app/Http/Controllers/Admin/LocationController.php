@@ -23,13 +23,7 @@ class LocationController extends Controller
             'shipping' => 'nullable|numeric|min:0|max:999999.99'
         ]);
 
-        // Debug logging
-        \Log::info('Countries Store - Request data:', $request->all());
-        \Log::info('Countries Store - Only name and shipping:', $request->only('name', 'shipping'));
-
         $country = Country::create($request->only('name', 'shipping'));
-
-        \Log::info('Countries Store - Created country:', $country->toArray());
 
         return back()->with('success', 'State created successfully.');
     }

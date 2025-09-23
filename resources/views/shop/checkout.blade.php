@@ -104,8 +104,9 @@
             <div class="col-md-4">
                 <label class="form-label fw-bold">City</label>
                 <select id="shipping-city" name="shipping_city" class="form-select">
-                    <option value="">-- Select Country First --</option>
+                    <option value="">-- Select State First --</option>
                 </select>
+                <small class="text-muted">Optional - for tax calculation only</small>
             </div>
             <div class="col-md-4">
                 <label class="form-label fw-bold">Postal Code</label>
@@ -120,7 +121,7 @@
         </div>
         <div class="mt-3">
             <small class="text-muted">
-                📍 Shipping costs and taxes will be calculated based on your location
+                📍 Shipping costs are calculated by state. Taxes are calculated by city (if available)
             </small>
         </div>
     </div>
@@ -349,7 +350,7 @@
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Shipping:</span>
-                                <span id="display-shipping">Select location</span>
+                                <span id="display-shipping">Select state</span>
                             </div>
                             
                             <!-- Línea de propina -->
@@ -371,7 +372,7 @@
                             @endif
                             
                             <div id="location-warning" class="alert alert-warning" style="display: none;">
-                                📍 Please select shipping location to see final costs
+                                📍 Please select a state to see shipping costs and complete your order
                             </div>
                             
                             <button type="submit" form="checkoutForm" class="btn btn-success w-100 mb-2" id="place-order-btn" disabled>
@@ -555,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cities = selectedOption.dataset.cities ? JSON.parse(selectedOption.dataset.cities) : [];
         
         // Limpiar ciudades
-        citySelect.innerHTML = '<option value="">-- Select City --</option>';
+        citySelect.innerHTML = '<option value="">-- Optional: Select City for tax calculation --</option>';
         
         // Agregar ciudades
         cities.forEach(city => {
@@ -746,18 +747,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function resetCosts() {
         document.getElementById('display-tax').textContent = '$0.00';
-        document.getElementById('display-shipping').textContent = 'Select location';
-        
+        document.getElementById('display-shipping').textContent = 'Select state';
+
         const subtotalConDescuento = originalSubtotal - currentDiscount + currentTip;
         document.getElementById('display-total').textContent = '$' + subtotalConDescuento.toFixed(2);
-        
+
         // Limpiar campos ocultos
         document.getElementById('final-country').value = '';
         document.getElementById('final-city').value = '';
         document.getElementById('final-total').value = '';
         document.getElementById('final-tax').value = '';
         document.getElementById('final-shipping').value = '';
-        
+
         placeOrderBtn.disabled = true;
         locationWarning.style.display = 'block';
     }

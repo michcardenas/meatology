@@ -196,32 +196,22 @@ public function calculateCosts(Request $request)
             }
         }
 
-        // Calcular shipping basado en el país (puedes ajustar esta lógica)
+        // Calcular shipping basado en el país/estado usando la columna shipping
         $country = Country::find($countryId);
-        if ($country) {
-            // Ejemplo de lógica de shipping (ajusta según tus necesidades)
-            switch ($country->name) {
-                case 'Colombia':
-                case 'Bogotá D.C.':
-                    $shipping = $subtotal > 100 ? 0 : 15; // Envío gratis sobre $100
-                    break;
-                case 'United States':
-                    $shipping = $subtotal > 150 ? 0 : 25;
-                    break;
-                default:
-                    $shipping = $subtotal > 200 ? 10 : 35; // Shipping internacional
-                    break;
-            }
+        if ($country && $country->shipping) {
+            $shipping = floatval($country->shipping);
         }
 
         // Log para debugging
         \Log::info('Cost Calculation:', [
             'country_id' => $countryId,
+            'country_name' => $country->name ?? 'Unknown',
+            'country_shipping' => $country->shipping ?? 0,
             'city_id' => $cityId,
             'subtotal' => $subtotal,
             'tax_percentage' => $cityId ? ($city->tax ?? 0) : 0,
             'tax_amount' => $tax,
-            'shipping' => $shipping
+            'shipping_amount' => $shipping
         ]);
 
         return response()->json([
