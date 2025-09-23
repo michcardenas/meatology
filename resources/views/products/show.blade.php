@@ -310,7 +310,7 @@
 } */
 
 .certification-badge {
-    width: 120px;
+    width: 220px;
     height: 120px;
     object-fit: contain;
 }
