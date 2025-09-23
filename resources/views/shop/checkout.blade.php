@@ -607,8 +607,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 subtotal: subtotalConDescuento
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Calculate costs response status:', response.status);
+            console.log('Calculate costs response ok:', response.ok);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Calculate costs response data:', data);
+
+            if (!data.success) {
+                throw new Error(data.message || 'Unknown error from server');
+            }
+
             const tax = parseFloat(data.tax_raw || 0);
             const shipping = parseFloat(data.shipping_raw || 0);
             const total = subtotalConDescuento + tax + shipping + currentTip;
@@ -638,8 +651,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Error calculating shipping costs. Please try again.');
+            console.error('Error calculating costs:', error);
+            console.error('Full error details:', {
+                message: error.message,
+                stack: error.stack
+            });
+            alert('Error calculating shipping costs: ' + error.message + '. Please check console for details.');
             resetCosts();
         });
     }

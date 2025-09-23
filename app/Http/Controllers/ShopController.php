@@ -173,11 +173,21 @@ public function checkout()
 }
 public function calculateCosts(Request $request)
 {
-    $request->validate([
-        'country_id' => 'required|exists:countries,id',
-        'city_id' => 'nullable|exists:cities,id',
-        'subtotal' => 'required|numeric|min:0'
-    ]);
+    \Log::info('calculateCosts called with:', $request->all());
+
+    try {
+        $request->validate([
+            'country_id' => 'required|exists:countries,id',
+            'city_id' => 'nullable|exists:cities,id',
+            'subtotal' => 'required|numeric|min:0'
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        \Log::error('Validation failed:', $e->errors());
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation error: ' . implode(', ', array_flatten($e->errors()))
+        ], 422);
+    }
 
     $countryId = $request->country_id;
     $cityId = $request->city_id;
@@ -226,11 +236,15 @@ public function calculateCosts(Request $request)
         ]);
 
     } catch (\Exception $e) {
-        \Log::error('Error calculating costs: ' . $e->getMessage());
-        
+        \Log::error('Error calculating costs: ' . $e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
         return response()->json([
             'success' => false,
-            'message' => 'Error calculating shipping costs'
+            'message' => 'Error calculating shipping costs: ' . $e->getMessage()
         ], 500);
     }
 }
