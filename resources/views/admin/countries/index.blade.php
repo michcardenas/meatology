@@ -83,9 +83,17 @@
     <!-- Create Country -->
     <form action="{{ route('admin.countries.store') }}" method="POST" class="mb-4">
         @csrf
-        <div class="input-group">
-            <input type="text" name="name" class="form-control" placeholder="New country name..." required>
-            <button type="submit" class="btn btn-primary">Add Country</button>
+        <div class="row g-2">
+            <div class="col-md-6">
+                <input type="text" name="name" class="form-control" placeholder="New state name..." required>
+            </div>
+            <div class="col-md-4">
+                <input type="number" name="shipping" class="form-control" placeholder="Shipping Cost (USD)" step="0.01" min="0">
+                <small class="text-muted">Shipping cost in USD</small>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Add State</button>
+            </div>
         </div>
     </form>
 
@@ -99,6 +107,7 @@
             <tr>
                 <th>Name</th>
                 <th># of Cities</th>
+                <th>Shipping (USD)</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -107,6 +116,13 @@
                 <tr>
                     <td>{{ $country->name }}</td>
                     <td>{{ $country->cities_count }}</td>
+                    <td>
+                        @if($country->shipping)
+                            ${{ number_format($country->shipping, 2) }}
+                        @else
+                            <span class="text-muted">N/A</span>
+                        @endif
+                    </td>
                     <td>
                         {{-- Future edit button --}}
                         <button class="btn btn-sm btn-secondary" disabled>Edit</button>
@@ -122,7 +138,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="3">No countries found.</td></tr>
+                <tr><td colspan="4">No countries found.</td></tr>
             @endforelse
         </tbody>
     </table>

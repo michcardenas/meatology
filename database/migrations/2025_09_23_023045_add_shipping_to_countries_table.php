@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('cities', function (Blueprint $table) {
-            $table->decimal('shipping', 8, 2)->nullable()->after('tax')->comment('Shipping cost in USD');
+        Schema::table('countries', function (Blueprint $table) {
+            $table->decimal('shipping', 8, 2)->nullable()->after('name')->comment('Shipping cost in USD');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('cities', function (Blueprint $table) {
+        Schema::table('countries', function (Blueprint $table) {
             $table->dropColumn('shipping');
         });
     }
