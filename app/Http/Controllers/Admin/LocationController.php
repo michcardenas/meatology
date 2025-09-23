@@ -18,9 +18,20 @@ class LocationController extends Controller
 
     public function countriesStore(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:255']);
-        Country::create($request->only('name'));
-        return back()->with('success', 'Country created successfully.');
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'shipping' => 'nullable|numeric|min:0|max:999999.99'
+        ]);
+
+        // Debug logging
+        \Log::info('Countries Store - Request data:', $request->all());
+        \Log::info('Countries Store - Only name and shipping:', $request->only('name', 'shipping'));
+
+        $country = Country::create($request->only('name', 'shipping'));
+
+        \Log::info('Countries Store - Created country:', $country->toArray());
+
+        return back()->with('success', 'State created successfully.');
     }
 
     public function countriesDestroy($id)
