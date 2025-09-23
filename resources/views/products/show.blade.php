@@ -68,38 +68,35 @@
         @endif
 
         <!-- 🔥 NUEVA SECCIÓN: CERTIFICACIONES DEBAJO DEL CARRUSEL -->
-        @if($product->certifications && $product->certifications->count() > 0)
+        @if($product->certification && count($product->certification) > 0)
             <div class="certifications-section mt-3">
-                <div class="d-flex flex-wrap gap-2 justify-content-center">
-                    @foreach($product->certifications as $certification)
+                <h6 class="text-light text-center mb-3">🏆 Product Certifications</h6>
+                <div class="d-flex flex-wrap gap-3 justify-content-center">
+                    @foreach($product->certification as $certNumber)
                         <div class="certification-item">
-                            <img src="{{ Storage::url($certification->image) }}" 
-                                 alt="Certification" 
+                            <img src="{{ asset('images/' . $certNumber . '.webp') }}"
+                                 alt="Certification {{ $certNumber }}"
                                  class="certification-badge"
-                                 data-bs-toggle="modal" 
-                                 data-bs-target="#certificationModal{{ $certification->id }}"
-                                >
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#certificationModal{{ $certNumber }}"
+                                 title="Click to view certification details">
                         </div>
 
                         <!-- Modal para ver certificación en grande -->
-                        <div class="modal fade" id="certificationModal{{ $certification->id }}" tabindex="-1">
+                        <div class="modal fade" id="certificationModal{{ $certNumber }}" tabindex="-1">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content bg-dark">
                                     <div class="modal-header border-secondary">
-                                        <h5 class="modal-title text-light"></h5>
+                                        <h5 class="modal-title text-light">Certification {{ $certNumber }}</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body text-center">
-                                        <img src="{{ Storage::url($certification->image) }}" 
-                                             alt="Certification" 
+                                        <img src="{{ asset('images/' . $certNumber . '.webp') }}"
+                                             alt="Certification {{ $certNumber }}"
                                              class="img-fluid rounded"
                                              style="max-height: 70vh; object-fit: contain;">
-                                        @if($certification->name)
-                                            <h6 class="text-light mt-3">{{ $certification->name }}</h6>
-                                        @endif
-                                        @if($certification->description)
-                                            <p class="text-light">{{ $certification->description }}</p>
-                                        @endif
+                                        <h6 class="text-light mt-3">Certification Level {{ $certNumber }}</h6>
+                                        <p class="text-light">This product meets the quality standards of Certification {{ $certNumber }}.</p>
                                     </div>
                                 </div>
                             </div>
@@ -107,6 +104,7 @@
                     @endforeach
                 </div>
                 <small class="text-light d-block text-center mt-2">
+                    Click on any certification badge to view details
                 </small>
             </div>
         @endif
@@ -339,14 +337,21 @@
 } */
 
 .certification-badge {
-    width: 200px;
- 
-  
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px;
 }
 
 .certification-badge:hover {
     transform: scale(1.1);
-
+    border-color: #28a745;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
 .certification-item {
@@ -389,12 +394,17 @@
 /* Responsive para móviles */
 @media (max-width: 768px) {
     .certification-badge {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
+        padding: 3px;
     }
-    
+
     .certifications-section {
         padding: 10px;
+    }
+
+    .certifications-section h6 {
+        font-size: 1rem;
     }
 }
 
