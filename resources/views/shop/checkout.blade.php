@@ -582,84 +582,147 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 🧮 Funciones de cálculo
-    function calculateCosts() {
-        const countryId = countrySelect.value;
-        const cityId = citySelect.value;
-        
-        if (!countryId) return;
-        
-        // Mostrar loading
-        document.getElementById('display-tax').textContent = 'Calculating...';
-        document.getElementById('display-shipping').textContent = 'Calculating...';
-        document.getElementById('display-total').textContent = 'Calculating...';
-        
-        const subtotalConDescuento = originalSubtotal - currentDiscount;
-        
-        fetch('{{ route("checkout.calculate") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                country_id: countryId,
-                city_id: cityId,
-                subtotal: subtotalConDescuento
-            })
-        })
-        .then(response => {
-            console.log('Calculate costs response status:', response.status);
-            console.log('Calculate costs response ok:', response.ok);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Calculate costs response data:', data);
+   // Reemplaza tu función calculateCosts con esta versión mejorada:
 
-            if (!data.success) {
-                throw new Error(data.message || 'Unknown error from server');
-            }
-
-            const tax = parseFloat(data.tax_raw || 0);
-            const shipping = parseFloat(data.shipping_raw || 0);
-            const total = subtotalConDescuento + tax + shipping + currentTip;
-            
-            // Actualizar display
-            document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
-            document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
-            document.getElementById('display-total').textContent = '$' + total.toFixed(2);
-            
-            // Actualizar campos ocultos
-            document.getElementById('final-country').value = countryId;
-            document.getElementById('final-city').value = cityId;
-            document.getElementById('final-total').value = total.toFixed(2);
-            document.getElementById('final-tax').value = tax.toFixed(2);
-            document.getElementById('final-shipping').value = shipping.toFixed(2);
-            
-            // Habilitar botón
-            placeOrderBtn.disabled = false;
-            locationWarning.style.display = 'none';
-            
-            console.log('Cálculo:', {
-                subtotal: subtotalConDescuento,
-                tax: tax,
-                shipping: shipping,
-                tip: currentTip,
-                total: total
-            });
-        })
-        .catch(error => {
-            console.error('Error calculating costs:', error);
-            console.error('Full error details:', {
-                message: error.message,
-                stack: error.stack
-            });
-            alert('Error calculating shipping costs: ' + error.message + '. Please check console for details.');
-            resetCosts();
-        });
+function calculateCosts() {
+    const countryId = countrySelect.value;
+    const cityId = citySelect.value;
+    
+    if (!countryId) return;
+    
+    // Mostrar loading
+    document.getElementById('display-tax').textContent = 'Calculating...';
+    document.getElementById('display-shipping').textContent = 'Calculating...';
+    document.getElementById('display-total').textContent = 'Calculating...';
+    
+    const subtotalConDescuento = originalSubtotal - currentDiscount;
+    
+    // Verificar CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        console.error('CSRF token not found! Add <meta name="csrf-token" content="{{ csrf_token() }}"> to your layout');
+        alert('Security token missing. Please refresh the page.');
+        return;
     }
+    
+    console.log('Sending request with:', {
+        country_id: countryId,
+        city_id: cityId,
+        subtotal: subtotalConDescuento,
+        url: '{{ route("checkout.calculate") }}'
+    });
+    
+    fetch('{{ route("checkout.calculate") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json', // Importante: especificar que esperamos JSON
+            'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest' // Indica que es una petición AJAX
+        },
+        body: JSON.stringify({
+            country_id: countryId,
+            city_id: cityId,
+            subtotal: subtotalConDescuento
+        })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        // Clonar la respuesta para poder leerla dos veces si es necesario
+        const clonedResponse = response.clone();
+        
+        // Primero intentar leer como texto para debug
+        return response.text().then(text => {
+            console.log('Raw response:', text.substring(0, 500)); // Primeros 500 caracteres
+            
+            // Si la respuesta comienza con HTML, mostrar el error
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                // Intentar extraer el mensaje de error del HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const errorTitle = doc.querySelector('title')?.textContent || 'Server Error';
+                const errorMessage = doc.querySelector('.exception-message')?.textContent || 
+                                   doc.querySelector('.alert-danger')?.textContent ||
+                                   'Server returned an error page instead of JSON';
+                
+                throw new Error(`Laravel Error: ${errorTitle} - ${errorMessage}`);
+            }
+            
+            // Si no es HTML, intentar parsear como JSON
+            try {
+                const data = JSON.parse(text);
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Unknown error from server');
+                }
+                
+                return data;
+            } catch (e) {
+                console.error('JSON Parse Error:', e);
+                throw new Error(`Invalid JSON response: ${e.message}`);
+            }
+        });
+    })
+    .then(data => {
+        console.log('Parsed data:', data);
+        
+        const tax = parseFloat(data.tax_raw || 0);
+        const shipping = parseFloat(data.shipping_raw || 0);
+        const total = subtotalConDescuento + tax + shipping + currentTip;
+        
+        // Actualizar display
+        document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
+        document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
+        document.getElementById('display-total').textContent = '$' + total.toFixed(2);
+        
+        // Actualizar campos ocultos
+        document.getElementById('final-country').value = countryId;
+        document.getElementById('final-city').value = cityId;
+        document.getElementById('final-total').value = total.toFixed(2);
+        document.getElementById('final-tax').value = tax.toFixed(2);
+        document.getElementById('final-shipping').value = shipping.toFixed(2);
+        
+        // Habilitar botón
+        placeOrderBtn.disabled = false;
+        locationWarning.style.display = 'none';
+        
+        console.log('Calculation successful:', {
+            subtotal: subtotalConDescuento,
+            tax: tax,
+            shipping: shipping,
+            tip: currentTip,
+            total: total
+        });
+    })
+    .catch(error => {
+        console.error('Error in calculateCosts:', error);
+        
+        // Mostrar error más descriptivo al usuario
+        let userMessage = 'Error calculating shipping costs. ';
+        
+        if (error.message.includes('Laravel Error')) {
+            userMessage += 'Server error detected. Check browser console for details.';
+            
+            // Abrir la consola automáticamente en desarrollo
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.error('%c⚠️ Laravel Error Detected!', 'color: red; font-size: 16px; font-weight: bold;');
+                console.error('The server returned an HTML error page instead of JSON.');
+                console.error('Common causes:');
+                console.error('1. Route not found (404)');
+                console.error('2. Method not allowed (405)');
+                console.error('3. Controller method missing');
+                console.error('4. Database query error');
+                console.error('5. Validation error');
+                console.error('Check your Laravel logs: storage/logs/laravel.log');
+            }
+        }
+        
+        alert(userMessage + '\n\nDetails: ' + error.message);
+        resetCosts();
+    });
+}
     
     function updateTotals() {
         // Solo actualizar el total si no hay país seleccionado
