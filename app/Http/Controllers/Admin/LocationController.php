@@ -20,10 +20,10 @@ class LocationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'shipping' => 'nullable|numeric|min:0|max:999999.99'
+            'tax' => 'nullable|numeric|min:0|max:999999.99'
         ]);
 
-        $country = Country::create($request->only('name', 'shipping'));
+        $country = Country::create($request->only('name', 'tax'));
 
         return back()->with('success', 'State created successfully.');
     }
