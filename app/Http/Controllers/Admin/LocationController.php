@@ -47,10 +47,10 @@ class LocationController extends Controller
     $request->validate([
         'name' => 'required|string|max:255',
         'country_id' => 'required|exists:countries,id',
-        'tax' => 'nullable|numeric|min:0|max:999.99',
+        'shipping' => 'nullable|numeric|min:0|max:999.99',
     ]);
 
-    City::create($request->only('name', 'country_id', 'tax'));
+    City::create($request->only('name', 'country_id', 'shipping'));
     return back()->with('success', 'City created successfully.');
 }
 
@@ -71,10 +71,10 @@ public function citiesUpdate(Request $request, City $city)
     $request->validate([
         'name' => 'required|string|max:255',
         'country_id' => 'required|exists:countries,id',
-        'tax' => 'nullable|numeric|min:0|max:999.99',
+        'shipping' => 'nullable|numeric|min:0|max:999.99',
     ]);
 
-    $city->update($request->only('name', 'country_id', 'tax'));
+    $city->update($request->only('name', 'country_id', 'shipping'));
     return redirect()->route('admin.cities.index')->with('success', 'City updated successfully.');
 }
 }
