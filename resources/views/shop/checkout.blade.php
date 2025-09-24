@@ -419,7 +419,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función auxiliar para obtener elementos con sufijo correcto
     function getElementWithSuffix(baseId) {
-        return document.getElementById(baseId + formSuffix);
+        const element = document.getElementById(baseId + formSuffix);
+        if (!element) {
+            console.warn(`Elemento no encontrado: ${baseId + formSuffix}`);
+        }
+        return element;
     }
 
     // Función para obtener el formulario correcto
@@ -427,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return document.getElementById(isAuthenticated ? 'checkoutForm' : 'checkoutFormGuest');
     }
 
-    // Elementos del DOM
+    // Elementos del DOM - Verificar que existan
     const countrySelect = document.getElementById('shipping-country');
     const citySelect = document.getElementById('shipping-city');
     const placeOrderBtn = document.getElementById('place-order-btn');
@@ -439,6 +443,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountLine = document.getElementById('discount-line');
     const discountLabel = document.getElementById('discount-label');
     const discountAmount = document.getElementById('discount-amount');
+    
+    // Verificar elementos críticos
+    if (!placeOrderBtn) {
+        console.error('Botón de orden no encontrado');
+        return;
+    }
     
     // Variables globales
     const originalSubtotal = parseFloat('{{ $subtotal }}');
@@ -462,91 +472,166 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Product savings:', parseFloat('{{ $totalSavings ?? 0 }}'));
     
     // 🔥 CAMBIO IMPORTANTE: NO mostrar advertencia y HABILITAR el botón desde el inicio
-    locationWarning.style.display = 'none';
+    if (locationWarning) {
+        locationWarning.style.display = 'none';
+    }
     placeOrderBtn.disabled = false;
 
     // Establecer valores por defecto al cargar
     setDefaultValues();
 
-    // 🔥 Event listener para el botón de envío
+    // 🔥 🔥 🔥 CORRECCIÓN PRINCIPAL: Event listener para el botón de envío
     placeOrderBtn.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        
         const form = getCorrectForm();
-        if (form) {
-            console.log('Submitting form:', form.id);
+        
+        if (!form) {
+            console.error('Formulario no encontrado');
+            alert('Error al procesar el pedido. Por favor recarga la página.');
+            return;
+        }
+        
+        // Validar campos requeridos antes de enviar
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        let firstInvalidField = null;
+        
+        requiredFields.forEach(field => {
+            if (!field.value || field.value.trim() === '') {
+                field.classList.add('is-invalid');
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            alert('Please complete all required fields');
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+            }
+            return;
+        }
+        
+        // Log para debugging
+        console.log('=== ENVIANDO FORMULARIO ===');
+        console.log('Form ID:', form.id);
+        console.log('Form Action:', form.action);
+        console.log('Form Method:', form.method);
+        console.log('Datos a enviar:', {
+            country: getElementWithSuffix('final-country')?.value || '',
+            city: getElementWithSuffix('final-city')?.value || '',
+            total: getElementWithSuffix('final-total')?.value || '',
+            tax: getElementWithSuffix('final-tax')?.value || '',
+            shipping: getElementWithSuffix('final-shipping')?.value || '',
+            discount_code: getElementWithSuffix('applied-discount-code')?.value || '',
+            discount_amount: getElementWithSuffix('applied-discount-amount')?.value || '',
+            tip_amount: getElementWithSuffix('final-tip-amount')?.value || '0'
+        });
+        
+        // Deshabilitar el botón para evitar doble envío
+        placeOrderBtn.disabled = true;
+        placeOrderBtn.innerHTML = '⏳ Processing order...';
+        
+        // IMPORTANTE: Usar HTMLFormElement.submit() directamente
+        try {
+            // Asegurarse de que los campos ocultos tengan valores
+            if (!getElementWithSuffix('final-total').value) {
+                const subtotalConDescuento = originalSubtotal - currentDiscount;
+                const total = subtotalConDescuento + currentTip;
+                getElementWithSuffix('final-total').value = total.toFixed(2);
+            }
+            
+            // Enviar el formulario
+            console.log('Enviando formulario ahora...');
             form.submit();
-        } else {
-            console.error('No se pudo encontrar el formulario correcto');
+            
+        } catch (error) {
+            console.error('Error al enviar:', error);
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.innerHTML = '💳 Place Order';
+            alert('Error processing order. Please try again.');
         }
     });
 
     // 🎫 Manejar aplicación de descuento adicional
-    applyDiscountBtn.addEventListener('click', function() {
-        const codigo = discountCodeInput.value.trim().toUpperCase();
-        
-        if (!codigo) {
-            showDiscountMessage('❌ Please enter a discount code', 'error');
-            return;
-        }
-        
-        // Usar datos del carrito desde variable global
-        const cartItems = window.cartItemsData;
-        
-        // Mostrar loading
-        applyDiscountBtn.textContent = 'Validating...';
-        applyDiscountBtn.disabled = true;
-        
-        fetch('{{ route("checkout.validate-discount") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                codigo: codigo,
-                subtotal: originalSubtotal,
-                cart_items: cartItems
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Aplicar descuento
-                appliedDiscountData = data.descuento;
-                currentDiscount = appliedDiscountData.monto;
-                
-                // Actualizar UI
-                showDiscountMessage(data.message, 'success');
-                showDiscountLine();
-                updateTotals();
-                
-                // Mostrar botón de remover
-                removeDiscountBtn.style.display = 'block';
-                discountCodeInput.disabled = true;
-                applyDiscountBtn.style.display = 'none';
-                
-                // Actualizar campos ocultos
-                getElementWithSuffix('applied-discount-code').value = appliedDiscountData.codigo;
-                getElementWithSuffix('applied-discount-amount').value = currentDiscount.toFixed(2);
-                
-            } else {
-                showDiscountMessage(data.message, 'error');
+    if (applyDiscountBtn) {
+        applyDiscountBtn.addEventListener('click', function() {
+            const codigo = discountCodeInput.value.trim().toUpperCase();
+            
+            if (!codigo) {
+                showDiscountMessage('❌ Please enter a discount code', 'error');
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showDiscountMessage('❌ Error validating discount code', 'error');
-        })
-        .finally(() => {
-            applyDiscountBtn.textContent = 'Apply';
-            applyDiscountBtn.disabled = false;
+            
+            // Usar datos del carrito desde variable global
+            const cartItems = window.cartItemsData;
+            
+            // Mostrar loading
+            applyDiscountBtn.textContent = 'Validating...';
+            applyDiscountBtn.disabled = true;
+            
+            fetch('{{ route("checkout.validate-discount") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    codigo: codigo,
+                    subtotal: originalSubtotal,
+                    cart_items: cartItems
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Aplicar descuento
+                    appliedDiscountData = data.descuento;
+                    currentDiscount = appliedDiscountData.monto;
+                    
+                    // Actualizar UI
+                    showDiscountMessage(data.message, 'success');
+                    showDiscountLine();
+                    updateTotals();
+                    
+                    // Mostrar botón de remover
+                    removeDiscountBtn.style.display = 'block';
+                    discountCodeInput.disabled = true;
+                    applyDiscountBtn.style.display = 'none';
+                    
+                    // Actualizar campos ocultos
+                    const discountCodeField = getElementWithSuffix('applied-discount-code');
+                    const discountAmountField = getElementWithSuffix('applied-discount-amount');
+                    if (discountCodeField) discountCodeField.value = appliedDiscountData.codigo;
+                    if (discountAmountField) discountAmountField.value = currentDiscount.toFixed(2);
+                    
+                } else {
+                    showDiscountMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showDiscountMessage('❌ Error validating discount code', 'error');
+            })
+            .finally(() => {
+                applyDiscountBtn.textContent = 'Apply';
+                applyDiscountBtn.disabled = false;
+            });
         });
-    });
+    }
     
     // 🗑️ Manejar remoción de descuento
-    removeDiscountBtn.addEventListener('click', function() {
-        removeDiscount();
-    });
+    if (removeDiscountBtn) {
+        removeDiscountBtn.addEventListener('click', function() {
+            removeDiscount();
+        });
+    }
 
     // 💝 Manejar botones de porcentaje de propina
     tipButtons.forEach(button => {
@@ -555,84 +640,108 @@ document.addEventListener('DOMContentLoaded', function() {
             applyTipPercentage(percentage);
             
             // Activar botón seleccionado
-            tipButtons.forEach(btn => btn.classList.remove('btn-success'));
-            tipButtons.forEach(btn => btn.classList.add('btn-outline-success'));
+            tipButtons.forEach(btn => {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-success');
+            });
             this.classList.remove('btn-outline-success');
             this.classList.add('btn-success');
             
             // Limpiar input custom
-            customTipInput.value = '';
+            if (customTipInput) customTipInput.value = '';
         });
     });
 
     // Manejar monto personalizado
-    customTipInput.addEventListener('input', function() {
-        const customAmount = parseFloat(this.value) || 0;
-        applyCustomTip(customAmount);
-        
-        // Desactivar botones de porcentaje
-        tipButtons.forEach(btn => btn.classList.remove('btn-success'));
-        tipButtons.forEach(btn => btn.classList.add('btn-outline-success'));
-    });
+    if (customTipInput) {
+        customTipInput.addEventListener('input', function() {
+            const customAmount = parseFloat(this.value) || 0;
+            applyCustomTip(customAmount);
+            
+            // Desactivar botones de porcentaje
+            tipButtons.forEach(btn => {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-success');
+            });
+        });
+    }
 
     // Remover propina
-    removeTipBtn.addEventListener('click', function() {
-        removeTip();
-    });
-    
-    // 📍 Manejar cambio de país - OPCIONAL ahora
-    countrySelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const cities = selectedOption.dataset.cities ? JSON.parse(selectedOption.dataset.cities) : [];
-        
-        // Limpiar ciudades
-        citySelect.innerHTML = '<option value="">-- Optional: Select City for tax calculation --</option>';
-        
-        // Agregar ciudades
-        cities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city.id;
-            option.textContent = city.name;
-            citySelect.appendChild(option);
+    if (removeTipBtn) {
+        removeTipBtn.addEventListener('click', function() {
+            removeTip();
         });
-        
-        // Calcular costos si hay país seleccionado, si no usar valores por defecto
-        if (this.value) {
-            calculateCosts();
-        } else {
-            setDefaultValues(); // Cambio de resetCosts() a setDefaultValues()
-        }
-    });
+    }
+    
+    // 📍 Manejar cambio de país
+    if (countrySelect) {
+        countrySelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const cities = selectedOption.dataset.cities ? JSON.parse(selectedOption.dataset.cities) : [];
+            
+            // Limpiar ciudades
+            if (citySelect) {
+                citySelect.innerHTML = '<option value="">-- Optional: Select City for tax calculation --</option>';
+                
+                // Agregar ciudades
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id;
+                    option.textContent = city.name;
+                    citySelect.appendChild(option);
+                });
+            }
+            
+            // Calcular costos
+            if (this.value) {
+                calculateCosts();
+            } else {
+                setDefaultValues();
+            }
+        });
+    }
     
     // Manejar cambio de ciudad
-    citySelect.addEventListener('change', function() {
-        if (countrySelect.value) {
-            calculateCosts();
-        }
-    });
+    if (citySelect) {
+        citySelect.addEventListener('change', function() {
+            if (countrySelect && countrySelect.value) {
+                calculateCosts();
+            }
+        });
+    }
     
-    // 🆕 Función para establecer valores por defecto (sin estado seleccionado)
+    // 🆕 Función para establecer valores por defecto
     function setDefaultValues() {
         const subtotalConDescuento = originalSubtotal - currentDiscount;
-        const defaultTax = 0; // Sin impuestos si no hay ubicación
-        const defaultShipping = 0; // O puedes poner un valor fijo como 15.00
+        const defaultTax = 0;
+        const defaultShipping = 0;
         const total = subtotalConDescuento + defaultTax + defaultShipping + currentTip;
         
         // Actualizar display
-        document.getElementById('display-tax').textContent = '$' + defaultTax.toFixed(2);
-        document.getElementById('display-shipping').textContent = 'Free'; // O '$15.00' para precio fijo
-        document.getElementById('display-total').textContent = '$' + total.toFixed(2);
+        const displayTax = document.getElementById('display-tax');
+        const displayShipping = document.getElementById('display-shipping');
+        const displayTotal = document.getElementById('display-total');
         
-        // Actualizar campos ocultos con valores por defecto
-        getElementWithSuffix('final-country').value = '';
-        getElementWithSuffix('final-city').value = '';
-        getElementWithSuffix('final-total').value = total.toFixed(2);
-        getElementWithSuffix('final-tax').value = defaultTax.toFixed(2);
-        getElementWithSuffix('final-shipping').value = defaultShipping.toFixed(2);
+        if (displayTax) displayTax.textContent = '$' + defaultTax.toFixed(2);
+        if (displayShipping) displayShipping.textContent = 'Free';
+        if (displayTotal) displayTotal.textContent = '$' + total.toFixed(2);
+        
+        // Actualizar campos ocultos
+        const countryField = getElementWithSuffix('final-country');
+        const cityField = getElementWithSuffix('final-city');
+        const totalField = getElementWithSuffix('final-total');
+        const taxField = getElementWithSuffix('final-tax');
+        const shippingField = getElementWithSuffix('final-shipping');
+        
+        if (countryField) countryField.value = '';
+        if (cityField) cityField.value = '';
+        if (totalField) totalField.value = total.toFixed(2);
+        if (taxField) taxField.value = defaultTax.toFixed(2);
+        if (shippingField) shippingField.value = defaultShipping.toFixed(2);
         
         // Mantener el botón habilitado
         placeOrderBtn.disabled = false;
-        locationWarning.style.display = 'none';
+        if (locationWarning) locationWarning.style.display = 'none';
         
         console.log('Default values set:', {
             subtotal: subtotalConDescuento,
@@ -643,27 +752,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 🧮 Funciones de cálculo
+    // 🧮 Función de cálculo de costos
     function calculateCosts() {
+        if (!countrySelect) return;
+        
         const countryId = countrySelect.value;
-        const cityId = citySelect.value;
+        const cityId = citySelect ? citySelect.value : '';
         
         if (!countryId) {
-            setDefaultValues(); // Usar valores por defecto si no hay país
+            setDefaultValues();
             return;
         }
         
         // Mostrar loading
-        document.getElementById('display-tax').textContent = 'Calculating...';
-        document.getElementById('display-shipping').textContent = 'Calculating...';
-        document.getElementById('display-total').textContent = 'Calculating...';
+        const displayTax = document.getElementById('display-tax');
+        const displayShipping = document.getElementById('display-shipping');
+        const displayTotal = document.getElementById('display-total');
+        
+        if (displayTax) displayTax.textContent = 'Calculating...';
+        if (displayShipping) displayShipping.textContent = 'Calculating...';
+        if (displayTotal) displayTotal.textContent = 'Calculating...';
         
         const subtotalConDescuento = originalSubtotal - currentDiscount;
         
         // Verificar CSRF token
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (!csrfToken) {
-            console.error('CSRF token not found! Add <meta name="csrf-token" content="{{ csrf_token() }}"> to your layout');
+            console.error('CSRF token not found!');
             alert('Security token missing. Please refresh the page.');
             return;
         }
@@ -689,41 +804,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 subtotal: subtotalConDescuento
             })
         })
-        .then(response => {
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            
-            // Primero intentar leer como texto para debug
-            return response.text().then(text => {
-                console.log('Raw response:', text.substring(0, 500));
-                
-                // Si la respuesta comienza con HTML, mostrar el error
-                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, 'text/html');
-                    const errorTitle = doc.querySelector('title')?.textContent || 'Server Error';
-                    const errorMessage = doc.querySelector('.exception-message')?.textContent || 
-                                       doc.querySelector('.alert-danger')?.textContent ||
-                                       'Server returned an error page instead of JSON';
-                    
-                    throw new Error(`Laravel Error: ${errorTitle} - ${errorMessage}`);
-                }
-                
-                // Si no es HTML, intentar parsear como JSON
-                try {
-                    const data = JSON.parse(text);
-                    
-                    if (!data.success) {
-                        throw new Error(data.message || 'Unknown error from server');
-                    }
-                    
-                    return data;
-                } catch (e) {
-                    console.error('JSON Parse Error:', e);
-                    throw new Error(`Invalid JSON response: ${e.message}`);
-                }
-            });
-        })
+        .then(response => response.json())
         .then(data => {
             console.log('Parsed data:', data);
             
@@ -732,20 +813,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const total = subtotalConDescuento + tax + shipping + currentTip;
             
             // Actualizar display
-            document.getElementById('display-tax').textContent = '$' + tax.toFixed(2);
-            document.getElementById('display-shipping').textContent = '$' + shipping.toFixed(2);
-            document.getElementById('display-total').textContent = '$' + total.toFixed(2);
+            if (displayTax) displayTax.textContent = '$' + tax.toFixed(2);
+            if (displayShipping) displayShipping.textContent = '$' + shipping.toFixed(2);
+            if (displayTotal) displayTotal.textContent = '$' + total.toFixed(2);
             
             // Actualizar campos ocultos
-            getElementWithSuffix('final-country').value = countryId;
-            getElementWithSuffix('final-city').value = cityId;
-            getElementWithSuffix('final-total').value = total.toFixed(2);
-            getElementWithSuffix('final-tax').value = tax.toFixed(2);
-            getElementWithSuffix('final-shipping').value = shipping.toFixed(2);
+            const countryField = getElementWithSuffix('final-country');
+            const cityField = getElementWithSuffix('final-city');
+            const totalField = getElementWithSuffix('final-total');
+            const taxField = getElementWithSuffix('final-tax');
+            const shippingField = getElementWithSuffix('final-shipping');
+            
+            if (countryField) countryField.value = countryId;
+            if (cityField) cityField.value = cityId;
+            if (totalField) totalField.value = total.toFixed(2);
+            if (taxField) taxField.value = tax.toFixed(2);
+            if (shippingField) shippingField.value = shipping.toFixed(2);
             
             // Mantener el botón habilitado
             placeOrderBtn.disabled = false;
-            locationWarning.style.display = 'none';
+            if (locationWarning) locationWarning.style.display = 'none';
             
             console.log('Calculation successful:', {
                 subtotal: subtotalConDescuento,
@@ -757,29 +844,15 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error in calculateCosts:', error);
-            
-            // En caso de error, usar valores por defecto pero NO deshabilitar el botón
             setDefaultValues();
-            
-            // Mostrar mensaje de error no intrusivo
             console.log('Using default shipping values due to calculation error');
-            
-            // Opcional: mostrar un mensaje suave al usuario
-            const tempMessage = document.createElement('div');
-            tempMessage.className = 'alert alert-info small mt-2';
-            tempMessage.textContent = 'Using standard shipping rates';
-            document.getElementById('display-shipping').parentElement.appendChild(tempMessage);
-            setTimeout(() => tempMessage.remove(), 3000);
         });
     }
     
     function updateTotals() {
-        // Actualizar totales basándose en si hay o no estado seleccionado
-        if (countrySelect.value) {
-            // Recalcular con ubicación
+        if (countrySelect && countrySelect.value) {
             calculateCosts();
         } else {
-            // Usar valores por defecto
             setDefaultValues();
         }
     }
@@ -805,11 +878,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function removeTip() {
         currentTip = 0;
         currentTipPercentage = null;
-        customTipInput.value = '';
+        if (customTipInput) customTipInput.value = '';
         
         // Desactivar botones
-        tipButtons.forEach(btn => btn.classList.remove('btn-success'));
-        tipButtons.forEach(btn => btn.classList.add('btn-outline-success'));
+        tipButtons.forEach(btn => {
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-success');
+        });
         
         updateTipDisplay();
         updateTotals();
@@ -817,28 +892,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateTipDisplay() {
         if (currentTip > 0) {
-            tipAmountDisplay.textContent = currentTip.toFixed(2);
-            displayTip.textContent = '$' + currentTip.toFixed(2);
-            tipDisplay.style.display = 'block';
-            tipLine.style.display = 'flex';
-            removeTipBtn.style.display = 'block';
+            if (tipAmountDisplay) tipAmountDisplay.textContent = currentTip.toFixed(2);
+            if (displayTip) displayTip.textContent = '$' + currentTip.toFixed(2);
+            if (tipDisplay) tipDisplay.style.display = 'block';
+            if (tipLine) tipLine.style.display = 'flex';
+            if (removeTipBtn) removeTipBtn.style.display = 'block';
             
             // Actualizar campos ocultos
-            getElementWithSuffix('final-tip-amount').value = currentTip.toFixed(2);
-            getElementWithSuffix('final-tip-percentage').value = currentTipPercentage || '';
+            const tipAmountField = getElementWithSuffix('final-tip-amount');
+            const tipPercentageField = getElementWithSuffix('final-tip-percentage');
+            
+            if (tipAmountField) tipAmountField.value = currentTip.toFixed(2);
+            if (tipPercentageField) tipPercentageField.value = currentTipPercentage || '';
         } else {
-            tipDisplay.style.display = 'none';
-            tipLine.style.display = 'none';
-            removeTipBtn.style.display = 'none';
+            if (tipDisplay) tipDisplay.style.display = 'none';
+            if (tipLine) tipLine.style.display = 'none';
+            if (removeTipBtn) removeTipBtn.style.display = 'none';
             
             // Limpiar campos ocultos
-            getElementWithSuffix('final-tip-amount').value = '0';
-            getElementWithSuffix('final-tip-percentage').value = '';
+            const tipAmountField = getElementWithSuffix('final-tip-amount');
+            const tipPercentageField = getElementWithSuffix('final-tip-percentage');
+            
+            if (tipAmountField) tipAmountField.value = '0';
+            if (tipPercentageField) tipPercentageField.value = '';
         }
     }
     
     function showDiscountLine() {
-        if (appliedDiscountData) {
+        if (appliedDiscountData && discountLabel && discountAmount && discountLine) {
             discountLabel.textContent = `Additional Discount (${appliedDiscountData.codigo} - ${appliedDiscountData.porcentaje}%):`;
             discountAmount.textContent = '-$' + currentDiscount.toFixed(2);
             discountLine.style.display = 'flex';
@@ -850,39 +931,53 @@ document.addEventListener('DOMContentLoaded', function() {
         appliedDiscountData = null;
         
         // Limpiar UI
-        discountLine.style.display = 'none';
-        discountStatus.style.display = 'none';
-        removeDiscountBtn.style.display = 'none';
-        applyDiscountBtn.style.display = 'block';
-        discountCodeInput.disabled = false;
-        discountCodeInput.value = '';
+        if (discountLine) discountLine.style.display = 'none';
+        if (discountStatus) discountStatus.style.display = 'none';
+        if (removeDiscountBtn) removeDiscountBtn.style.display = 'none';
+        if (applyDiscountBtn) applyDiscountBtn.style.display = 'block';
+        if (discountCodeInput) {
+            discountCodeInput.disabled = false;
+            discountCodeInput.value = '';
+        }
         
         // Limpiar campos ocultos
-        getElementWithSuffix('applied-discount-code').value = '';
-        getElementWithSuffix('applied-discount-amount').value = '';
+        const discountCodeField = getElementWithSuffix('applied-discount-code');
+        const discountAmountField = getElementWithSuffix('applied-discount-amount');
+        
+        if (discountCodeField) discountCodeField.value = '';
+        if (discountAmountField) discountAmountField.value = '';
         
         updateTotals();
     }
     
     function showDiscountMessage(message, type) {
-        discountStatus.innerHTML = `
-            <div class="alert alert-${type === 'success' ? 'success' : 'danger'} alert-sm mb-2">
-                ${message}
-                ${appliedDiscountData ? `<br><small>Applies to: ${appliedDiscountData.productos.join(', ')}</small>` : ''}
-            </div>
-        `;
-        discountStatus.style.display = 'block';
+        if (discountStatus) {
+            discountStatus.innerHTML = `
+                <div class="alert alert-${type === 'success' ? 'success' : 'danger'} alert-sm mb-2">
+                    ${message}
+                    ${appliedDiscountData ? `<br><small>Applies to: ${appliedDiscountData.productos.join(', ')}</small>` : ''}
+                </div>
+            `;
+            discountStatus.style.display = 'block';
+        }
     }
     
-    // 🔥 ELIMINADA la función resetCosts() - ya no es necesaria
-    // Ahora usamos setDefaultValues() en su lugar
-    
     // Permitir aplicar descuento con Enter
-    discountCodeInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            applyDiscountBtn.click();
-        }
-    });
+    if (discountCodeInput) {
+        discountCodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (applyDiscountBtn) applyDiscountBtn.click();
+            }
+        });
+    }
 });
-</script>
+
+// Protección contra errores adicionales que puedan existir después de este script
+window.addEventListener('error', function(e) {
+    if (e.message && e.message.includes('classList')) {
+        console.warn('Error de classList capturado:', e.message);
+        e.preventDefault();
+    }
+});</script>
 @endsection
