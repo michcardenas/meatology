@@ -455,7 +455,100 @@ public function calculateCosts(Request $request)
         return back()->with('error', 'Error creating order: ' . $e->getMessage());
     }
 }
+ public function processOrder(Request $request)
+        {
+            // Validación
+            $rules = [
+                'country_id' => 'required|exists:countries,id',
+                'city_id' => 'nullable|exists:cities,id',
+                'total' => 'required|numeric',
+                'tax' => 'required|numeric',
+                'shipping' => 'required|numeric',
+                'phone' => 'required|string',
+                'address' => 'required|string',
+                'notes' => 'nullable|string',
+            ];
 
+            // Validación adicional para guests
+            if (!Auth::check()) {
+                $rules['name'] = 'required|string|max:255';
+                $rules['email'] = 'required|email|max:255';
+            }
+
+            $validatedData = $request->validate($rules);
+
+            // Verificar que el carrito no esté vacío
+            if (Cart::count() == 0) {
+                return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+            }
+
+            DB::beginTransaction();
+            
+            try {
+                // Datos del cliente
+                $user = Auth::user();
+                $customerData = [
+                    'customer_name' => $user ? $user->name : $validatedData['name'],
+                    'customer_email' => $user ? $user->email : $validatedData['email'],
+                    'customer_phone' => $validatedData['phone'],
+                    'customer_address' => $validatedData['address'],
+                ];
+
+                // Crear la orden
+                $order = Order::create([
+                    'order_number' => Order::generateOrderNumber(),
+                    'user_id' => $user ? $user->id : null, // 🔴 NULL para guests
+                    ...$customerData,
+                    'country_id' => $validatedData['country_id'],
+                    'city_id' => $validatedData['city_id'],
+                    'subtotal' => floatval(str_replace(',', '', Cart::subtotal(2, '', ''))),
+                    'tax_amount' => $validatedData['tax'],
+                    'shipping_amount' => $validatedData['shipping'],
+                    'total_amount' => $validatedData['total'],
+                    'notes' => $validatedData['notes'],
+                    'status' => 'pending',
+                    'payment_status' => 'pending',
+                ]);
+
+                // Crear items de la orden
+                foreach (Cart::content() as $cartItem) {
+                    // Calcular impuesto para este item específico
+                    $priceConfig = Price::where('product_id', $cartItem->id)
+                        ->where('country_id', $validatedData['country_id'])
+                        ->when($validatedData['city_id'], function($query) use ($validatedData) {
+                            return $query->where('city_id', $validatedData['city_id']);
+                        })
+                        ->first();
+
+                    $taxRate = $priceConfig ? $priceConfig->interest : 0;
+                    $itemTaxAmount = ($cartItem->price * $cartItem->qty * $taxRate) / 100;
+
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $cartItem->id,
+                        'product_name' => $cartItem->name,
+                        'product_price' => $cartItem->price,
+                        'quantity' => $cartItem->qty,
+                        'total_price' => $cartItem->total,
+                        'tax_rate' => $taxRate,
+                        'tax_amount' => $itemTaxAmount,
+                    ]);
+                }
+
+                DB::commit();
+
+                // Limpiar carrito
+                Cart::destroy();
+
+                // Redirigir a pasarela de pago
+                return redirect()->route('payment.gateway', ['order' => $order->id])
+                                ->with('success', 'Order created successfully! Order #' . $order->order_number);
+
+            } catch (\Exception $e) {
+                DB::rollback();
+                return back()->with('error', 'Error creating order: ' . $e->getMessage());
+            }
+        }
  public function paymentGateway(Order $order)
 {
     // Verificar que la orden exista y esté pendiente

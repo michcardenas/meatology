@@ -36,7 +36,7 @@ Route::view('/wholesale','wholesale')->name('wholesale');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::delete('/admin/products/images/{id}', [App\Http\Controllers\Admin\ProductImageController::class, 'destroy'])->name('admin.products.images.destroy');
 Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout.index');
-Route::post('/order/process', [CheckoutController::class, 'processOrder'])->name('order.process');
+Route::post('/order/process', [ShopController::class, 'processOrder'])->name('order.process');
 Route::patch('/admin/orders/{order}/status', [DashboardController::class, 'updateOrderStatus'])
      ->name('admin.orders.update-status');
      
