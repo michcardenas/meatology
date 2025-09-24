@@ -77,55 +77,52 @@
                                     </div>
                                 </div>
                             @endforeach
-                            
-                            {{-- Resumen de ahorros en productos --}}
-                          
                         </div>
                     </div>
 
                     <!-- Sección de ubicación de envío -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>🚚 Shipping Location</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <label class="form-label fw-bold">State *</label>
-                <select id="shipping-country" name="shipping_country" class="form-select" required>
-                    <option value="">-- Select State --</option>
-                    @foreach($countries as $country)
-                        <option value="{{ $country->id }}" data-cities="{{ $country->cities->toJson() }}">
-                            {{ $country->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">City</label>
-                <select id="shipping-city" name="shipping_city" class="form-select">
-                    <option value="">-- Select State First --</option>
-                </select>
-                <small class="text-muted">Optional - for shipping cost calculation</small>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Postal Code</label>
-                <input type="text" 
-                       id="codigo-postal" 
-                       name="codigo_postal" 
-                       class="form-control" 
-                       placeholder="Enter postal code"
-                       maxlength="20">
-                <small class="text-muted">Optional</small>
-            </div>
-        </div>
-        <div class="mt-3">
-            <small class="text-muted">
-                📍 Tax rates are calculated by state. Shipping costs are calculated by city (if available)
-            </small>
-        </div>
-    </div>
-</div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>🚚 Shipping Location</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">State *</label>
+                                    <select id="shipping-country" name="shipping_country" class="form-select" required>
+                                        <option value="">-- Select State --</option>
+                                        @foreach($countries as $country)
+                                            <option value="{{ $country->id }}" data-cities="{{ $country->cities->toJson() }}">
+                                                {{ $country->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">City</label>
+                                    <select id="shipping-city" name="shipping_city" class="form-select">
+                                        <option value="">-- Select State First --</option>
+                                    </select>
+                                    <small class="text-muted">Optional - for shipping cost calculation</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Postal Code</label>
+                                    <input type="text" 
+                                           id="codigo-postal" 
+                                           name="codigo_postal" 
+                                           class="form-control" 
+                                           placeholder="Enter postal code"
+                                           maxlength="20">
+                                    <small class="text-muted">Optional</small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    📍 Tax rates are calculated by state. Shipping costs are calculated by city (if available)
+                                </small>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Información de envío/contacto -->
                     <div class="card">
@@ -151,7 +148,6 @@
                                     <input type="hidden" id="applied-discount-amount" name="discount_amount">
                                     <input type="hidden" id="final-tip-amount" name="tip_amount" value="0">
                                     <input type="hidden" id="final-tip-percentage" name="tip_percentage">
-                                    {{-- Agregar información de descuentos de productos --}}
                                     <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
                                     
                                     <div class="row">
@@ -170,6 +166,9 @@
                                             <textarea name="notes" class="form-control" rows="2" placeholder="Any special instructions for your order">{{ old('notes') }}</textarea>
                                         </div>
                                     </div>
+                                    
+                                    {{-- BOTÓN OCULTO PARA ENVIAR EL FORMULARIO --}}
+                                    <button type="submit" id="real-submit-btn" style="display: none;">Submit</button>
                                 </form>
                             @else
                                 <!-- Usuario no autenticado -->
@@ -189,7 +188,6 @@
                                     <input type="hidden" id="applied-discount-amount-guest" name="discount_amount">
                                     <input type="hidden" id="final-tip-amount-guest" name="tip_amount" value="0">
                                     <input type="hidden" id="final-tip-percentage-guest" name="tip_percentage">
-                                    {{-- Agregar información de descuentos de productos --}}
                                     <input type="hidden" name="product_savings" value="{{ $totalSavings ?? 0 }}">
                                     
                                     <div class="row">
@@ -225,6 +223,9 @@
                                             <a href="{{ route('register') }}">Create account for faster checkout</a>
                                         </small>
                                     </div>
+                                    
+                                    {{-- BOTÓN OCULTO PARA ENVIAR EL FORMULARIO --}}
+                                    <button type="submit" id="real-submit-btn-guest" style="display: none;">Submit</button>
                                 </form>
                             @endif
                         </div>
@@ -244,10 +245,7 @@
                             </div>
                         @endif
                         <div class="card-body">
-                            {{-- Mostrar ahorros de productos primero --}}
                             @if(isset($totalSavings) && $totalSavings > 0)
-                             
-                                
                                 <div class="d-flex justify-content-between mb-2 text-muted text-decoration-line-through">
                                     <span>Original subtotal:</span>
                                     <span>${{ number_format($originalSubtotal ?? 0, 2, '.', ',') }}</span>
@@ -270,12 +268,8 @@
                                     </button>
                                 </div>
                                 
-                                <!-- Estado del descuento -->
-                                <div id="discount-status" style="display: none;">
-                                    <!-- Se llena dinámicamente -->
-                                </div>
+                                <div id="discount-status" style="display: none;"></div>
                                 
-                                <!-- Botón para remover descuento -->
                                 <button type="button" id="remove-discount-btn" class="btn btn-sm btn-outline-danger w-100" 
                                         style="display: none;">
                                     Remove Discount
@@ -286,7 +280,6 @@
                             <div class="mb-3 p-3 bg-light rounded">
                                 <h6 class="mb-3">💝 Add Tip for Our Team</h6>
                                 
-                                <!-- Botones de porcentajes predefinidos -->
                                 <div class="row mb-3">
                                     <div class="col-3">
                                         <button type="button" class="btn btn-outline-success w-100 tip-btn" data-percentage="15">
@@ -310,7 +303,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Monto personalizado -->
                                 <div class="mb-2">
                                     <label class="form-label small">Custom Amount:</label>
                                     <div class="input-group">
@@ -320,12 +312,10 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Estado del tip -->
                                 <div id="tip-display" class="text-center text-success fw-bold" style="display: none;">
                                     Tip: $<span id="tip-amount-display">0.00</span>
                                 </div>
                                 
-                                <!-- Botón para remover tip -->
                                 <button type="button" id="remove-tip-btn" class="btn btn-sm btn-outline-danger w-100 mt-2" 
                                         style="display: none;">
                                     Remove Tip
@@ -338,7 +328,6 @@
                                 <span id="display-subtotal">${{ number_format($subtotal, 2, '.', ',') }}</span>
                             </div>
                             
-                            <!-- Línea de descuento adicional (oculta inicialmente) -->
                             <div id="discount-line" class="d-flex justify-content-between mb-2 text-success" style="display: none;">
                                 <span id="discount-label">Additional Discount:</span>
                                 <span id="discount-amount">-$0.00</span>
@@ -350,10 +339,9 @@
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Shipping:</span>
-                                <span id="display-shipping">Select state</span>
+                                <span id="display-shipping">Free</span>
                             </div>
                             
-                            <!-- Línea de propina -->
                             <div id="tip-line" class="d-flex justify-content-between mb-2" style="display: none;">
                                 <span>Tip:</span>
                                 <span id="display-tip">$0.00</span>
@@ -375,7 +363,7 @@
                                 📍 Please select a state to see shipping costs and complete your order
                             </div>
                             
-                            <button type="submit" class="btn btn-success w-100 mb-2" id="place-order-btn" disabled>
+                            <button type="button" class="btn btn-success w-100 mb-2" id="place-order-btn">
                                 💳 Place Order
                                 @if(isset($totalSavings) && $totalSavings > 0)
                                     <br><small>With ${{ number_format($totalSavings, 2, '.', ',') }} in savings!</small>
@@ -401,7 +389,7 @@
 </div>
 
 <script>
-// 🔥 Generar datos del carrito en PHP y asignarlos a variable global
+// Generar datos del carrito en PHP y asignarlos a variable global
 window.cartItemsData = {!! json_encode($cartItems->map(function($item) {
     return [
         'id' => $item->id,
@@ -413,7 +401,7 @@ window.cartItemsData = {!! json_encode($cartItems->map(function($item) {
 })) !!};
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 🔥 Detectar cuál formulario usar basado en si el usuario está autenticado
+    // Detectar cuál formulario usar basado en si el usuario está autenticado
     const isAuthenticated = {{ $isAuthenticated ? 'true' : 'false' }};
     const formSuffix = isAuthenticated ? '' : '-guest';
 
@@ -431,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return document.getElementById(isAuthenticated ? 'checkoutForm' : 'checkoutFormGuest');
     }
 
-    // Elementos del DOM - Verificar que existan
+    // Elementos del DOM
     const countrySelect = document.getElementById('shipping-country');
     const citySelect = document.getElementById('shipping-city');
     const placeOrderBtn = document.getElementById('place-order-btn');
@@ -444,18 +432,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountLabel = document.getElementById('discount-label');
     const discountAmount = document.getElementById('discount-amount');
     
-    // Verificar elementos críticos
-    if (!placeOrderBtn) {
-        console.error('Botón de orden no encontrado');
-        return;
-    }
-    
     // Variables globales
     const originalSubtotal = parseFloat('{{ $subtotal }}');
     let currentDiscount = 0;
     let appliedDiscountData = null;
-    
-    // Variables para propinas
     let currentTip = 0;
     let currentTipPercentage = null;
 
@@ -471,133 +451,110 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Subtotal with product discounts:', originalSubtotal);
     console.log('Product savings:', parseFloat('{{ $totalSavings ?? 0 }}'));
     
-    // 🔥 CAMBIO IMPORTANTE: NO mostrar advertencia y HABILITAR el botón desde el inicio
-    if (locationWarning) {
-        locationWarning.style.display = 'none';
-    }
-    placeOrderBtn.disabled = false;
-
     // Establecer valores por defecto al cargar
     setDefaultValues();
 
- // REEMPLAZA todo el event listener del placeOrderBtn con este código:
-
-// 🔥 🔥 🔥 CORRECCIÓN PRINCIPAL: Event listener para el botón de envío
-placeOrderBtn.addEventListener('click', function(e) {
-    // NO usar preventDefault() al inicio - solo si hay errores
-    
-    const form = getCorrectForm();
-    
-    if (!form) {
+    // 🔥 SOLUCIÓN PRINCIPAL: Event listener corregido para el botón
+    placeOrderBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        console.error('Formulario no encontrado');
-        alert('Error al procesar el pedido. Por favor recarga la página.');
-        return;
-    }
-    
-    // Validar campos requeridos antes de enviar
-    const requiredFields = form.querySelectorAll('[required]');
-    let isValid = true;
-    let firstInvalidField = null;
-    
-    requiredFields.forEach(field => {
-        if (!field.value || field.value.trim() === '') {
-            field.classList.add('is-invalid');
-            if (!firstInvalidField) {
-                firstInvalidField = field;
+        
+        const form = getCorrectForm();
+        
+        if (!form) {
+            alert('Error al procesar el pedido. Por favor recarga la página.');
+            return;
+        }
+        
+        // Validar campos requeridos
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        let firstInvalidField = null;
+        
+        requiredFields.forEach(field => {
+            if (!field.value || field.value.trim() === '') {
+                field.classList.add('is-invalid');
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
             }
-            isValid = false;
+        });
+        
+        if (!isValid) {
+            alert('Please complete all required fields');
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+            }
+            return;
+        }
+        
+        // Calcular el total final
+        const subtotalConDescuento = originalSubtotal - currentDiscount;
+        const currentTax = parseFloat(getElementWithSuffix('final-tax')?.value || '0');
+        const currentShipping = parseFloat(getElementWithSuffix('final-shipping')?.value || '0');
+        const total = subtotalConDescuento + currentTax + currentShipping + currentTip;
+        
+        // Establecer todos los valores en campos ocultos
+        if (getElementWithSuffix('final-country')) {
+            getElementWithSuffix('final-country').value = countrySelect?.value || '';
+        }
+        if (getElementWithSuffix('final-city')) {
+            getElementWithSuffix('final-city').value = citySelect?.value || '';
+        }
+        if (getElementWithSuffix('final-total')) {
+            getElementWithSuffix('final-total').value = total.toFixed(2);
+        }
+        if (getElementWithSuffix('final-tax')) {
+            getElementWithSuffix('final-tax').value = currentTax.toFixed(2);
+        }
+        if (getElementWithSuffix('final-shipping')) {
+            getElementWithSuffix('final-shipping').value = currentShipping.toFixed(2);
+        }
+        if (getElementWithSuffix('applied-discount-code')) {
+            getElementWithSuffix('applied-discount-code').value = appliedDiscountData ? appliedDiscountData.codigo : '';
+        }
+        if (getElementWithSuffix('applied-discount-amount')) {
+            getElementWithSuffix('applied-discount-amount').value = currentDiscount.toFixed(2);
+        }
+        if (getElementWithSuffix('final-tip-amount')) {
+            getElementWithSuffix('final-tip-amount').value = currentTip.toFixed(2);
+        }
+        if (getElementWithSuffix('final-tip-percentage')) {
+            getElementWithSuffix('final-tip-percentage').value = currentTipPercentage || '';
+        }
+        
+        // Log para debugging
+        console.log('=== ENVIANDO FORMULARIO ===');
+        console.log('Form ID:', form.id);
+        console.log('Form Action:', form.action);
+        console.log('Datos finales:', {
+            country: getElementWithSuffix('final-country')?.value,
+            city: getElementWithSuffix('final-city')?.value,
+            total: total.toFixed(2),
+            tax: currentTax.toFixed(2),
+            shipping: currentShipping.toFixed(2),
+            discount_code: getElementWithSuffix('applied-discount-code')?.value,
+            discount_amount: currentDiscount.toFixed(2),
+            tip_amount: currentTip.toFixed(2)
+        });
+        
+        // Deshabilitar el botón para evitar doble envío
+        this.disabled = true;
+        this.innerHTML = '⏳ Processing order...';
+        
+        // Encontrar y hacer click en el botón real dentro del formulario
+        const realSubmitBtn = document.getElementById(isAuthenticated ? 'real-submit-btn' : 'real-submit-btn-guest');
+        if (realSubmitBtn) {
+            realSubmitBtn.click();
         } else {
-            field.classList.remove('is-invalid');
-        }
-    });
-    
-    if (!isValid) {
-        e.preventDefault(); // Solo prevenir si hay errores
-        alert('Please complete all required fields');
-        if (firstInvalidField) {
-            firstInvalidField.focus();
-        }
-        return;
-    }
-    
-    // Asegurarse de que los campos ocultos tengan valores
-    const subtotalConDescuento = originalSubtotal - currentDiscount;
-    const currentTax = parseFloat(getElementWithSuffix('final-tax')?.value || '0');
-    const currentShipping = parseFloat(getElementWithSuffix('final-shipping')?.value || '0');
-    const total = subtotalConDescuento + currentTax + currentShipping + currentTip;
-    
-    // Establecer valores en campos ocultos
-    if (getElementWithSuffix('final-country')) {
-        getElementWithSuffix('final-country').value = countrySelect?.value || '';
-    }
-    if (getElementWithSuffix('final-city')) {
-        getElementWithSuffix('final-city').value = citySelect?.value || '';
-    }
-    if (getElementWithSuffix('final-total')) {
-        getElementWithSuffix('final-total').value = total.toFixed(2);
-    }
-    if (getElementWithSuffix('final-tax')) {
-        getElementWithSuffix('final-tax').value = currentTax.toFixed(2);
-    }
-    if (getElementWithSuffix('final-shipping')) {
-        getElementWithSuffix('final-shipping').value = currentShipping.toFixed(2);
-    }
-    if (getElementWithSuffix('applied-discount-code') && appliedDiscountData) {
-        getElementWithSuffix('applied-discount-code').value = appliedDiscountData.codigo;
-    }
-    if (getElementWithSuffix('applied-discount-amount')) {
-        getElementWithSuffix('applied-discount-amount').value = currentDiscount.toFixed(2);
-    }
-    if (getElementWithSuffix('final-tip-amount')) {
-        getElementWithSuffix('final-tip-amount').value = currentTip.toFixed(2);
-    }
-    if (getElementWithSuffix('final-tip-percentage')) {
-        getElementWithSuffix('final-tip-percentage').value = currentTipPercentage || '';
-    }
-    
-    // Log para debugging
-    console.log('=== ENVIANDO FORMULARIO ===');
-    console.log('Form ID:', form.id);
-    console.log('Form Action:', form.action);
-    console.log('Form Method:', form.method);
-    console.log('Datos finales:', {
-        country: getElementWithSuffix('final-country')?.value,
-        city: getElementWithSuffix('final-city')?.value,
-        total: total.toFixed(2),
-        tax: currentTax.toFixed(2),
-        shipping: currentShipping.toFixed(2),
-        discount_code: getElementWithSuffix('applied-discount-code')?.value,
-        discount_amount: currentDiscount.toFixed(2),
-        tip_amount: currentTip.toFixed(2)
-    });
-    
-    // Deshabilitar el botón para evitar doble envío
-    placeOrderBtn.disabled = true;
-    placeOrderBtn.innerHTML = '⏳ Processing order...';
-    
-    // OPCIÓN 1: Mover el botón dentro del formulario dinámicamente y hacer click
-    // Esto permite que el navegador maneje el envío naturalmente
-    form.appendChild(placeOrderBtn);
-    
-    // OPCIÓN 2: Si la opción 1 no funciona, usar submit programático
-    setTimeout(() => {
-        try {
-            console.log('Enviando formulario programáticamente...');
+            // Si no encuentra el botón, enviar directamente
             form.submit();
-        } catch (error) {
-            console.error('Error al enviar:', error);
-            // Si falla, intentar con un submit button temporal
-            const tempSubmit = document.createElement('button');
-            tempSubmit.type = 'submit';
-            tempSubmit.style.display = 'none';
-            form.appendChild(tempSubmit);
-            tempSubmit.click();
         }
-    }, 100);
-});
+    });
 
-    // 🎫 Manejar aplicación de descuento adicional
+    // Manejar aplicación de descuento adicional
     if (applyDiscountBtn) {
         applyDiscountBtn.addEventListener('click', function() {
             const codigo = discountCodeInput.value.trim().toUpperCase();
@@ -607,10 +564,8 @@ placeOrderBtn.addEventListener('click', function(e) {
                 return;
             }
             
-            // Usar datos del carrito desde variable global
             const cartItems = window.cartItemsData;
             
-            // Mostrar loading
             applyDiscountBtn.textContent = 'Validating...';
             applyDiscountBtn.disabled = true;
             
@@ -629,26 +584,21 @@ placeOrderBtn.addEventListener('click', function(e) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Aplicar descuento
                     appliedDiscountData = data.descuento;
                     currentDiscount = appliedDiscountData.monto;
                     
-                    // Actualizar UI
                     showDiscountMessage(data.message, 'success');
                     showDiscountLine();
                     updateTotals();
                     
-                    // Mostrar botón de remover
                     removeDiscountBtn.style.display = 'block';
                     discountCodeInput.disabled = true;
                     applyDiscountBtn.style.display = 'none';
                     
-                    // Actualizar campos ocultos
                     const discountCodeField = getElementWithSuffix('applied-discount-code');
                     const discountAmountField = getElementWithSuffix('applied-discount-amount');
                     if (discountCodeField) discountCodeField.value = appliedDiscountData.codigo;
                     if (discountAmountField) discountAmountField.value = currentDiscount.toFixed(2);
-                    
                 } else {
                     showDiscountMessage(data.message, 'error');
                 }
@@ -664,20 +614,19 @@ placeOrderBtn.addEventListener('click', function(e) {
         });
     }
     
-    // 🗑️ Manejar remoción de descuento
+    // Manejar remoción de descuento
     if (removeDiscountBtn) {
         removeDiscountBtn.addEventListener('click', function() {
             removeDiscount();
         });
     }
 
-    // 💝 Manejar botones de porcentaje de propina
+    // Manejar botones de porcentaje de propina
     tipButtons.forEach(button => {
         button.addEventListener('click', function() {
             const percentage = parseFloat(this.dataset.percentage);
             applyTipPercentage(percentage);
             
-            // Activar botón seleccionado
             tipButtons.forEach(btn => {
                 btn.classList.remove('btn-success');
                 btn.classList.add('btn-outline-success');
@@ -685,7 +634,6 @@ placeOrderBtn.addEventListener('click', function(e) {
             this.classList.remove('btn-outline-success');
             this.classList.add('btn-success');
             
-            // Limpiar input custom
             if (customTipInput) customTipInput.value = '';
         });
     });
@@ -696,7 +644,6 @@ placeOrderBtn.addEventListener('click', function(e) {
             const customAmount = parseFloat(this.value) || 0;
             applyCustomTip(customAmount);
             
-            // Desactivar botones de porcentaje
             tipButtons.forEach(btn => {
                 btn.classList.remove('btn-success');
                 btn.classList.add('btn-outline-success');
@@ -711,17 +658,15 @@ placeOrderBtn.addEventListener('click', function(e) {
         });
     }
     
-    // 📍 Manejar cambio de país
+    // Manejar cambio de país
     if (countrySelect) {
         countrySelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const cities = selectedOption.dataset.cities ? JSON.parse(selectedOption.dataset.cities) : [];
             
-            // Limpiar ciudades
             if (citySelect) {
-                citySelect.innerHTML = '<option value="">-- Optional: Select City for tax calculation --</option>';
+                citySelect.innerHTML = '<option value="">-- Optional: Select City for shipping --</option>';
                 
-                // Agregar ciudades
                 cities.forEach(city => {
                     const option = document.createElement('option');
                     option.value = city.id;
@@ -730,7 +675,6 @@ placeOrderBtn.addEventListener('click', function(e) {
                 });
             }
             
-            // Calcular costos
             if (this.value) {
                 calculateCosts();
             } else {
@@ -748,14 +692,13 @@ placeOrderBtn.addEventListener('click', function(e) {
         });
     }
     
-    // 🆕 Función para establecer valores por defecto
+    // Función para establecer valores por defecto
     function setDefaultValues() {
         const subtotalConDescuento = originalSubtotal - currentDiscount;
         const defaultTax = 0;
         const defaultShipping = 0;
         const total = subtotalConDescuento + defaultTax + defaultShipping + currentTip;
         
-        // Actualizar display
         const displayTax = document.getElementById('display-tax');
         const displayShipping = document.getElementById('display-shipping');
         const displayTotal = document.getElementById('display-total');
@@ -764,7 +707,6 @@ placeOrderBtn.addEventListener('click', function(e) {
         if (displayShipping) displayShipping.textContent = 'Free';
         if (displayTotal) displayTotal.textContent = '$' + total.toFixed(2);
         
-        // Actualizar campos ocultos
         const countryField = getElementWithSuffix('final-country');
         const cityField = getElementWithSuffix('final-city');
         const totalField = getElementWithSuffix('final-total');
@@ -777,7 +719,6 @@ placeOrderBtn.addEventListener('click', function(e) {
         if (taxField) taxField.value = defaultTax.toFixed(2);
         if (shippingField) shippingField.value = defaultShipping.toFixed(2);
         
-        // Mantener el botón habilitado
         placeOrderBtn.disabled = false;
         if (locationWarning) locationWarning.style.display = 'none';
         
@@ -790,7 +731,7 @@ placeOrderBtn.addEventListener('click', function(e) {
         });
     }
     
-    // 🧮 Función de cálculo de costos
+    // Función de cálculo de costos
     function calculateCosts() {
         if (!countrySelect) return;
         
@@ -802,7 +743,6 @@ placeOrderBtn.addEventListener('click', function(e) {
             return;
         }
         
-        // Mostrar loading
         const displayTax = document.getElementById('display-tax');
         const displayShipping = document.getElementById('display-shipping');
         const displayTotal = document.getElementById('display-total');
@@ -813,7 +753,6 @@ placeOrderBtn.addEventListener('click', function(e) {
         
         const subtotalConDescuento = originalSubtotal - currentDiscount;
         
-        // Verificar CSRF token
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (!csrfToken) {
             console.error('CSRF token not found!');
@@ -850,12 +789,10 @@ placeOrderBtn.addEventListener('click', function(e) {
             const shipping = parseFloat(data.shipping_raw || 0);
             const total = subtotalConDescuento + tax + shipping + currentTip;
             
-            // Actualizar display
             if (displayTax) displayTax.textContent = '$' + tax.toFixed(2);
             if (displayShipping) displayShipping.textContent = '$' + shipping.toFixed(2);
             if (displayTotal) displayTotal.textContent = '$' + total.toFixed(2);
             
-            // Actualizar campos ocultos
             const countryField = getElementWithSuffix('final-country');
             const cityField = getElementWithSuffix('final-city');
             const totalField = getElementWithSuffix('final-total');
@@ -868,7 +805,6 @@ placeOrderBtn.addEventListener('click', function(e) {
             if (taxField) taxField.value = tax.toFixed(2);
             if (shippingField) shippingField.value = shipping.toFixed(2);
             
-            // Mantener el botón habilitado
             placeOrderBtn.disabled = false;
             if (locationWarning) locationWarning.style.display = 'none';
             
@@ -918,7 +854,6 @@ placeOrderBtn.addEventListener('click', function(e) {
         currentTipPercentage = null;
         if (customTipInput) customTipInput.value = '';
         
-        // Desactivar botones
         tipButtons.forEach(btn => {
             btn.classList.remove('btn-success');
             btn.classList.add('btn-outline-success');
@@ -936,7 +871,6 @@ placeOrderBtn.addEventListener('click', function(e) {
             if (tipLine) tipLine.style.display = 'flex';
             if (removeTipBtn) removeTipBtn.style.display = 'block';
             
-            // Actualizar campos ocultos
             const tipAmountField = getElementWithSuffix('final-tip-amount');
             const tipPercentageField = getElementWithSuffix('final-tip-percentage');
             
@@ -947,7 +881,6 @@ placeOrderBtn.addEventListener('click', function(e) {
             if (tipLine) tipLine.style.display = 'none';
             if (removeTipBtn) removeTipBtn.style.display = 'none';
             
-            // Limpiar campos ocultos
             const tipAmountField = getElementWithSuffix('final-tip-amount');
             const tipPercentageField = getElementWithSuffix('final-tip-percentage');
             
@@ -968,7 +901,6 @@ placeOrderBtn.addEventListener('click', function(e) {
         currentDiscount = 0;
         appliedDiscountData = null;
         
-        // Limpiar UI
         if (discountLine) discountLine.style.display = 'none';
         if (discountStatus) discountStatus.style.display = 'none';
         if (removeDiscountBtn) removeDiscountBtn.style.display = 'none';
@@ -978,7 +910,6 @@ placeOrderBtn.addEventListener('click', function(e) {
             discountCodeInput.value = '';
         }
         
-        // Limpiar campos ocultos
         const discountCodeField = getElementWithSuffix('applied-discount-code');
         const discountAmountField = getElementWithSuffix('applied-discount-amount');
         
@@ -1011,11 +942,12 @@ placeOrderBtn.addEventListener('click', function(e) {
     }
 });
 
-// Protección contra errores adicionales que puedan existir después de este script
+// Protección contra errores adicionales
 window.addEventListener('error', function(e) {
     if (e.message && e.message.includes('classList')) {
         console.warn('Error de classList capturado:', e.message);
         e.preventDefault();
     }
-});</script>
+});
+</script>
 @endsection
