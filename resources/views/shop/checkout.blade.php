@@ -106,7 +106,7 @@
                 <select id="shipping-city" name="shipping_city" class="form-select">
                     <option value="">-- Select State First --</option>
                 </select>
-                <small class="text-muted">Optional - for tax calculation only</small>
+                <small class="text-muted">Optional - for shipping cost calculation</small>
             </div>
             <div class="col-md-4">
                 <label class="form-label fw-bold">Postal Code</label>
@@ -121,7 +121,7 @@
         </div>
         <div class="mt-3">
             <small class="text-muted">
-                📍 Shipping costs are calculated by state. Taxes are calculated by city (if available)
+                📍 Tax rates are calculated by state. Shipping costs are calculated by city (if available)
             </small>
         </div>
     </div>

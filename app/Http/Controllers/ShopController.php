@@ -198,28 +198,30 @@ public function calculateCosts(Request $request)
     $shipping = 0;
 
     try {
-        // Calcular tax basado en la ciudad (si se seleccionó)
-        if ($cityId) {
-            $city = City::find($cityId);
-            if ($city && $city->tax > 0) {
-                $tax = ($subtotal * $city->tax) / 100;
-            }
+        // Calcular tax basado en el país/estado
+        $country = Country::find($countryId);
+        if ($country && $country->tax > 0) {
+            $tax = ($subtotal * $country->tax) / 100;
         }
 
-        // Calcular shipping basado en el país/estado usando la columna shipping
-        $country = Country::find($countryId);
-        if ($country && $country->shipping) {
-            $shipping = floatval($country->shipping);
+        // Calcular shipping basado en la ciudad (si se seleccionó)
+        if ($cityId) {
+            $city = City::find($cityId);
+            if ($city && $city->shipping > 0) {
+                $shipping = floatval($city->shipping);
+            }
         }
 
         // Log para debugging
         \Log::info('Cost Calculation:', [
             'country_id' => $countryId,
             'country_name' => $country->name ?? 'Unknown',
-            'country_shipping' => $country->shipping ?? 0,
+            'country_tax' => $country->tax ?? 0,
             'city_id' => $cityId,
+            'city_name' => $cityId ? ($city->name ?? 'Unknown') : null,
+            'city_shipping' => $cityId ? ($city->shipping ?? 0) : 0,
             'subtotal' => $subtotal,
-            'tax_percentage' => $cityId ? ($city->tax ?? 0) : 0,
+            'tax_percentage' => $country->tax ?? 0,
             'tax_amount' => $tax,
             'shipping_amount' => $shipping
         ]);
@@ -232,7 +234,8 @@ public function calculateCosts(Request $request)
             'shipping_formatted' => number_format($shipping, 2),
             'total_raw' => $subtotal + $tax + $shipping,
             'total_formatted' => number_format($subtotal + $tax + $shipping, 2),
-            'city_tax_percentage' => $cityId ? ($city->tax ?? 0) : 0
+            'country_tax_percentage' => $country->tax ?? 0,
+            'city_shipping_amount' => $cityId ? ($city->shipping ?? 0) : 0
         ]);
 
     } catch (\Exception $e) {
