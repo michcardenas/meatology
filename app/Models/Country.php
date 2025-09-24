@@ -11,7 +11,7 @@ class Country extends Model
 
     protected $fillable = [
         'name',
-        'shipping',
+        'tax',
     ];
 
     public function cities()

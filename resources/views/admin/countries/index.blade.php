@@ -88,8 +88,8 @@
                 <input type="text" name="name" class="form-control" placeholder="New state name..." required>
             </div>
             <div class="col-md-4">
-                <input type="number" name="shipping" class="form-control" placeholder="Shipping Cost (USD)" step="0.01" min="0">
-                <small class="text-muted">Shipping cost in USD</small>
+                <input type="number" name="tax" class="form-control" placeholder="Tax Rate (%)" step="0.01" min="0">
+                <small class="text-muted">Tax rate in percentage</small>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">Add State</button>
@@ -107,7 +107,7 @@
             <tr>
                 <th>Name</th>
                 <th># of Cities</th>
-                <th>Shipping (USD)</th>
+                <th>Tax (%)</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -117,8 +117,8 @@
                     <td>{{ $country->name }}</td>
                     <td>{{ $country->cities_count }}</td>
                     <td>
-                        @if($country->shipping)
-                            ${{ number_format($country->shipping, 2) }}
+                        @if($country->tax)
+                            {{ number_format($country->tax, 2) }}%
                         @else
                             <span class="text-muted">N/A</span>
                         @endif
