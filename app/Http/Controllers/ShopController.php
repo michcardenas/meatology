@@ -303,116 +303,158 @@ public function calculateCosts(Request $request)
 
         // En tu controlador (ShopController o donde tengas checkout)
 
-        public function processOrder(Request $request)
-        {
-            // Validación
-            $rules = [
-                'country_id' => 'required|exists:countries,id',
-                'city_id' => 'nullable|exists:cities,id',
-                'total' => 'required|numeric',
-                'tax' => 'required|numeric',
-                'shipping' => 'required|numeric',
-                'phone' => 'required|string',
-                'address' => 'required|string',
-                'notes' => 'nullable|string',
-                'discount_amount' => 'nullable|numeric|min:0',
-                'discount_code' => 'nullable|string|max:50',
-                'tip_amount' => 'nullable|numeric|min:0',
-                'tip_percentage' => 'nullable|numeric|min:0|max:100',
-                'product_savings' => 'nullable|numeric|min:0',
+       public function process(Request $request)
+{
+    \Log::info('=== ORDER PROCESS CALLED ===', $request->all());
+    
+    // Validación
+    $rules = [
+        'country_id' => 'nullable|exists:countries,id',
+        'city_id' => 'nullable|exists:cities,id',
+        'total' => 'required|numeric',
+        'tax' => 'required|numeric',
+        'shipping' => 'required|numeric',
+        'phone' => 'required|string',
+        'address' => 'required|string',
+        'notes' => 'nullable|string',
+        'discount_amount' => 'nullable|numeric|min:0',
+        'discount_code' => 'nullable|string|max:50',
+        'tip_amount' => 'nullable|numeric|min:0',
+        'tip_percentage' => 'nullable|numeric|min:0|max:100',
+        'product_savings' => 'nullable|numeric|min:0',
+    ];
+
+    // Validación adicional para guests
+    if (!Auth::check()) {
+        $rules['name'] = 'required|string|max:255';
+        $rules['email'] = 'required|email|max:255';
+    }
+
+    $validatedData = $request->validate($rules);
+
+    // Verificar que el carrito no esté vacío
+    if (Cart::count() == 0) {
+        return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+    }
+
+    DB::beginTransaction();
+    
+    try {
+        // Datos del cliente
+        $user = Auth::user();
+        $customerData = [
+            'customer_name' => $user ? $user->name : $validatedData['name'],
+            'customer_email' => $user ? $user->email : $validatedData['email'],
+            'customer_phone' => $validatedData['phone'],
+            'customer_address' => $validatedData['address'],
+        ];
+
+        // Calcular subtotal (el subtotal ya viene sin tax del checkout)
+        // El total incluye: subtotal + tax + shipping + tip - discount
+        $subtotal = $validatedData['total'] - $validatedData['tax'] - $validatedData['shipping'] - ($validatedData['tip_amount'] ?? 0);
+        
+        // Si hay descuento adicional, sumarlo de vuelta al subtotal
+        if (isset($validatedData['discount_amount']) && $validatedData['discount_amount'] > 0) {
+            $subtotal += $validatedData['discount_amount'];
+        }
+        
+        // Product savings (descuentos de productos)
+        $productSavings = $validatedData['product_savings'] ?? 0;
+        $originalSubtotalCalc = $subtotal + $productSavings;
+
+        // Crear la orden
+        $order = Order::create([
+            'order_number' => Order::generateOrderNumber(),
+            'user_id' => $user ? $user->id : null,
+            ...$customerData,
+            'country_id' => $validatedData['country_id'] ?? null,
+            'city_id' => $validatedData['city_id'] ?? null,
+            'subtotal' => $subtotal,
+            'tax_amount' => $validatedData['tax'],
+            'shipping_amount' => $validatedData['shipping'],
+            'total_amount' => $validatedData['total'],
+            'discount_amount' => $validatedData['discount_amount'] ?? null,
+            'discount_code' => $validatedData['discount_code'] ?? null,
+            'tip_amount' => $validatedData['tip_amount'] ?? null,
+            'tip_percentage' => $validatedData['tip_percentage'] ?? null,
+            'product_savings' => $productSavings,
+            'original_subtotal' => $originalSubtotalCalc,
+            'notes' => $validatedData['notes'] ?? null,
+            'status' => 'pending',
+            'payment_status' => 'pending',
+        ]);
+
+        \Log::info('Order created:', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'subtotal' => $subtotal,
+            'tax' => $validatedData['tax'],
+            'shipping' => $validatedData['shipping'],
+            'tip' => $validatedData['tip_amount'] ?? 0,
+            'discount' => $validatedData['discount_amount'] ?? 0,
+            'total' => $validatedData['total']
+        ]);
+
+        // Crear items de la orden
+        foreach (Cart::content() as $cartItem) {
+            // Obtener información del producto
+            $product = \App\Models\Product::find($cartItem->id);
+            
+            // Datos del item
+            $itemData = [
+                'order_id' => $order->id,
+                'product_id' => $cartItem->id,
+                'product_name' => $cartItem->name,
+                'product_price' => $cartItem->price,
+                'quantity' => $cartItem->qty,
+                'total_price' => $cartItem->total,
             ];
 
-            // Validación adicional para guests
-            if (!Auth::check()) {
-                $rules['name'] = 'required|string|max:255';
-                $rules['email'] = 'required|email|max:255';
+            // Si el producto tiene descuento, guardar información adicional
+            if (isset($cartItem->options['descuento']) && $cartItem->options['descuento'] > 0) {
+                $itemData['discount_percentage'] = $cartItem->options['descuento'];
+                $itemData['original_price'] = $cartItem->options['original_price'] ?? $cartItem->price;
+                $itemData['discount_amount'] = $cartItem->options['discount_amount'] ?? 0;
             }
 
-            $validatedData = $request->validate($rules);
+            // Si necesitas calcular tax por item (opcional)
+            if ($validatedData['country_id']) {
+                $priceConfig = \App\Models\Price::where('product_id', $cartItem->id)
+                    ->where('country_id', $validatedData['country_id'])
+                    ->when($validatedData['city_id'], function($query) use ($validatedData) {
+                        return $query->where('city_id', $validatedData['city_id']);
+                    })
+                    ->first();
 
-            // Verificar que el carrito no esté vacío
-            if (Cart::count() == 0) {
-                return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
-            }
-
-            DB::beginTransaction();
-            
-            try {
-                // Datos del cliente
-                $user = Auth::user();
-                $customerData = [
-                    'customer_name' => $user ? $user->name : $validatedData['name'],
-                    'customer_email' => $user ? $user->email : $validatedData['email'],
-                    'customer_phone' => $validatedData['phone'],
-                    'customer_address' => $validatedData['address'],
-                ];
-
-                // Calcular subtotal original (antes de descuentos de productos)
-                $currentSubtotal = floatval(str_replace(',', '', Cart::subtotal(2, '', '')));
-                $productSavings = $validatedData['product_savings'] ?? 0;
-                $originalSubtotalCalc = $currentSubtotal + $productSavings;
-
-                // Crear la orden
-                $order = Order::create([
-                    'order_number' => Order::generateOrderNumber(),
-                    'user_id' => $user ? $user->id : null, // 🔴 NULL para guests
-                    ...$customerData,
-                    'country_id' => $validatedData['country_id'],
-                    'city_id' => $validatedData['city_id'],
-                    'subtotal' => $currentSubtotal,
-                    'tax_amount' => $validatedData['tax'],
-                    'shipping_amount' => $validatedData['shipping'],
-                    'total_amount' => $validatedData['total'],
-                    'discount_amount' => $validatedData['discount_amount'] ?? null,
-                    'discount_code' => $validatedData['discount_code'] ?? null,
-                    'tip_amount' => $validatedData['tip_amount'] ?? null,
-                    'tip_percentage' => $validatedData['tip_percentage'] ?? null,
-                    'product_savings' => $productSavings,
-                    'original_subtotal' => $originalSubtotalCalc,
-                    'notes' => $validatedData['notes'],
-                    'status' => 'pending',
-                    'payment_status' => 'pending',
-                ]);
-
-                // Crear items de la orden
-                foreach (Cart::content() as $cartItem) {
-                    // Calcular impuesto para este item específico
-                    $priceConfig = Price::where('product_id', $cartItem->id)
-                        ->where('country_id', $validatedData['country_id'])
-                        ->when($validatedData['city_id'], function($query) use ($validatedData) {
-                            return $query->where('city_id', $validatedData['city_id']);
-                        })
-                        ->first();
-
-                    $taxRate = $priceConfig ? $priceConfig->interest : 0;
-                    $itemTaxAmount = ($cartItem->price * $cartItem->qty * $taxRate) / 100;
-
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'product_id' => $cartItem->id,
-                        'product_name' => $cartItem->name,
-                        'product_price' => $cartItem->price,
-                        'quantity' => $cartItem->qty,
-                        'total_price' => $cartItem->total,
-                        'tax_rate' => $taxRate,
-                        'tax_amount' => $itemTaxAmount,
-                    ]);
+                if ($priceConfig) {
+                    $itemData['tax_rate'] = $priceConfig->interest ?? 0;
+                    $itemData['tax_amount'] = ($cartItem->price * $cartItem->qty * ($priceConfig->interest ?? 0)) / 100;
                 }
-
-                DB::commit();
-
-                // Limpiar carrito
-                Cart::destroy();
-
-                // Redirigir a pasarela de pago
-                return redirect()->route('payment.gateway', ['order' => $order->id])
-                                ->with('success', 'Order created successfully! Order #' . $order->order_number);
-
-            } catch (\Exception $e) {
-                DB::rollback();
-                return back()->with('error', 'Error creating order: ' . $e->getMessage());
             }
+
+            OrderItem::create($itemData);
         }
+
+        DB::commit();
+
+        // Limpiar carrito
+        Cart::destroy();
+
+        \Log::info('Order process completed successfully', ['order_id' => $order->id]);
+
+        // Redirigir a pasarela de pago
+        return redirect()->route('payment.gateway', ['order' => $order->id])
+                        ->with('success', 'Order created successfully! Order #' . $order->order_number);
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        \Log::error('Error creating order:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return back()->with('error', 'Error creating order: ' . $e->getMessage());
+    }
+}
 
  public function paymentGateway(Order $order)
 {
