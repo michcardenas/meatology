@@ -169,7 +169,7 @@ public function checkout()
         'user' => $user
     ];
 
-    return view('shop.checkout', $checkoutData);
+    return view('payment.gateway', $checkoutData);
 }
 public function calculateCosts(Request $request)
 {
