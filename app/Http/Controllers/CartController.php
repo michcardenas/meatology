@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
-     protected $taxRate = 0.0;a
+     protected $taxRate = 0.0;
     /**
      * Mostrar el carrito de compras
      */
