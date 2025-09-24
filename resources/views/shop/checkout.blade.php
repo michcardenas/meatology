@@ -480,84 +480,122 @@ document.addEventListener('DOMContentLoaded', function() {
     // Establecer valores por defecto al cargar
     setDefaultValues();
 
-    // 🔥 🔥 🔥 CORRECCIÓN PRINCIPAL: Event listener para el botón de envío
-    placeOrderBtn.addEventListener('click', function(e) {
+ // REEMPLAZA todo el event listener del placeOrderBtn con este código:
+
+// 🔥 🔥 🔥 CORRECCIÓN PRINCIPAL: Event listener para el botón de envío
+placeOrderBtn.addEventListener('click', function(e) {
+    // NO usar preventDefault() al inicio - solo si hay errores
+    
+    const form = getCorrectForm();
+    
+    if (!form) {
         e.preventDefault();
-        e.stopPropagation();
-        
-        const form = getCorrectForm();
-        
-        if (!form) {
-            console.error('Formulario no encontrado');
-            alert('Error al procesar el pedido. Por favor recarga la página.');
-            return;
-        }
-        
-        // Validar campos requeridos antes de enviar
-        const requiredFields = form.querySelectorAll('[required]');
-        let isValid = true;
-        let firstInvalidField = null;
-        
-        requiredFields.forEach(field => {
-            if (!field.value || field.value.trim() === '') {
-                field.classList.add('is-invalid');
-                if (!firstInvalidField) {
-                    firstInvalidField = field;
-                }
-                isValid = false;
-            } else {
-                field.classList.remove('is-invalid');
+        console.error('Formulario no encontrado');
+        alert('Error al procesar el pedido. Por favor recarga la página.');
+        return;
+    }
+    
+    // Validar campos requeridos antes de enviar
+    const requiredFields = form.querySelectorAll('[required]');
+    let isValid = true;
+    let firstInvalidField = null;
+    
+    requiredFields.forEach(field => {
+        if (!field.value || field.value.trim() === '') {
+            field.classList.add('is-invalid');
+            if (!firstInvalidField) {
+                firstInvalidField = field;
             }
-        });
-        
-        if (!isValid) {
-            alert('Please complete all required fields');
-            if (firstInvalidField) {
-                firstInvalidField.focus();
-            }
-            return;
-        }
-        
-        // Log para debugging
-        console.log('=== ENVIANDO FORMULARIO ===');
-        console.log('Form ID:', form.id);
-        console.log('Form Action:', form.action);
-        console.log('Form Method:', form.method);
-        console.log('Datos a enviar:', {
-            country: getElementWithSuffix('final-country')?.value || '',
-            city: getElementWithSuffix('final-city')?.value || '',
-            total: getElementWithSuffix('final-total')?.value || '',
-            tax: getElementWithSuffix('final-tax')?.value || '',
-            shipping: getElementWithSuffix('final-shipping')?.value || '',
-            discount_code: getElementWithSuffix('applied-discount-code')?.value || '',
-            discount_amount: getElementWithSuffix('applied-discount-amount')?.value || '',
-            tip_amount: getElementWithSuffix('final-tip-amount')?.value || '0'
-        });
-        
-        // Deshabilitar el botón para evitar doble envío
-        placeOrderBtn.disabled = true;
-        placeOrderBtn.innerHTML = '⏳ Processing order...';
-        
-        // IMPORTANTE: Usar HTMLFormElement.submit() directamente
-        try {
-            // Asegurarse de que los campos ocultos tengan valores
-            if (!getElementWithSuffix('final-total').value) {
-                const subtotalConDescuento = originalSubtotal - currentDiscount;
-                const total = subtotalConDescuento + currentTip;
-                getElementWithSuffix('final-total').value = total.toFixed(2);
-            }
-            
-            // Enviar el formulario
-            console.log('Enviando formulario ahora...');
-            form.submit();
-            
-        } catch (error) {
-            console.error('Error al enviar:', error);
-            placeOrderBtn.disabled = false;
-            placeOrderBtn.innerHTML = '💳 Place Order';
-            alert('Error processing order. Please try again.');
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
         }
     });
+    
+    if (!isValid) {
+        e.preventDefault(); // Solo prevenir si hay errores
+        alert('Please complete all required fields');
+        if (firstInvalidField) {
+            firstInvalidField.focus();
+        }
+        return;
+    }
+    
+    // Asegurarse de que los campos ocultos tengan valores
+    const subtotalConDescuento = originalSubtotal - currentDiscount;
+    const currentTax = parseFloat(getElementWithSuffix('final-tax')?.value || '0');
+    const currentShipping = parseFloat(getElementWithSuffix('final-shipping')?.value || '0');
+    const total = subtotalConDescuento + currentTax + currentShipping + currentTip;
+    
+    // Establecer valores en campos ocultos
+    if (getElementWithSuffix('final-country')) {
+        getElementWithSuffix('final-country').value = countrySelect?.value || '';
+    }
+    if (getElementWithSuffix('final-city')) {
+        getElementWithSuffix('final-city').value = citySelect?.value || '';
+    }
+    if (getElementWithSuffix('final-total')) {
+        getElementWithSuffix('final-total').value = total.toFixed(2);
+    }
+    if (getElementWithSuffix('final-tax')) {
+        getElementWithSuffix('final-tax').value = currentTax.toFixed(2);
+    }
+    if (getElementWithSuffix('final-shipping')) {
+        getElementWithSuffix('final-shipping').value = currentShipping.toFixed(2);
+    }
+    if (getElementWithSuffix('applied-discount-code') && appliedDiscountData) {
+        getElementWithSuffix('applied-discount-code').value = appliedDiscountData.codigo;
+    }
+    if (getElementWithSuffix('applied-discount-amount')) {
+        getElementWithSuffix('applied-discount-amount').value = currentDiscount.toFixed(2);
+    }
+    if (getElementWithSuffix('final-tip-amount')) {
+        getElementWithSuffix('final-tip-amount').value = currentTip.toFixed(2);
+    }
+    if (getElementWithSuffix('final-tip-percentage')) {
+        getElementWithSuffix('final-tip-percentage').value = currentTipPercentage || '';
+    }
+    
+    // Log para debugging
+    console.log('=== ENVIANDO FORMULARIO ===');
+    console.log('Form ID:', form.id);
+    console.log('Form Action:', form.action);
+    console.log('Form Method:', form.method);
+    console.log('Datos finales:', {
+        country: getElementWithSuffix('final-country')?.value,
+        city: getElementWithSuffix('final-city')?.value,
+        total: total.toFixed(2),
+        tax: currentTax.toFixed(2),
+        shipping: currentShipping.toFixed(2),
+        discount_code: getElementWithSuffix('applied-discount-code')?.value,
+        discount_amount: currentDiscount.toFixed(2),
+        tip_amount: currentTip.toFixed(2)
+    });
+    
+    // Deshabilitar el botón para evitar doble envío
+    placeOrderBtn.disabled = true;
+    placeOrderBtn.innerHTML = '⏳ Processing order...';
+    
+    // OPCIÓN 1: Mover el botón dentro del formulario dinámicamente y hacer click
+    // Esto permite que el navegador maneje el envío naturalmente
+    form.appendChild(placeOrderBtn);
+    
+    // OPCIÓN 2: Si la opción 1 no funciona, usar submit programático
+    setTimeout(() => {
+        try {
+            console.log('Enviando formulario programáticamente...');
+            form.submit();
+        } catch (error) {
+            console.error('Error al enviar:', error);
+            // Si falla, intentar con un submit button temporal
+            const tempSubmit = document.createElement('button');
+            tempSubmit.type = 'submit';
+            tempSubmit.style.display = 'none';
+            form.appendChild(tempSubmit);
+            tempSubmit.click();
+        }
+    }, 100);
+});
 
     // 🎫 Manejar aplicación de descuento adicional
     if (applyDiscountBtn) {
