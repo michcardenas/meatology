@@ -1,6 +1,67 @@
-@extends('layouts.app')
+@extends('layouts.app_admin')
 
 @section('content')
+<style>
+    /* Texto blanco en general */
+    body, .container, .table, .form-control, .form-select, .alert, .btn {
+        color: white !important;
+    }
+
+    /* Inputs y selects oscuros */
+    .form-control, .form-select {
+        background-color: #333 !important;
+        border: 1px solid #555;
+    }
+
+    /* Placeholder blanco */
+    ::placeholder {
+        color: #ccc !important;
+        opacity: 1;
+    }
+    :-ms-input-placeholder { /* IE 10-11 */
+        color: #ccc !important;
+    }
+    ::-ms-input-placeholder { /* Edge */
+        color: #ccc !important;
+    }
+
+    /* Labels */
+    .form-label {
+        color: white !important;
+    }
+
+    /* Alertas */
+    .alert-success {
+        background-color: #2d572c;
+        color: #fff;
+    }
+
+    /* Botones personalizados */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0069d9;
+        border-color: #0062cc;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+
+    /* Error text */
+    .text-danger {
+        color: #ff6b6b !important;
+    }
+</style>
 <div class="container py-4">
     <h2 class="mb-4">✏️ Edit City</h2>
 
@@ -35,11 +96,12 @@
             </div>
 
             <div class="col-md-6">
-                <label for="tax" class="form-label">Tax (%)</label>
-                <input type="number" name="tax" id="tax" class="form-control" 
-                       value="{{ old('tax', $city->tax) }}" 
-                       step="0.01" min="0" max="999.99" placeholder="Optional tax percentage">
-                @error('tax')
+                <label for="shipping" class="form-label">Shipping (USD)</label>
+                <input type="number" name="shipping" id="shipping" class="form-control"
+                       value="{{ old('shipping', $city->shipping) }}"
+                       step="0.01" min="0" max="999.99" placeholder="Shipping cost in USD">
+                <small class="text-muted">Optional shipping cost in USD</small>
+                @error('shipping')
                     <div class="text-danger small">{{ $message }}</div>
                 @enderror
             </div>
