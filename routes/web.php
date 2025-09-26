@@ -107,6 +107,8 @@ Route::prefix('admin')->group(function () {
     // Countries
     Route::get('/countries', [LocationController::class, 'countriesIndex'])->name('admin.countries.index');
     Route::post('/countries', [LocationController::class, 'countriesStore'])->name('admin.countries.store');
+    Route::get('/countries/{country}/edit', [LocationController::class, 'countriesEdit'])->name('admin.countries.edit');
+    Route::put('/countries/{country}', [LocationController::class, 'countriesUpdate'])->name('admin.countries.update');
     Route::delete('/countries/{id}', [LocationController::class, 'countriesDestroy'])->name('admin.countries.destroy');
 
     // Cities

@@ -124,14 +124,16 @@
                         @endif
                     </td>
                     <td>
-                        {{-- Future edit button --}}
-                        <button class="btn btn-sm btn-secondary" disabled>Edit</button>
+                        <!-- Edit button -->
+                        <a href="{{ route('admin.countries.edit', $country->id) }}" class="btn btn-sm btn-primary">
+                            Edit
+                        </a>
 
                         <!-- Delete -->
                         <form action="{{ route('admin.countries.destroy', $country->id) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Are you sure you want to delete this country?')">
+                                    onclick="return confirm('Are you sure you want to delete this state?')">
                                 Delete
                             </button>
                         </form>

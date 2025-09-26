@@ -28,6 +28,22 @@ class LocationController extends Controller
         return back()->with('success', 'State created successfully.');
     }
 
+    public function countriesEdit(Country $country)
+    {
+        return view('admin.countries.edit', compact('country'));
+    }
+
+    public function countriesUpdate(Request $request, Country $country)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'tax' => 'nullable|numeric|min:0|max:999999.99'
+        ]);
+
+        $country->update($request->only('name', 'tax'));
+        return redirect()->route('admin.countries.index')->with('success', 'State updated successfully.');
+    }
+
     public function countriesDestroy($id)
     {
         Country::findOrFail($id)->delete();
