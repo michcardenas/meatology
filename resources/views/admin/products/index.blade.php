@@ -43,7 +43,7 @@
                             </td>
                             <td>{{ $p->name }}</td>
                             <td>{{ $p->category?->name . ' - ' . $p->category?->country ?? '—' }}</td>
-                            <td class="text-end">${{ number_format($p->price, 0) }}</td>
+                            <td class="text-end">${{ $p->price }}</td>
                             <td class="text-center">{{ $p->stock }}</td>
                             <td class="text-end">
                                 <a href="{{ route('admin.products.edit', $p) }}" class="btn btn-sm btn-warning" title="Edit">
