@@ -228,6 +228,15 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>Customer Name
+                            </label>
+                            <input type="text" class="form-control" name="customer_name"
+                                   value="{{ $order->customer_name }}"
+                                   placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
                                 <i class="fas fa-credit-card me-2"></i>Card Information
                             </label>
                             

@@ -567,7 +567,10 @@ public function processPayment(Request $request, Order $order)
 
     try {
         // Validar datos del pago
-        $request->validate(['source_id' => 'required|string']);
+        $request->validate([
+            'source_id' => 'required|string',
+            'customer_name' => 'required|string|max:255'
+        ]);
 
         \Log::info('Processing payment for order', [
             'order_id' => $order->id,
@@ -621,9 +624,10 @@ public function processPayment(Request $request, Order $order)
         
         $order->update([
             'payment_status' => 'paid',
-            'status' => 'confirmed', 
+            'status' => 'confirmed',
             'payment_method' => 'square',
             'transaction_id' => $transactionId,
+            'customer_name' => $request->customer_name,
             'paid_at' => now()
         ]);
 
