@@ -210,53 +210,59 @@
                                 </span>
                             @endif
                         </div>
-                        <div class="card-body p-3">
-                            <h6 class="card-title mb-2 text-light">{{ Str::limit($featuredProduct->name, 30) }}</h6>
-                            <p class="card-text text-light small mb-2">
-                                {{ Str::limit(strip_tags($featuredProduct->description), 80) }}
-                            </p>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                @php
-                                    $featuredBasePrice = ($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0);
-                                    $featuredDiscountAmount = ($featuredBasePrice * ($featuredProduct->descuento ?? 0)) / 100;
-                                    $featuredFinalPrice = $featuredBasePrice - $featuredDiscountAmount;
-                                @endphp
+                        <div class="card-body p-3" style="display: flex; flex-direction: column; height: 100%;">
+                            <div class="product-card-content" style="flex-grow: 1; display: flex; flex-direction: column;">
+                                <h6 class="card-title mb-2 text-light">{{ Str::limit($featuredProduct->name, 30) }}</h6>
+                                <p class="card-text text-light small mb-2">
+                                    {{ Str::limit(strip_tags($featuredProduct->description), 80) }}
+                                </p>
 
-                                <div>
-                                    @if($featuredProduct->descuento > 0)
-                                        {{-- Precio original tachado --}}
-                                        <div class="text-muted text-decoration-line-through small">
-                                            ${{ number_format($featuredBasePrice, 2, '.', ',') }}
-                                        </div>
-                                        {{-- Precio con descuento --}}
-                                        <span class="text-danger fw-bold">
-                                            ${{ number_format($featuredFinalPrice, 2, '.', ',') }}
-                                        </span>
-                                    @else
-                                        {{-- Precio normal --}}
-                                        <span class="text-success fw-bold">
-                                            ${{ number_format($featuredBasePrice, 2, '.', ',') }}
-                                        </span>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    @php
+                                        $featuredBasePrice = ($featuredProduct->price ?? 0) + ($featuredProduct->interest ?? 0);
+                                        $featuredDiscountAmount = ($featuredBasePrice * ($featuredProduct->descuento ?? 0)) / 100;
+                                        $featuredFinalPrice = $featuredBasePrice - $featuredDiscountAmount;
+                                    @endphp
+
+                                    <div>
+                                        @if($featuredProduct->descuento > 0)
+                                            {{-- Precio original tachado --}}
+                                            <div class="text-muted text-decoration-line-through small">
+                                                ${{ number_format($featuredBasePrice, 2, '.', ',') }}
+                                            </div>
+                                            {{-- Precio con descuento --}}
+                                            <span class="text-danger fw-bold">
+                                                ${{ number_format($featuredFinalPrice, 2, '.', ',') }}
+                                            </span>
+                                        @else
+                                            {{-- Precio normal --}}
+                                            <span class="text-success fw-bold">
+                                                ${{ number_format($featuredBasePrice, 2, '.', ',') }}
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    @if(!empty($featuredProduct->avg_weight))
+                                        <small class="text-light">/ {{ $featuredProduct->avg_weight }}</small>
                                     @endif
                                 </div>
-                                
-                                @if(!empty($featuredProduct->avg_weight))
-                                    <small class="text-light">/ {{ $featuredProduct->avg_weight }}</small>
-                                @endif
                             </div>
-                            <div class="d-flex gap-1">
-                                <a href="{{ route('product.show', $featuredProduct) }}" 
-                                   class="btn btn-outline-light btn-sm flex-fill">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                                <form action="{{ route('cart.add') }}" method="POST" class="flex-fill">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $featuredProduct->id }}">
-                                    <button type="submit" class="btn btn-success btn-sm w-100" 
-                                            {{ $featuredProduct->stock <= 0 ? 'disabled' : '' }}>
-                                        <i class="fas fa-cart-plus"></i>
-                                    </button>
-                                </form>
+
+                            <div class="product-card-actions" style="margin-top: auto; padding-top: 1rem;">
+                                <div class="d-flex gap-1">
+                                    <a href="{{ route('product.show', $featuredProduct) }}"
+                                       class="btn btn-outline-light btn-sm flex-fill">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <form action="{{ route('cart.add') }}" method="POST" class="flex-fill">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $featuredProduct->id }}">
+                                        <button type="submit" class="btn btn-success btn-sm w-100"
+                                                {{ $featuredProduct->stock <= 0 ? 'disabled' : '' }}>
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
