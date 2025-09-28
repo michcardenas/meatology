@@ -192,9 +192,9 @@
                 <div class="col-lg-3 col-md-6 col-sm-6">
                     <div class="card h-100 shadow-sm border-0 bg-dark text-light">
                         <div class="position-relative" style="overflow: hidden;">
-                            <img src="{{ $featuredProduct->images->first() ? Storage::url($featuredProduct->images->first()->image) : asset('images/placeholder.jpg') }}" 
+                            <img src="{{ $featuredProduct->images->first() ? Storage::url($featuredProduct->images->first()->image) : asset('images/placeholder.jpg') }}"
                                  class="card-img-top" alt="{{ $featuredProduct->name }}"
-                                 style="height: 220px; object-fit: cover; transition: transform 0.3s ease;">
+                                 style="height: 220px; object-fit: contain; transition: transform 0.3s ease;">
                             
                             <!-- Badge de categoría -->
                             @if($featuredProduct->category)
