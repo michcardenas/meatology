@@ -591,7 +591,7 @@ public function processPayment(Request $request, Order $order)
         ];
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://connect.squareupsandbox.com/v2/payments');
+        curl_setopt($ch, CURLOPT_URL, 'https://connect.squareup.com/v2/payments');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
