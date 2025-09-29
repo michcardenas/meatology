@@ -49,10 +49,11 @@
                                 <a href="{{ route('admin.products.edit', $p) }}" class="btn btn-sm btn-warning" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('admin.products.destroy', $p) }}" method="POST"
-                                      class="d-inline" onsubmit="return confirm('Delete this product?')">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger" title="Delete">
+                                <form action="{{ route('admin.products.destroy', $p->id) }}" method="POST"
+                                      class="d-inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>

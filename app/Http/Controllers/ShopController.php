@@ -583,7 +583,7 @@ public function processPayment(Request $request, Order $order)
             'idempotency_key' => 'order_' . $order->id . '_' . time(),
             'source_id' => $request->source_id,
             'amount_money' => [
-                'amount' => $order->total_amount * 100, // Convertir a centavos
+                'amount' => (int)($order->total_amount * 100), // Convertir a centavos
                 'currency' => 'USD'
             ],
             'location_id' => config('square.location_id'),
