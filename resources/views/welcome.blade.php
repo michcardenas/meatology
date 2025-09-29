@@ -192,8 +192,22 @@
             </div>
         </div>
     </div>
-    
-  
+
+
+    </div>
+</section>
+
+<!-- Maintenance Notice -->
+<section class="py-4" style="background-color: #ff6b35; color: white;">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h4 class="mb-3"><i class="fas fa-tools me-2"></i>Scheduled Maintenance Notice</h4>
+                <p class="mb-2">We are currently performing scheduled maintenance to enhance our services and ensure a better experience for our users.</p>
+                <p class="mb-2">Our website will be available again shortly.</p>
+                <p class="mb-0"><strong>We appreciate your understanding and continued trust.</strong></p>
+            </div>
+        </div>
     </div>
 </section>
 <!-- Sección de Productos Destacados con Fondo Verde Oscuro -->
