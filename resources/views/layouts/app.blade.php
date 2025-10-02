@@ -832,9 +832,30 @@ footer {
         @yield('content')
     </main>
 
-    <!-- Footer -->
-   <!-- Footer -->
-<!-- Footer -->
+  <div class="modal fade" id="maintenanceModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-tools me-2"></i>Scheduled Maintenance
+                </h5>
+            </div>
+            
+            <div class="modal-body text-center p-4">
+                <p>We are currently performing scheduled maintenance to enhance our services and ensure a better experience for our users.</p>
+                <p>Our website will be available again shortly.</p>
+                <p>We appreciate your understanding and continued trust.</p>
+            </div>
+            
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+                    I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <footer class="text-white pt-5 pb-4" style="background-color: #011904;">
     <div class="container">
         <div class="row">
@@ -1042,6 +1063,8 @@ let currentImages = [];
 let currentImageIndex = 0;
 
 document.addEventListener('DOMContentLoaded', function () {
+        new bootstrap.Modal(document.getElementById('maintenanceModal')).show();
+
     const modal = document.getElementById('quickViewModal');
     
     if (modal) {
