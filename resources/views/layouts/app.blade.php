@@ -832,16 +832,16 @@ footer {
         @yield('content')
     </main>
 
-  <div class="modal fade" id="maintenanceModal" tabindex="-1" data-bs-backdrop="static">
+<div class="modal fade" id="maintenanceModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" style="color: #011904;">
                     <i class="fas fa-tools me-2"></i>Scheduled Maintenance
                 </h5>
             </div>
             
-            <div class="modal-body text-center p-4">
+            <div class="modal-body text-center p-4" style="color: #011904;">
                 <p>We are currently performing scheduled maintenance to enhance our services and ensure a better experience for our users.</p>
                 <p>Our website will be available again shortly.</p>
                 <p>We appreciate your understanding and continued trust.</p>
