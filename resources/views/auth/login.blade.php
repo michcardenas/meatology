@@ -138,7 +138,7 @@
 
 <style>
 .login-page {
-    background: linear-gradient(135deg, #f8f9fa 0%, rgba(1, 25, 4, 0.05) 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
     min-height: 100vh;
     padding: 40px 0;
     font-family: 'Inter', sans-serif;
@@ -154,14 +154,15 @@
 }
 
 .login-image-section {
-    background: linear-gradient(135deg, #011904 0%, #022a07 100%);
-    color: white;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    color: #011904;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 60px 40px;
     position: relative;
     overflow: hidden;
+    border-right: 1px solid #e0d9c0;
 }
 
 .login-image-section::before {
@@ -172,7 +173,7 @@
     width: 200%;
     height: 200%;
     background: url('{{ asset("images/carrusel1.png") }}') center/cover;
-    opacity: 0.1;
+    opacity: 0.08;
     transform: rotate(-15deg);
 }
 
@@ -185,20 +186,20 @@
 .brand-logo {
     height: 60px;
     margin-bottom: 30px;
-    filter: brightness(0) invert(1);
 }
 
 .brand-title {
     font-size: 2.5rem;
     font-weight: 900;
     margin-bottom: 20px;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    color: #011904;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
 }
 
 .brand-subtitle {
     font-size: 1.1rem;
     line-height: 1.6;
-    opacity: 0.9;
+    color: #2d5016;
     margin-bottom: 40px;
 }
 
@@ -213,10 +214,11 @@
     align-items: center;
     gap: 12px;
     font-size: 1rem;
+    color: #2d5016;
 }
 
 .feature-item i {
-    color: #c41e3a;
+    color: #2d5016;
     font-size: 1.2rem;
 }
 
@@ -244,7 +246,7 @@
 }
 
 .form-header p {
-    color: #666;
+    color: #6c757d;
     font-size: 1rem;
     line-height: 1.5;
 }
@@ -269,11 +271,12 @@
     font-size: 1rem;
     transition: all 0.3s ease;
     background: #f8f9fa;
+    color: #2c3e50;
 }
 
 .login-form .form-control:focus {
-    border-color: #011904;
-    box-shadow: 0 0 0 0.2rem rgba(1, 25, 4, 0.25);
+    border-color: #2d5016;
+    box-shadow: 0 0 0 0.2rem rgba(45, 80, 22, 0.25);
     background: white;
 }
 
@@ -288,7 +291,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #666;
+    color: #6c757d;
     cursor: pointer;
     transition: color 0.3s ease;
 }
@@ -320,18 +323,18 @@
 }
 
 .form-check-input:checked {
-    background-color: #011904;
-    border-color: #011904;
+    background-color: #2d5016;
+    border-color: #2d5016;
 }
 
 .form-check-label {
-    color: #666;
+    color: #6c757d;
     font-size: 0.95rem;
     cursor: pointer;
 }
 
 .forgot-password {
-    color: #c41e3a;
+    color: #2d5016;
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 500;
@@ -339,13 +342,13 @@
 }
 
 .forgot-password:hover {
-    color: #e74c3c;
+    color: #011904;
     text-decoration: underline;
 }
 
 .login-btn {
     width: 100%;
-    background: linear-gradient(135deg, #011904 0%, #022a07 100%);
+    background: linear-gradient(135deg, #2d5016 0%, #011904 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -355,12 +358,12 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(1, 25, 4, 0.3);
+    box-shadow: 0 8px 25px rgba(45, 80, 22, 0.3);
     margin-bottom: 25px;
 }
 
 .login-btn:hover {
-    background: linear-gradient(135deg, #022a07 0%, #033309 100%);
+    background: linear-gradient(135deg, #011904 0%, #000000 100%);
     transform: translateY(-2px);
     box-shadow: 0 12px 35px rgba(1, 25, 4, 0.4);
 }
@@ -371,19 +374,19 @@
 }
 
 .register-link p {
-    color: #666;
+    color: #6c757d;
     margin: 0;
 }
 
 .register-link a {
-    color: #c41e3a;
+    color: #2d5016;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
 }
 
 .register-link a:hover {
-    color: #e74c3c;
+    color: #011904;
     text-decoration: underline;
 }
 
@@ -444,6 +447,8 @@
     
     .login-image-section {
         padding: 30px 20px;
+        border-right: none;
+        border-bottom: 1px solid #e0d9c0;
     }
     
     .brand-title {

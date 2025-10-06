@@ -1,64 +1,279 @@
 @extends('layouts.app')
 
-@section('title', 'About Us - Meatology')
+@section('title', 'Wholesale | Restaurants & Chefs - Meatology')
 
 @section('content')
 
-
 <style>
-        .container-form {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #011904;
-        }
+    .wholesale-page {
+        background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
+        min-height: 100vh;
+        padding: 80px 0;
+        font-family: 'Inter', sans-serif;
+    }
 
-        .form-title {
-            color: #d4c5a9;
-            font-size: 2.5rem;
-            font-weight: 300;
-            text-align: center;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
-        }
+    .container-form {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
 
-        .form-container {
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 2px solid #d4c5a9;
-            border-radius: 10px;
-            padding: 30px;
-        }
+    .form-title {
+        color: #011904;
+        font-size: 2.8rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 20px;
+        letter-spacing: -0.5px;
+    }
 
-        .form-description {
-            color: #d4c5a9;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            text-align: left;
+    .form-subtitle {
+        color: #2d5016;
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 50px;
+        font-weight: 400;
+    }
+
+    .form-container {
+        background: #ffffff;
+        border: 1px solid #e0d9c0;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-description {
+        color: #2c3e50;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 40px;
+        text-align: left;
+        padding: 25px;
+        background: rgba(232, 245, 233, 0.4);
+        border-left: 4px solid #2d5016;
+        border-radius: 8px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+    .form-group.full-width {
+        width: 100%;
+    }
+
+    label {
+        display: block;
+        color: #011904;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .required {
+        color: #dc3545;
+        margin-left: 3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="number"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 14px 18px;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 1rem;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #adb5bd;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #2d5016;
+        box-shadow: 0 0 0 4px rgba(45, 80, 22, 0.1);
+        background-color: #ffffff;
+    }
+
+    .phone-container {
+        display: flex;
+        gap: 12px;
+    }
+
+    .country-code {
+        width: 90px;
+        flex-shrink: 0;
+    }
+
+    .phone-number {
+        flex: 1;
+    }
+
+    textarea {
+        height: 120px;
+        resize: vertical;
+        min-height: 80px;
+        max-height: 300px;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #2d5016 0%, #011904 100%);
+        color: white;
+        padding: 16px 50px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 30px;
+        box-shadow: 0 8px 25px rgba(45, 80, 22, 0.3);
+        width: 100%;
+    }
+
+    .submit-btn:hover {
+        background: linear-gradient(135deg, #011904 0%, #000000 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(1, 25, 4, 0.4);
+    }
+
+    .submit-btn:active {
+        transform: translateY(-1px);
+    }
+
+    /* Mensajes de error */
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .error-message::before {
+        content: "⚠";
+        font-size: 1rem;
+    }
+
+    .form-group.has-error input,
+    .form-group.has-error select,
+    .form-group.has-error textarea {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+    }
+
+    /* Mensajes de éxito */
+    .success-message {
+        background: rgba(40, 167, 69, 0.1);
+        border: 2px solid rgba(40, 167, 69, 0.3);
+        color: #28a745;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1rem;
+    }
+
+    .success-message::before {
+        content: "✓";
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    /* Iconos en los labels */
+    .label-icon {
+        margin-right: 8px;
+        color: #2d5016;
+        font-size: 0.9rem;
+    }
+
+    /* Info badges */
+    .info-badge {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #2d5016;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .wholesale-page {
+            padding: 40px 0;
         }
 
         .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .form-title {
+            font-size: 2.2rem;
         }
 
-        .form-group {
-            flex: 1;
+        .form-subtitle {
+            font-size: 1rem;
+            margin-bottom: 40px;
         }
 
-        .form-group.full-width {
-            width: 100%;
+        .form-container {
+            padding: 30px 25px;
+            border-radius: 15px;
         }
 
-        label {
-            display: block;
-            color: #d4c5a9;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
+        .form-description {
+            padding: 20px;
+            font-size: 1rem;
+        }
+        
+        .phone-container {
+            flex-direction: row;
+        }
+        
+        .country-code {
+            width: 90px;
         }
 
-        .required {
-            color: #ff6b6b;
+        .submit-btn {
+            padding: 14px 40px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .form-title {
+            font-size: 1.8rem;
+        }
+
+        .form-container {
+            padding: 25px 20px;
         }
 
         input[type="text"],
@@ -68,111 +283,62 @@
         input[type="number"],
         textarea,
         select {
-            width: 100%;
             padding: 12px 15px;
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 5px;
             font-size: 0.95rem;
-            color: #333;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
+    }
 
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #d4c5a9;
-            box-shadow: 0 0 5px rgba(212, 197, 169, 0.3);
+    /* Animaciones */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
-
-        .phone-container {
-            display: flex;
-            gap: 10px;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
+    }
 
-        .country-code {
-            width: 80px;
-            flex-shrink: 0;
-        }
+    .form-container {
+        animation: fadeIn 0.6s ease-out;
+    }
 
-        .phone-number {
-            flex: 1;
-        }
+    /* Mejoras de accesibilidad */
+    input:disabled,
+    textarea:disabled,
+    select:disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+</style>
 
-        textarea {
-            height: 100px;
-            resize: vertical;
-        }
-
-        .submit-btn {
-            background-color: #8b7355;
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .submit-btn:hover {
-            background-color: #a08660;
-        }
-
-        .submit-btn:active {
-            transform: translateY(1px);
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .form-title {
-                font-size: 2rem;
-            }
-            
-            .phone-container {
-                flex-direction: column;
-            }
-            
-            .country-code {
-                width: 100%;
-            }
-        }
-
-        /* Estilos para mensajes de error */
-        .error-message {
-            color: #ff6b6b;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-
-        .form-group.has-error input,
-        .form-group.has-error select,
-        .form-group.has-error textarea {
-            border-color: #ff6b6b;
-        }
-    </style>
-
+<div class="wholesale-page">
     <div class="container-form">
         <h1 class="form-title">Wholesale | Restaurants & Chefs</h1>
+        <p class="form-subtitle">Partner with us for premium grass-fed beef at wholesale prices</p>
         
         <div class="form-container">
+            @if(session('success'))
+                <div class="success-message">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <p class="form-description">
                 If you are a chef or restaurant and would like to create an account for wholesale pricing, please make an inquiry with the following form. We will respond within the next 24 business hours with further information. Thank you!
             </p>
 
-            <form action="{{ route('wholesale.submit') }}" method="POST">
+            <form action="" method="POST">
                 @csrf
 
                 <!-- Fila 1: Nombre y Apellido -->
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="first_name">First name<span class="required">*</span></label>
+                    <div class="form-group {{ $errors->has('first_name') ? 'has-error' : '' }}">
+                        <label for="first_name">
+                            <i class="fas fa-user label-icon"></i>First name<span class="required">*</span>
+                        </label>
                         <input type="text" 
                                id="first_name" 
                                name="first_name" 
@@ -184,8 +350,10 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group">
-                        <label for="last_name">Last name<span class="required">*</span></label>
+                    <div class="form-group {{ $errors->has('last_name') ? 'has-error' : '' }}">
+                        <label for="last_name">
+                            <i class="fas fa-user label-icon"></i>Last name<span class="required">*</span>
+                        </label>
                         <input type="text" 
                                id="last_name" 
                                name="last_name" 
@@ -200,8 +368,10 @@
 
                 <!-- Fila 2: Email y Teléfono -->
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">Email address<span class="required">*</span></label>
+                    <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
+                        <label for="email">
+                            <i class="fas fa-envelope label-icon"></i>Email address<span class="required">*</span>
+                        </label>
                         <input type="email" 
                                id="email" 
                                name="email" 
@@ -213,8 +383,10 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group">
-                        <label for="phone">Phone number<span class="required">*</span></label>
+                    <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
+                        <label for="phone">
+                            <i class="fas fa-phone label-icon"></i>Phone number<span class="required">*</span>
+                        </label>
                         <div class="phone-container">
                             <select name="country_code" class="country-code" required>
                                 <option value="+1" {{ old('country_code') == '+1' ? 'selected' : '' }}>+1</option>
@@ -280,8 +452,11 @@
 
                 <!-- Fila 3: Nombre de empresa y sitio web -->
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="company_name">Company name</label>
+                    <div class="form-group {{ $errors->has('company_name') ? 'has-error' : '' }}">
+                        <label for="company_name">
+                            <i class="fas fa-building label-icon"></i>Company name
+                            <span class="info-badge">Optional</span>
+                        </label>
                         <input type="text" 
                                id="company_name" 
                                name="company_name" 
@@ -292,13 +467,16 @@
                         @enderror
                     </div>
                     
-                    <div class="form-group">
-                        <label for="company_website">Company website</label>
+                    <div class="form-group {{ $errors->has('company_website') ? 'has-error' : '' }}">
+                        <label for="company_website">
+                            <i class="fas fa-globe label-icon"></i>Company website
+                            <span class="info-badge">Optional</span>
+                        </label>
                         <input type="url" 
                                id="company_website" 
                                name="company_website" 
                                value="{{ old('company_website') }}" 
-                               placeholder="wonkachocolatefactory.com">
+                               placeholder="https://wonkachocolatefactory.com">
                         @error('company_website')
                             <div class="error-message">{{ $message }}</div>
                         @enderror
@@ -306,33 +484,43 @@
                 </div>
 
                 <!-- Dirección de la empresa -->
-                <div class="form-group full-width">
-                    <label for="company_address">Company address</label>
+                <div class="form-group full-width {{ $errors->has('company_address') ? 'has-error' : '' }}">
+                    <label for="company_address">
+                        <i class="fas fa-map-marker-alt label-icon"></i>Company address
+                        <span class="info-badge">Optional</span>
+                    </label>
                     <textarea name="company_address" 
                               id="company_address" 
-                              placeholder="1234 Main St, New York, USA">{{ old('company_address') }}</textarea>
+                              placeholder="1234 Main St, New York, NY 10001, USA">{{ old('company_address') }}</textarea>
                     @error('company_address')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <!-- Años en el negocio -->
-                <div class="form-group full-width">
-                    <label for="years_in_business">Years in business</label>
+                <div class="form-group full-width {{ $errors->has('years_in_business') ? 'has-error' : '' }}">
+                    <label for="years_in_business">
+                        <i class="fas fa-calendar-alt label-icon"></i>Years in business
+                        <span class="info-badge">Optional</span>
+                    </label>
                     <input type="number" 
                            id="years_in_business" 
                            name="years_in_business" 
                            value="{{ old('years_in_business') }}" 
                            placeholder="12"
-                           min="0">
+                           min="0"
+                           max="100">
                     @error('years_in_business')
                         <div class="error-message">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <!-- Botón de envío -->
-                <button type="submit" class="submit-btn">Submit</button>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane" style="margin-right: 10px;"></i>Submit Application
+                </button>
             </form>
         </div>
     </div>
+</div>
 @endsection

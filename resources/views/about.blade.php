@@ -120,12 +120,12 @@
             <div class="content-section bg-dark-green">
                 <div class="row justify-content-center">
                     <div class="col-lg-10 text-center">
-                        <h2 class="section-title text-white">Why It Matters to You</h2>
-                        <p class="section-description text-white mb-4">
+                        <h2 class="section-title section-title-light">Why It Matters to You</h2>
+                        <p class="section-description section-description-light mb-4">
                             Choosing Meatology means choosing meat that's better for you, the animals, and the planet. 
                             Grass-fed beef is leaner, richer in omega-3s, and free of the additives found in factory-farmed products.
                         </p>
-                        <p class="section-description text-white mb-5">
+                        <p class="section-description section-description-light mb-5">
                             It's also a vote for sustainability—our regenerative farming practices help sequester carbon and 
                             restore soil health. Plus, every purchase supports farmers who share your values of compassion and responsibility.
                         </p>
@@ -174,6 +174,7 @@
 .about-page {
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
+    background-color: #ffffff;
 }
 
 .about-hero {
@@ -207,14 +208,15 @@
     left: 0;
     width: 100%;
     height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(232, 245, 233, 0.8) 100%);
 }
 
 .hero-title {
     font-size: 3.5rem;
     font-weight: 900;
-    color: white;
+    color: #011904;
     margin-bottom: 20px;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
     position: relative;
     z-index: 2;
     line-height: 1.1;
@@ -222,15 +224,16 @@
 
 .hero-subtitle {
     font-size: 1.3rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: #2d5016;
     position: relative;
     z-index: 2;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.4;
 }
 
 .about-content {
     padding: 80px 0;
+    background-color: #ffffff;
 }
 
 .content-section {
@@ -239,41 +242,42 @@
 }
 
 .bg-light-green {
-    background: rgba(45, 80, 22, 0.05);
+    background: rgba(232, 245, 233, 0.6);
     border-radius: 20px;
     margin: 0 20px;
     padding: 40px 30px;
+    border: 1px solid rgba(45, 80, 22, 0.1);
 }
 
 .bg-dark-green {
-    background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
     border-radius: 20px;
     margin: 0 20px;
-    color: white;
     padding: 40px 30px;
+    border: 1px solid #e0d9c0;
 }
 
 .section-title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: #2d5016;
+    color: #011904;
     margin-bottom: 30px;
     line-height: 1.2;
 }
 
-.section-title.text-white {
-    color: white;
+.section-title-light {
+    color: #011904;
 }
 
 .section-description {
     font-size: 1.1rem;
     line-height: 1.7;
-    color: #555;
+    color: #2c3e50;
     margin-bottom: 25px;
 }
 
-.section-description.text-white {
-    color: rgba(255, 255, 255, 0.9);
+.section-description-light {
+    color: #2d5016;
 }
 
 .content-image {
@@ -296,14 +300,15 @@
 }
 
 .farming-quote {
-    background: rgba(45, 80, 22, 0.05);
-    border-left: 4px solid #c41e3a;
+    background: rgba(232, 245, 233, 0.5);
+    border-left: 4px solid #2d5016;
     padding: 25px 30px;
     margin: 30px 0;
     font-style: italic;
     font-size: 1.1rem;
     line-height: 1.6;
     border-radius: 0 10px 10px 0;
+    color: #2c3e50;
 }
 
 .quality-badges {
@@ -314,7 +319,7 @@
 }
 
 .badge-item {
-    background: #c41e3a;
+    background: #2d5016;
     color: white;
     padding: 8px 16px;
     border-radius: 25px;
@@ -324,23 +329,24 @@
 }
 
 .farmer-quote {
-    background: white;
+    background: #f8f9fa;
     border-radius: 15px;
     padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     margin-top: 30px;
+    border: 1px solid #e0e0e0;
 }
 
 .quote-content p {
     font-size: 1.2rem;
     font-style: italic;
-    color: #2d5016;
+    color: #011904;
     margin-bottom: 15px;
     line-height: 1.5;
 }
 
 .quote-content cite {
-    color: #c41e3a;
+    color: #2d5016;
     font-weight: 600;
     font-style: normal;
     font-size: 0.95rem;
@@ -365,21 +371,21 @@
 }
 
 .benefit-item h4 {
-    color: white;
+    color: #011904;
     font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 15px;
 }
 
 .benefit-item p {
-    color: rgba(255, 255, 255, 0.8);
+    color: #2d5016;
     font-size: 1rem;
     line-height: 1.5;
 }
 
 .cta-button {
     display: inline-block;
-    background: #c41e3a;
+    background: #2d5016;
     color: white;
     padding: 18px 40px;
     border-radius: 50px;
@@ -389,22 +395,22 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(196, 30, 58, 0.3);
+    box-shadow: 0 8px 25px rgba(45, 80, 22, 0.3);
     margin-bottom: 30px;
     text-align: center;
 }
 
 .cta-button:hover {
-    background: #e74c3c;
+    background: #011904;
     transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(196, 30, 58, 0.4);
+    box-shadow: 0 12px 35px rgba(1, 25, 4, 0.4);
     color: white;
     text-decoration: none;
 }
 
 .cta-question {
     font-style: italic;
-    color: #666;
+    color: #6c757d;
     font-size: 1.1rem;
     margin-top: 20px;
 }
@@ -817,12 +823,11 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .farming-quote {
-        background: rgba(45, 80, 22, 0.1);
+        background: rgba(232, 245, 233, 0.3);
     }
     
     .farmer-quote {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
+        background: #f8f9fa;
     }
 }
 </style>
