@@ -679,6 +679,282 @@ footer {
     }
 }
 /* ===== FIN SUBMENU STYLES ===== */
+nav {
+    background-color: #ffffff;
+    padding: 12px 20px;
+    border-bottom: 2px solid #e0d9c0;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo span {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    font-weight: 500;
+    color: #011904; /* Verde oscuro para el texto */
+}
+
+.nav-links a {
+    color: #011904; /* Verde oscuro */
+    text-decoration: none;
+    font-size: 0.95rem;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #2d5016; /* Verde más claro en hover */
+}
+
+.nav-icons i {
+    color: #011904;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.nav-icons i:hover {
+    color: #2d5016;
+}
+
+.nav-icons a {
+    color: #011904;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav-icons a:hover {
+    color: #2d5016;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #011904;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 1001;
+}
+
+/* Mobile Navigation - CAMBIADO */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    padding-top: 80px;
+}
+
+.mobile-nav-links a {
+    color: #011904;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active {
+    color: #2d5016;
+    background: rgba(1, 25, 4, 0.1);
+    transform: translateY(-2px);
+}
+
+.mobile-nav-icons a,
+.mobile-nav-icons .dropdown {
+    color: #011904;
+    font-size: 1.3rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 15px;
+    border-radius: 50%;
+    background: rgba(1, 25, 4, 0.1);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Submenu - CAMBIADO */
+.submenu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    border: 1px solid #e0d9c0;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    padding: 8px 0;
+}
+
+.country-item > a {
+    display: block;
+    padding: 12px 20px;
+    color: #011904;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.country-item:hover > a {
+    background: rgba(1, 25, 4, 0.05);
+    color: #2d5016;
+    border-left-color: #2d5016;
+}
+
+.categories-submenu {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 8px);
+    background: #ffffff;
+    border: 1px solid #e0d9c0;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    min-width: 250px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    z-index: 1001;
+    padding: 15px 0;
+}
+
+.categories-header h4 {
+    margin: 0;
+    color: #2d5016;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.category-item a {
+    display: block;
+    padding: 10px 20px;
+    color: #011904;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.category-item a:hover {
+    background: rgba(1, 25, 4, 0.05);
+    color: #2d5016;
+    border-left-color: #2d5016;
+    padding-left: 25px;
+}
+
+/* Footer - CAMBIADO A BLANCO */
+footer {
+    background: #ffffff !important;
+    border-top: 3px solid #e0d9c0;
+    color: #011904 !important;
+}
+
+footer h4, footer h5, footer h6 {
+    color: #011904 !important;
+}
+
+footer p, footer .text-white {
+    color: #011904 !important;
+}
+
+.social-link {
+    color: #011904 !important;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(1, 25, 4, 0.1);
+}
+
+.social-link:hover {
+    color: #ffffff !important;
+    background: #2d5016;
+    transform: translateY(-2px);
+}
+
+.footer-link {
+    color: #011904 !important;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.footer-link:hover {
+    color: #2d5016 !important;
+    padding-left: 5px;
+}
+
+.newsletter-input {
+    background: rgba(1, 25, 4, 0.05);
+    border: 2px solid #e0d9c0;
+    border-radius: 25px 0 0 25px;
+    color: #011904;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+}
+
+.newsletter-input::placeholder {
+    color: rgba(1, 25, 4, 0.5);
+}
+
+.newsletter-input:focus {
+    background: rgba(1, 25, 4, 0.08);
+    border-color: #2d5016;
+    box-shadow: none;
+    color: #011904;
+}
+
+.newsletter-btn {
+    background: #2d5016;
+    border: 2px solid #2d5016;
+    border-radius: 0 25px 25px 0;
+    color: white;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+}
+
+.certification-badge {
+    border-radius: 15px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    color: #011904;
+    background: rgba(1, 25, 4, 0.1);
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.zone h6, .zone p {
+    color: #011904 !important;
+}
 </style>
 
     @vite(['resources/js/app.js'])
@@ -862,7 +1138,7 @@ footer {
             <!-- Logo & descripción -->
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="footer-logo mb-3">
-                    <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" style="height: 40px; filter: brightness(0) invert(1);">
+                    <img src="{{ asset('images/logo.png') }}" alt="Meatology Logo" style="height: 40px; ">
                 </div>
                 <h4 class="fw-bold text-uppercase mb-3">Meatology</h4>
                 <p class="text-white small">
