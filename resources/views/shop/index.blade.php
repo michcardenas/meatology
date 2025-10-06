@@ -4,18 +4,19 @@
 
 <style>
     body {
-        background-color: #011904;
-        color: #e5e5e5;
+        background-color: #f8f9fa;
+        color: #2c3e50;
         font-family: 'Inter', Arial, sans-serif;
     }
 
     .catalog-section {
         min-height: 100vh;
         padding: 40px 0;
+        background-color: #ffffff;
     }
 
     .catalog-title {
-        color: #acafab;
+        color: #011904;
         font-size: 2.2rem;
         font-weight: 600;
         text-align: center;
@@ -24,9 +25,8 @@
 
     /* Filtro Simple */
     .filter-bar {
-        background: rgba(17, 39, 23, 0.6);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(172, 175, 171, 0.2);
+        background: #ffffff;
+        border: 1px solid #e0d9c0;
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 40px;
@@ -35,6 +35,7 @@
         align-items: center;
         justify-content: center;
         flex-wrap: wrap;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
     .filter-group {
@@ -44,16 +45,16 @@
     }
 
     .filter-label {
-        color: #acafab;
+        color: #011904;
         font-size: 0.9rem;
         font-weight: 500;
     }
 
     .filter-select {
-        background: rgba(1, 25, 4, 0.8);
-        border: 1px solid rgba(172, 175, 171, 0.3);
+        background: #ffffff;
+        border: 1px solid #e0d9c0;
         border-radius: 8px;
-        color: #e5e5e5;
+        color: #011904;
         padding: 8px 15px;
         font-size: 0.9rem;
         cursor: pointer;
@@ -62,40 +63,41 @@
 
     .filter-select:focus {
         outline: none;
-        border-color: #acafab;
-        box-shadow: 0 0 0 2px rgba(172, 175, 171, 0.1);
+        border-color: #2d5016;
+        box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
     }
 
     /* Grid de Productos */
-    .products-grid {
+    .products-grid-3col {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 2rem;
     }
 
     .product-card {
         display: flex;
         flex-direction: column;
-        background: linear-gradient(180deg, rgba(17, 39, 23, 0.8), rgba(17, 39, 23, 0.6));
-        border: 1px solid rgba(172, 175, 171, 0.2);
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
         border-radius: 14px;
         overflow: hidden;
         min-height: 100%;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
         transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
 
     .product-card:hover {
         transform: translateY(-3px);
-        border-color: #275c34;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        border-color: #2d5016;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
 
     /* Media del producto */
     .pc-media {
         position: relative;
         overflow: hidden;
-        background: #0a1d0d;
+        background: #f8f9fa;
         height: 230px;
     }
 
@@ -128,7 +130,7 @@
     /* Body del producto */
     .pc-body {
         padding: 14px 14px 8px;
-        color: #e5e5e5;
+        color: #2c3e50;
         flex: 1 1 auto;
     }
 
@@ -136,7 +138,7 @@
         font-size: .78rem;
         letter-spacing: .5px;
         text-transform: uppercase;
-        color: #888;
+        color: #6c757d;
         margin-bottom: 6px;
     }
 
@@ -152,13 +154,13 @@
     }
 
     .pc-title a {
-        color: #acafab;
+        color: #011904;
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
     .pc-title a:hover {
-        color: #ffffff;
+        color: #2d5016;
     }
 
     .pc-price-row {
@@ -169,13 +171,13 @@
     }
 
     .pc-price {
-        color: #7DFFB3;
+        color: #2d5016;
         font-weight: 800;
         font-size: 1.15rem;
     }
 
     .pc-weight {
-        color: #888;
+        color: #6c757d;
         font-size: .85rem;
     }
 
@@ -186,7 +188,7 @@
         align-items: center;
         gap: 10px;
         padding: 12px 14px 16px;
-        border-top: 1px solid rgba(172, 175, 171, 0.2);
+        border-top: 1px solid #e0e0e0;
         flex-wrap: wrap;
     }
 
@@ -208,33 +210,34 @@
 
     /* Outline */
     .btn-ghost {
-        color: #acafab;
+        color: #011904;
         background: transparent;
-        border: 1px solid rgba(172, 175, 171, 0.35);
+        border: 1px solid #011904;
     }
 
     .btn-ghost:hover {
-        color: #081f0b;
-        background: #acafab;
-        border-color: #acafab;
+        color: #ffffff;
+        background: #011904;
+        border-color: #011904;
         transform: translateY(-2px);
     }
 
     /* Solid */
     .btn-solid {
-        color: #081f0b;
-        background: #acafab;
-        border: 1px solid #acafab;
+        color: #ffffff;
+        background: #2d5016;
+        border: 1px solid #2d5016;
     }
 
     .btn-solid:hover {
-        filter: brightness(1.05);
+        background: #011904;
+        border-color: #011904;
         transform: translateY(-2px);
     }
 
-    /* Carrusel Principal Styles */
+    /* Hero Section - VERSIÓN CLARA */
     .meatology-carousel-section {
-        background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
         margin: 0;
         padding: 0;
         width: 100vw;
@@ -244,7 +247,7 @@
         margin-left: -50vw;
         margin-right: -50vw;
         margin-bottom: 0;
-        height: 500px; /* Altura fija para el carrusel */
+        height: 500px;
     }
 
     .category-hero-slide {
@@ -267,7 +270,7 @@
         height: 100%;
         object-fit: cover;
         object-position: center;
-        opacity: 0.3;
+        opacity: 0.15;
     }
 
     .slide-overlay {
@@ -277,9 +280,9 @@
         width: 100%;
         height: 100%;
         background: linear-gradient(90deg, 
-            rgba(45, 80, 22, 0.9) 0%, 
-            rgba(45, 80, 22, 0.7) 50%, 
-            rgba(45, 80, 22, 0.3) 100%);
+            rgba(255, 255, 255, 0.95) 0%, 
+            rgba(255, 255, 255, 0.85) 50%, 
+            rgba(255, 255, 255, 0.6) 100%);
     }
 
     .slide-content {
@@ -292,14 +295,13 @@
     }
 
     .slide-text {
-        color: white;
+        color: #011904;
         padding-right: 40px;
     }
 
     .category-label {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(45, 80, 22, 0.1);
+        border: 1px solid #2d5016;
         border-radius: 25px;
         padding: 8px 20px;
         margin-bottom: 20px;
@@ -308,7 +310,7 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         display: inline-block;
-        color: #fff;
+        color: #2d5016;
     }
 
     .slide-title {
@@ -317,9 +319,9 @@
         margin-bottom: 15px;
         text-transform: uppercase;
         letter-spacing: 2px;
-        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         line-height: 1.1;
-        color: #fff;
+        color: #011904;
     }
 
     .slide-description {
@@ -328,12 +330,12 @@
         opacity: 0.9;
         line-height: 1.5;
         max-width: 450px;
-        color: #f0f0f0;
+        color: #2d5016;
     }
 
     .shop-category-btn {
         display: inline-block;
-        background: #c41e3a;
+        background: #2d5016;
         color: white;
         padding: 15px 35px;
         border-radius: 50px;
@@ -343,13 +345,13 @@
         text-transform: uppercase;
         letter-spacing: 1.5px;
         transition: all 0.3s ease;
-        box-shadow: 0 8px 25px rgba(196, 30, 58, 0.3);
+        box-shadow: 0 8px 25px rgba(45, 80, 22, 0.3);
     }
 
     .shop-category-btn:hover {
-        background: #e74c3c;
+        background: #011904;
         transform: translateY(-3px);
-        box-shadow: 0 12px 35px rgba(196, 30, 58, 0.4);
+        box-shadow: 0 12px 35px rgba(1, 25, 4, 0.4);
         color: white;
         text-decoration: none;
     }
@@ -366,7 +368,7 @@
         max-height: 300px;
         object-fit: contain;
         border-radius: 15px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease;
     }
 
@@ -379,9 +381,8 @@
     .carousel-control-next {
         width: 50px;
         height: 50px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(45, 80, 22, 0.8);
+        border: 2px solid rgba(45, 80, 22, 0.3);
         border-radius: 50%;
         top: 50%;
         transform: translateY(-50%);
@@ -400,7 +401,7 @@
     .carousel-control-prev:hover,
     .carousel-control-next:hover {
         opacity: 1;
-        background: rgba(255, 255, 255, 0.2);
+        background: #011904;
         transform: translateY(-50%) scale(1.1);
     }
 
@@ -420,22 +421,22 @@
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
-        border: 2px solid rgba(255, 255, 255, 0.6);
+        background: rgba(45, 80, 22, 0.4);
+        border: 2px solid rgba(45, 80, 22, 0.6);
         transition: all 0.3s ease;
         margin: 0 5px;
     }
 
     .carousel-indicators .active {
-        background: #c41e3a;
-        border-color: #fff;
+        background: #2d5016;
+        border-color: #011904;
         transform: scale(1.2);
     }
 
     /* No products message */
     .no-products {
         text-align: center;
-        color: #888;
+        color: #6c757d;
         font-size: 1.1rem;
         margin-top: 60px;
     }
@@ -448,6 +449,13 @@
     }
 
     /* Responsive */
+    @media (max-width: 992px) {
+        .products-grid-3col {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+    }
+
     @media (max-width: 768px) {
         .catalog-title {
             font-size: 1.8rem;
@@ -467,11 +475,6 @@
 
         .filter-select {
             min-width: 150px;
-        }
-
-        .products-grid {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
         }
 
         .pc-media {
@@ -527,14 +530,14 @@
         }
     }
 
-    @media (max-width: 480px) {
-        .catalog-section {
-            padding: 20px 0;
+    @media (max-width: 576px) {
+        .products-grid-3col {
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
 
-        .products-grid {
-            grid-template-columns: 1fr;
-            gap: 15px;
+        .catalog-section {
+            padding: 20px 0;
         }
 
         .pc-media {
@@ -570,52 +573,28 @@
             max-height: 200px;
         }
     }
-.products-grid-3col {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-top: 2rem;
-}
 
-/* Responsive para diferentes tamaños de pantalla */
-@media (max-width: 992px) {
-    .products-grid-3col {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
+    /* Asegurar que las cards tengan la misma altura */
+    .products-grid-3col .product-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
-}
 
-@media (max-width: 576px) {
-    .products-grid-3col {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+    .products-grid-3col .pc-body {
+        flex-grow: 1;
     }
-}
 
-/* Asegurar que las cards tengan la misma altura */
-.products-grid-3col .product-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.products-grid-3col .pc-body {
-    flex-grow: 1;
-}
-
-.products-grid-3col .pc-actions {
-    margin-top: auto;
-}
-
+    .products-grid-3col .pc-actions {
+        margin-top: auto;
+    }
 </style>
 
-<!-- Hero de Categoría (fijo) -->
-<!-- Hero de Categoría (fijo) -->
+<!-- Hero de Categoría -->
 <div class="meatology-hero-section">
     @php
         $heroName  = $heroCategory->name ?? 'All Products';
         $heroImage = isset($heroCategory?->image) ? Storage::url($heroCategory->image) : asset('images/category-placeholder.jpg');
-        // Si hay heroCategory usamos su conteo; si no, usamos total filtrado
         $heroCount = isset($heroCategory) ? ($heroCategory->products_count ?? 0) : $products->total();
     @endphp
 
@@ -661,8 +640,6 @@
     </div>    
 </div>
 
-
-
 <!-- Sección del Catálogo -->
 <div class="catalog-section">
     <div class="container">
@@ -685,7 +662,7 @@
                     </select>
                 </div>
                 
-                <!-- Filtro por País (del Producto) -->
+                <!-- Filtro por País -->
                 <div class="filter-group">
                     <label class="filter-label">Country:</label>
                     <select name="country" class="filter-select" onchange="this.form.submit()">
@@ -716,7 +693,7 @@
             </form>
         </div>
 
-        <!-- Grid de Productos MODIFICADO para 3 columnas -->
+        <!-- Grid de Productos -->
         <div class="products-grid-3col">
             @forelse ($products as $product)
                 <div class="product-card">
@@ -776,14 +753,11 @@
                         
                         <div class="pc-price-row">
                             @if($product->descuento > 0)
-                                {{-- Precio original tachado --}}
                                 <div class="pc-price-original text-muted text-decoration-line-through small">
                                     ${{ number_format($basePrice, 2, '.', ',') }}
                                 </div>
-                                {{-- Precio con descuento --}}
                                 <div class="pc-price text-danger fw-bold">${{ number_format($finalPrice, 2, '.', ',') }}</div>
                             @else
-                                {{-- Precio normal --}}
                                 <div class="pc-price">${{ number_format($basePrice, 2, '.', ',') }}</div>
                             @endif
                             <div class="pc-weight">/ {{ $avg ?: 'per lb' }}</div>
@@ -823,14 +797,12 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Verificar que Bootstrap esté disponible
     if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap no está cargado. Asegúrate de incluir Bootstrap JS en tu layout.');
         return;
     }
 
     try {
-        // Inicializar carrusel principal
         const mainCarouselElement = document.getElementById('categoryCarousel');
         if (mainCarouselElement) {
             const mainCarousel = new bootstrap.Carousel(mainCarouselElement, {
@@ -843,19 +815,17 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Carrusel principal inicializado correctamente');
         }
 
-        // Inicializar carruseles de productos (solo si tienen múltiples imágenes)
         const productCarousels = document.querySelectorAll('.product-carousel');
         productCarousels.forEach(function(carouselElement) {
             try {
                 const carousel = new bootstrap.Carousel(carouselElement, {
-                    interval: false, // No auto-slide para productos
+                    interval: false,
                     ride: false,
                     wrap: true,
                     touch: true,
                     pause: 'hover'
                 });
                 
-                // Activar el carrusel en hover
                 carouselElement.addEventListener('mouseenter', function() {
                     carousel.cycle();
                 });
@@ -875,18 +845,15 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error general inicializando carruseles:', error);
     }
 
-    // Manejo de errores de imágenes
     const images = document.querySelectorAll('img');
     images.forEach(function(img) {
         img.addEventListener('error', function() {
             console.warn('Error cargando imagen:', this.src);
-            // Placeholder SVG
-            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmQ1MDE2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOWZhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzAxMTkwNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg==';
         });
     });
 });
 
-// Función de debug para verificar el estado del carrusel
 function debugCarousel() {
     const carousel = document.getElementById('categoryCarousel');
     if (carousel) {
@@ -899,7 +866,6 @@ function debugCarousel() {
     }
 }
 
-// Hacer disponible la función de debug globalmente
 window.debugCarousel = debugCarousel;
 </script>
 
