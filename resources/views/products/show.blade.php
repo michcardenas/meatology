@@ -67,7 +67,7 @@
             </div>
         @endif
 
-        <!-- 🔥 NUEVA SECCIÓN: CERTIFICACIONES DEBAJO DEL CARRUSEL -->
+        <!-- 🔥 SECCIÓN: CERTIFICACIONES DEBAJO DEL CARRUSEL -->
         @if($product->certification && count($product->certification) > 0)
             <div class="certifications-section mt-3">
                 <div class="d-flex flex-wrap gap-3 justify-content-center">
@@ -87,7 +87,7 @@
         <!-- Información del producto -->
         <div class="col-md-6">
             <div class="product-info">
-                <h1 class="mb-3" style="font-family: 'Georgia', serif;">{{ $product->name }}</h1>
+                <h1 class="mb-3 text-dark" style="font-family: 'Georgia', serif;">{{ $product->name }}</h1>
                 
                 <div class="price-section mb-4">
                     @php
@@ -109,7 +109,7 @@
                         <h3 class="text-success fw-bold">${{ number_format($basePrice, 2, '.', ',') }}</h3>
                     @endif
                     
-                    <small class="text-white d-block">/ {{ $product->avg_weight ?: 'per lb' }}</small>
+                    <small class="text-muted d-block">/ {{ $product->avg_weight ?: 'per lb' }}</small>
                 </div>
 
                 <div class="stock-info mb-4">
@@ -123,8 +123,8 @@
                 </div>
 
           <div class="description mb-4">
-    <h5>Description</h5>
-    <div class="text-white">{!! $product->description !!}</div>
+    <h5 class="text-dark">Description</h5>
+    <div class="text-dark">{!! $product->description !!}</div>
 </div>
 
                 <!-- Formulario para agregar al carrito -->
@@ -135,12 +135,12 @@
                     
                     <div class="row g-3">
                         <div class="col-4">
-                            <label for="quantity" class="form-label">Quantity</label>
+                            <label for="quantity" class="form-label text-dark">Quantity</label>
                             <input type="number" class="form-control" id="quantity" name="quantity" 
                                    value="1" min="1" max="{{ $product->stock }}">
                         </div>
                         <div class="col-8 d-flex align-items-end">
-                            <button type="submit" class="btn btn-success btn-lg w-100">
+                            <button type="submit" class="btn btn-lg w-100" style="background-color: #2d5016; color: white;">
                                 <i class="fas fa-shopping-cart"></i> Add to Cart
                             </button>
                         </div>
@@ -160,8 +160,8 @@
 
                 <!-- Información adicional -->
          <div class="product-details">
-                    <h6>Product Details</h6>
-                    <ul class="list-unstyled">
+                    <h6 class="text-dark">Product Details</h6>
+                    <ul class="list-unstyled text-dark">
                         <li><strong>SKU:</strong> #{{ $product->id }}</li>
                         <li><strong>Category:</strong> {{ $product->category->name ?? 'N/A' }}</li>
                         @if(!empty($product->avg_weight))
@@ -183,14 +183,14 @@
   @if($featuredProducts->count() > 0)
     <div class="row mt-5">
         <div class="col-12">
-            <h3 class="mb-4">
+            <h3 class="mb-4 text-dark">
                 <i class="fas fa-star text-warning"></i> You Might Also Like
-                <small class="text-white fs-6">Popular products</small>
+                <small class="text-muted fs-6">Popular products</small>
             </h3>
             <div class="row g-4">
                 @foreach($featuredProducts as $index => $featuredProduct)
                 <div class="col-lg-3 col-md-6 col-12">
-                    <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: #fdfdfd;">
+                    <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden" style="background-color: #ffffff;">
 
                         <div class="position-relative">
                             {{-- MEDIA CON CARRUSEL --}}
@@ -247,11 +247,7 @@
                         </div>
 
                         <!-- Contenido -->
-                        <div class="card-body p-4" style="
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-">
+                        <div class="card-body p-4" style="display: flex; flex-direction: column; justify-content: space-between;">
                             <h4 class="card-title fw-bold text-dark mb-2" style="font-family: 'Georgia', serif;">
                                 {{ $featuredProduct->name }}
                             </h4>
@@ -302,7 +298,7 @@
                                   <a href="{{ route('product.show', $featuredProduct) }}" class="btn btn-outline-dark btn-sm rounded-pill flex-fill">
                                         <i class="fas fa-eye"></i> View
                                     </a>
-                                    <button type="submit" class="btn btn-buy btn-sm rounded-pill flex-fill" {{ $featuredProduct->stock <= 0 ? 'disabled' : '' }}>
+                                    <button type="submit" class="btn btn-sm rounded-pill flex-fill" style="background-color: #2d5016; color: white;" {{ $featuredProduct->stock <= 0 ? 'disabled' : '' }}>
                                         <i class="fas fa-shopping-cart"></i> Add to Cart
                                     </button>
                                 </div>
@@ -319,9 +315,9 @@
     <div class="row mt-5 mb-5">
         <div class="col-12">
             <div class="text-center">
-                <h4 class="mb-3">Discover More Products</h4>
-                <p class="text-white mb-4">Explore our complete collection of premium cuts</p>
-                <a href="{{ route('shop.index') }}" class="btn btn-primary btn-lg px-5">
+                <h4 class="mb-3 text-dark">Discover More Products</h4>
+                <p class="text-muted mb-4">Explore our complete collection of premium cuts</p>
+                <a href="{{ route('shop.index') }}" class="btn btn-lg px-5" style="background-color: #2d5016; color: white;">
                     <i class="fas fa-store"></i> Browse All Products
                 </a>
             </div>
@@ -330,6 +326,11 @@
 </div>
 
 <style>
+/* Fondo blanco para toda la página */
+body {
+    background-color: #ffffff;
+}
+
 .thumbnail-img:hover {
     opacity: 0.8;
     transition: opacity 0.3s ease;
@@ -340,23 +341,23 @@
 }
 
 .carousel-indicators [data-bs-target] {
-    background-color: white;
+    background-color: rgba(1, 25, 4, 0.5);
     width: 10px;
     height: 10px;
     border-radius: 50%;
 }
 
 .carousel-indicators .active {
-    background-color: #198754; /* verde Bootstrap */
+    background-color: #2d5016;
 }
 
-/* 🔥 ESTILOS PARA LAS CERTIFICACIONES */
-/* .certifications-section {
-    background: rgba(255, 255, 255, 0.05);
+/* Estilos para las certificaciones */
+.certifications-section {
+    background: rgba(1, 25, 4, 0.05);
     border-radius: 8px;
     padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-} */
+    border: 1px solid rgba(1, 25, 4, 0.1);
+}
 
 .certification-badge {
     width: 220px;
@@ -369,15 +370,60 @@
     transition: transform 0.2s ease;
 }
 
-
 /* Estilos para el modal */
 .modal-content {
     border: none;
     border-radius: 12px;
+    background-color: #ffffff;
 }
 
 .modal-body img {
     border-radius: 8px;
+}
+
+/* Estilos para las tarjetas */
+.card {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(1, 25, 4, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+    transition: all 0.3s ease;
+}
+
+.card .card-title {
+    color: #011904 !important;
+}
+
+.card .card-text {
+    color: #2d5016 !important;
+}
+
+/* Botones con estilo verde */
+.btn-primary {
+    background-color: #2d5016;
+    border-color: #2d5016;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #011904;
+    border-color: #011904;
+}
+
+/* Badge de categoría con mejor contraste */
+.badge.bg-success {
+    background-color: #2d5016 !important;
+    color: #ffffff !important;
+}
+
+/* Controles del carrusel */
+.carousel-control-prev,
+.carousel-control-next {
+    filter: invert(1);
 }
 
 /* Responsive para móviles */
@@ -388,65 +434,23 @@
     }
 }
 
-/* 🔥 ESTILOS ESPECÍFICOS PARA FONDO VERDE OSCURO #013105 */
-body {
-    background-color: #011904;
+/* Featured product carousel hover effects */
+.featured-product-carousel:hover .carousel-control-prev,
+.featured-product-carousel:hover .carousel-control-next,
+.featured-product-carousel:hover .carousel-indicators {
+    opacity: 0.8 !important;
 }
 
-.certifications-section {
-    color: #ffffff !important;
+.featured-product-carousel .carousel-control-prev,
+.featured-product-carousel .carousel-control-next {
+    width: 5%;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
-.certifications-section small {
-    color: #e0e0e0 !important;
-    font-weight: 500;
-}
-
-/* Asegurar que todos los textos sean visibles */
-.text-white, .text-light {
-    color: #ffffff !important;
-}
-
-.modal-content.bg-dark {
-    background-color: #1a1a1a !important;
-    border: 1px solid #333;
-}
-
-/* 🔥 ESTILOS PARA LAS TARJETAS EN FONDO VERDE OSCURO */
-.card.bg-dark {
-    background-color: #1a1a1a !important;
-    border: 1px solid #333 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-.card.bg-dark:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-    transition: all 0.3s ease;
-}
-
-.card.bg-dark .card-title {
-    color: #ffffff !important;
-}
-
-.card.bg-dark .card-text {
-    color: #e0e0e0 !important;
-}
-
-.btn-outline-light {
-    border-color: #ffffff;
-    color: #ffffff;
-}
-
-.btn-outline-light:hover {
-    background-color: #ffffff;
-    color: #1a1a1a;
-}
-
-/* Badge de categoría con mejor contraste */
-.badge.bg-success {
-    background-color: #28a745 !important;
-    color: #ffffff !important;
+.featured-product-carousel .carousel-control-prev:hover,
+.featured-product-carousel .carousel-control-next:hover {
+    opacity: 1 !important;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 </style>
 
@@ -461,6 +465,40 @@ document.querySelectorAll('.thumbnail-img').forEach(thumb => {
     thumb.addEventListener('click', function() {
         const mainImg = document.querySelector('.main-image img');
         mainImg.src = this.src;
+    });
+});
+
+// Inicializar carruseles de productos destacados
+document.addEventListener('DOMContentLoaded', function() {
+    const featuredCarousels = document.querySelectorAll('.featured-product-carousel');
+    featuredCarousels.forEach(function(carouselElement) {
+        const carousel = new bootstrap.Carousel(carouselElement, {
+            interval: false,
+            ride: false,
+            wrap: true,
+            touch: true,
+            pause: 'hover'
+        });
+        
+        // Prevenir navegación cuando se hace clic en controles
+        const controls = carouselElement.querySelectorAll('.carousel-control-prev, .carousel-control-next, .carousel-indicators button');
+        controls.forEach(function(control) {
+            control.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+        
+        // Activar el carrusel en hover
+        carouselElement.addEventListener('mouseenter', function() {
+            const interval = setInterval(() => {
+                carousel.next();
+            }, 2000);
+            
+            carouselElement.addEventListener('mouseleave', function() {
+                clearInterval(interval);
+            }, { once: true });
+        });
     });
 });
 </script>
